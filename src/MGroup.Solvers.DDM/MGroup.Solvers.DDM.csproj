@@ -15,4 +15,8 @@
     <PackageReference Include="MGroup.LinearAlgebra.Distributed" Version="0.1.0-unstable.129" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MGroup.Solvers\MGroup.Solvers.csproj" />
+  </ItemGroup>
+
 </Project>
