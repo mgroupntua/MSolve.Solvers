@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+
 using MGroup.LinearAlgebra.Matrices;
 
 //TODO: Merge this with the assembler used for element -> subdomain map-reductions.
-namespace MGroup.Solvers.DDM.AssemblerExtensions
+namespace MGroup.Solvers.DDM.SolversExtensions.Assemblers
 {
 	public class DenseMatrixAssembler
 	{
@@ -13,10 +14,10 @@ namespace MGroup.Solvers.DDM.AssemblerExtensions
 			var globalMatrix = Matrix.CreateZero(numGlobalDofs, numGlobalDofs);
 
 			// Process the stiffness of each element
-			foreach (int s in localToGlobalMaps.Keys)
+			foreach (var s in localToGlobalMaps.Keys)
 			{
-				int[] globalDofs = localToGlobalMaps[s];
-				int[] localDofs = Utilities.Range(0, globalDofs.Length); //TODO: Create a DokSymmetric.AddSubmatrixSymmetric() overload that accepts a single mapping array
+				var globalDofs = localToGlobalMaps[s];
+				var localDofs = Utilities.Range(0, globalDofs.Length); //TODO: Create a DokSymmetric.AddSubmatrixSymmetric() overload that accepts a single mapping array
 				AddLocalToGlobalMatrix(globalMatrix, localMatrices[s], localDofs, globalDofs);
 			}
 
@@ -25,7 +26,7 @@ namespace MGroup.Solvers.DDM.AssemblerExtensions
 
 		public void HandleDofOrderingWasModified()
 		{
-		   // Do nothing, since there are no idexing arrays to cache.
+			// Do nothing, since there are no idexing arrays to cache.
 		}
 
 		private static void AddLocalToGlobalMatrix(Matrix globalMatrix, IMatrixView localMatrix,
@@ -34,15 +35,15 @@ namespace MGroup.Solvers.DDM.AssemblerExtensions
 			Debug.Assert(localMatrix.NumRows == localMatrix.NumColumns);
 			Debug.Assert(globalIndices.Length == localIndices.Length);
 
-			int numRelevantRows = localIndices.Length;
-			for (int i = 0; i < numRelevantRows; ++i)
+			var numRelevantRows = localIndices.Length;
+			for (var i = 0; i < numRelevantRows; ++i)
 			{
-				int localRow = localIndices[i];
-				int globalRow = globalIndices[i];
-				for (int j = 0; j < numRelevantRows; ++j)
+				var localRow = localIndices[i];
+				var globalRow = globalIndices[i];
+				for (var j = 0; j < numRelevantRows; ++j)
 				{
-					int localCol = localIndices[j];
-					int globalCol = globalIndices[j];
+					var localCol = localIndices[j];
+					var globalCol = globalIndices[j];
 
 					globalMatrix[globalRow, globalCol] += localMatrix[localRow, localCol];
 				}
