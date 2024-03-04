@@ -29,7 +29,6 @@ namespace MGroup.Solvers.AlgebraicModel
 		private readonly ISubdomainMatrixAssembler<TMatrix> subdomainMatrixAssembler;
 		private SubdomainVectorAssembler subdomainVectorAssembler;
 		private IAlgebraicModelInterpreter boundaryConditionsInterpreter;
-		private bool dofsHaveBeenOrdered = false;
 
 		public GlobalAlgebraicModel(IModel model, IDofOrderer dofOrderer,
 			ISubdomainMatrixAssembler<TMatrix> subdomainMatrixAssembler)
@@ -81,21 +80,6 @@ namespace MGroup.Solvers.AlgebraicModel
 			subdomainVectorAssembler.AddToSubdomainVector(loads, globalVector.SingleVector, subdomainDofs);
 		}
 
-		//public void AddToGlobalVector(Func<int, IEnumerable<IElementBoundaryCondition>> accessLoads, IGlobalVector vector)
-		//{
-		//	GlobalVector globalVector = CheckCompatibleVector(vector);
-		//	ISubdomainFreeDofOrdering subdomainDofs = SubdomainFreeDofOrdering;
-		//	IEnumerable<IElementBoundaryCondition> loads = accessLoads(subdomain.ID);
-		//	subdomainVectorAssembler.AddToSubdomainVector(loads, globalVector.SingleVector, subdomainDofs);
-		//}
-
-		//public void AddToGlobalVector(IEnumerable<IDomainModelQuantity<IDofType>> loads, IGlobalVector vector)
-		//{
-		//	GlobalVector globalVector = CheckCompatibleVector(vector);
-		//	ISubdomainFreeDofOrdering subdomainDofs = SubdomainFreeDofOrdering;
-		//	subdomainVectorAssembler.AddToSubdomainVector(loads, globalVector.SingleVector, subdomainDofs);
-		//}
-
 		public IGlobalMatrix BuildGlobalMatrix(IElementMatrixProvider elementMatrixProvider)
 		{
 			ISubdomainFreeDofOrdering subdomainDofs = SubdomainFreeDofOrdering;
@@ -105,8 +89,6 @@ namespace MGroup.Solvers.AlgebraicModel
 			return globalMatrix;
 		}
 
-		IGlobalVector IGlobalVectorAssembler.CreateZeroVector() => CreateZeroVector();
-
 		public IGlobalMatrix CreateEmptyMatrix()
 		{
 			ISubdomainFreeDofOrdering subdomainDofs = SubdomainFreeDofOrdering;
@@ -114,6 +96,8 @@ namespace MGroup.Solvers.AlgebraicModel
 			globalMatrix.SingleMatrix = subdomainMatrixAssembler.CreateEmptyMatrix(subdomainDofs);
 			return globalMatrix;
 		}
+
+		IGlobalVector IGlobalVectorAssembler.CreateZeroVector() => CreateZeroVector();
 
 		public GlobalVector CreateZeroVector()
 		{
@@ -143,19 +127,13 @@ namespace MGroup.Solvers.AlgebraicModel
 			}
 
 			// Constrained dofs
-			//foreach (INode node in subdomain.EnumerateNodes())
-			//{
-			//	foreach (Constraint dirichlet in node.Constraints)
-			//	{
-			//		results[node.ID, model.AllDofs.GetIdOfDof(dirichlet.DOF)] = dirichlet.Amount;
-			//	}
-			//}
+			ActiveDofs activeDofs = boundaryConditionsInterpreter.ActiveDofs;
 			var constraints = model.EnumerateBoundaryConditions(subdomain.ID)
 				.SelectMany(x => x.EnumerateNodalBoundaryConditions(model.EnumerateElements(subdomain.ID)))
 				.OfType<INodalDirichletBoundaryCondition<IDofType>>();
 			foreach (var constraint in constraints)
 			{
-				results[constraint.Node.ID, boundaryConditionsInterpreter.ActiveDofs.GetIdOfDof(constraint.DOF)] = constraint.Amount;
+				results[constraint.Node.ID, activeDofs.GetIdOfDof(constraint.DOF)] = constraint.Amount;
 			}
 
 			return new NodalResults(results);
@@ -188,7 +166,6 @@ namespace MGroup.Solvers.AlgebraicModel
 				else
 				{
 					var constraint = nodeConstraints.FirstOrDefault(x => x.DOF == dofs[i]);
-					//Constraint constraint = node.Constraints.Find(con => con.DOF == dofs[i]);
 					if (constraint != null)
 					{
 						result[i] = constraint.Amount;
@@ -196,7 +173,7 @@ namespace MGroup.Solvers.AlgebraicModel
 					else
 					{
 						throw new KeyNotFoundException(
-							$"The requested {dofs[i]} is neither a free nor a constrained dof of node node {node.ID}.");
+							$"The requested {dofs[i]} is neither a free nor a constrained dof of node {node.ID}.");
 					}
 				}
 			}
@@ -233,7 +210,6 @@ namespace MGroup.Solvers.AlgebraicModel
 			LinearSystem.Matrix = null;
 			LinearSystem.RhsVector = CreateZeroVector();
 			LinearSystem.Solution = CreateZeroVector();
-			dofsHaveBeenOrdered = true;
 		}
 
 		public void OrderDofs()
@@ -324,7 +300,7 @@ namespace MGroup.Solvers.AlgebraicModel
 
 		internal GlobalVector CheckCompatibleVector(IGlobalVector vector)
 		{
-			// Casting inside here is usually safe since all global vectors should be created by the this object
+			// Casting inside here is usually safe since all global vectors should be created by this object
 			if (vector is GlobalVector globalVector)
 			{
 				if (vector.CheckForCompatibility == false || globalVector.Format == this.Format)
