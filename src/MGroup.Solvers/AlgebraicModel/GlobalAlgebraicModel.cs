@@ -16,7 +16,7 @@ using MGroup.Solvers.Assemblers;
 using MGroup.Solvers.DofOrdering;
 using MGroup.Solvers.LinearSystem;
 using MGroup.Solvers.Results;
-using MGroup.LinearAlgebra.Distributed.LinearAlgebraExtensions;
+using MGroup.LinearAlgebra.LinearAlgebraExtensions;
 
 namespace MGroup.Solvers.AlgebraicModel
 {

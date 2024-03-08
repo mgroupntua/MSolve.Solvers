@@ -13,7 +13,6 @@ namespace MGroup.Solvers.MachineLearning
 	using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.LinearAlgebra.Vectors;
-	using MGroup.Constitutive.Structural.MachineLearning.Surrogates;
 	using MGroup.MachineLearning.Utilities;
 	using MGroup.MSolve.DataStructures;
 	using MGroup.MSolve.Discretization.Entities;
@@ -27,6 +26,7 @@ namespace MGroup.Solvers.MachineLearning
 	using MGroup.Solvers.LinearSystem;
 	using MGroup.MSolve.Solution.LinearSystem;
 	using System.Diagnostics;
+	using MGroup.MachineLearning.TensorFlow;
 
 	public class AmgAISolver : ISolver
 	{

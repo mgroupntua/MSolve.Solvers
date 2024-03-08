@@ -18,7 +18,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MGroup.Solvers.MachineLearn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MGroup.Solvers.DDM", "src\MGroup.Solvers.DDM\MGroup.Solvers.DDM.csproj", "{7625C642-71F0-45E3-A2CF-B19E4A2E407E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MGroup.MSolve.Meshes", "src\MGroup.MSolve.Meshes\MGroup.MSolve.Meshes.csproj", "{3E386786-0C7D-4773-826E-4E6665FA80A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MGroup.MSolve.Meshes", "src\MGroup.MSolve.Meshes\MGroup.MSolve.Meshes.csproj", "{3E386786-0C7D-4773-826E-4E6665FA80A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

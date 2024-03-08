@@ -13,7 +13,6 @@ namespace MGroup.Solvers.MachineLearning.Tests.Examples
 	using MGroup.Constitutive.Structural;
 	using MGroup.Constitutive.Structural.BoundaryConditions;
 	using MGroup.Constitutive.Structural.Continuum;
-	using MGroup.Constitutive.Structural.MachineLearning.Surrogates;
 	using MGroup.FEM.Structural.Continuum;
 	using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
 	using MGroup.LinearAlgebra.Output;
@@ -27,6 +26,7 @@ namespace MGroup.Solvers.MachineLearning.Tests.Examples
 	using MGroup.Solvers.Direct;
 	using System.IO;
 	using System.Diagnostics;
+	using MGroup.MachineLearning.TensorFlow;
 
 	public static class Elasticity3DExample
 	{

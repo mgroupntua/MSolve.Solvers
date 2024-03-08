@@ -16,7 +16,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="MGroup.Constitutive.Structural.MachineLearning" Version="0.2.0-unstable.34" />
+    <PackageReference Include="MGroup.Constitutive.Structural.MachineLearning" Version="0.2.0-unstable.35" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
   

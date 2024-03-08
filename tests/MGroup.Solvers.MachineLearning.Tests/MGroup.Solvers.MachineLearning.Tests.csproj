@@ -17,8 +17,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="MGroup.Constitutive.Structural.MachineLearning" Version="0.2.0-unstable.34" />
-    <PackageReference Include="MGroup.LinearAlgebra" Version="0.1.0-unstable.129" />
+    <PackageReference Include="MGroup.Constitutive.Structural.MachineLearning" Version="0.2.0-unstable.35" />
+    <PackageReference Include="MGroup.LinearAlgebra" Version="0.1.0-unstable.141" />
     <PackageReference Include="MGroup.NumericalAnalyzers" Version="0.2.0-unstable.62" />
     <PackageReference Include="MGroup.NumericalAnalyzers.Discretization" Version="0.2.0-unstable.62" /> 
 	<PackageReference Include="MathNet.Numerics" Version="5.0.0" />
