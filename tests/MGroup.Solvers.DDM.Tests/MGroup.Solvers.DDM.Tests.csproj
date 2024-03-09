@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="MGroup.FEM.Structural" Version="0.2.0-unstable.131" />
+    <PackageReference Include="MGroup.FEM.Thermal" Version="0.2.0-unstable.131" />
     <PackageReference Include="xunit" Version="2.7.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7">
       <PrivateAssets>all</PrivateAssets>
