@@ -174,8 +174,7 @@ namespace MGroup.Solvers.DDM.LinearSystem
 
 			// Constrained dofs
 			ActiveDofs activeDofs = boundaryConditionsInterpreter.ActiveDofs;
-			var constraints = model.FindAllDirichletBCs(subdomainID);
-			ISubdomain subdomain = model.GetSubdomain(subdomainID);
+			var constraints = model.FindDirichletBCsOfSubdomain(subdomainID);
 			foreach (var constraint in constraints)
 			{
 				results[constraint.Node.ID, activeDofs.GetIdOfDof(constraint.DOF)] = constraint.Amount;
