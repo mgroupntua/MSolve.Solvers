@@ -8,6 +8,7 @@ using Xunit;
 
 namespace MGroup.Solvers.DDM.Tests.Partitioning
 {
+	[Collection("Sequential")]
 	public static class UniformMeshPartitioner2DTests
 	{
 		//[Fact]

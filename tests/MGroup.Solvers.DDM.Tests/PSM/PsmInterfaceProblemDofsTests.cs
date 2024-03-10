@@ -13,6 +13,7 @@ using Xunit;
 
 namespace MGroup.Solvers.DDM.Tests.PSM
 {
+	[Collection("Sequential")]
 	public class PsmInterfaceProblemDofsTests
 	{
 		[Theory]

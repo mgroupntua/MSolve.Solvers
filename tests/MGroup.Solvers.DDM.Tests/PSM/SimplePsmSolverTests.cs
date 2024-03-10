@@ -15,6 +15,7 @@ using Xunit;
 
 namespace MGroup.Solvers.DDM.Tests.PSM
 {
+	[Collection("Sequential")]
 	public static class SimplePsmSolverTests
 	{
 		[Theory]

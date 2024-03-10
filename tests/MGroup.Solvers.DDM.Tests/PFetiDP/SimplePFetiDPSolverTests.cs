@@ -22,6 +22,7 @@ using Xunit;
 
 namespace MGroup.Solvers.DDM.Tests.PFetiDP
 {
+	[Collection("Sequential")]
 	public static class SimplePFetiDPSolverTests
 	{
 		[Theory]

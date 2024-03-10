@@ -1,17 +1,10 @@
-// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+using MGroup.Solvers.DDM.Tests;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-//All Xunit tests must be run sequentially
+class Program
+{
+	static void Main(string[] args)
+	{
+		MpiTestSuite.RunTestsWith5Processes();
+		//MpiScalabilityAnalysisRunner.RunScalabilityAnalysesWith4Processes();
+	}
+}

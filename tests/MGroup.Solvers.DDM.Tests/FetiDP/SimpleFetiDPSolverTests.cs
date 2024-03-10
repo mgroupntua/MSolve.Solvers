@@ -21,6 +21,7 @@ using Xunit;
 
 namespace MGroup.Solvers.DDM.Tests.FetiDP
 {
+	[Collection("Sequential")]
 	public static class SimpleFetiDPSolverTests
 	{
 		[Theory]
