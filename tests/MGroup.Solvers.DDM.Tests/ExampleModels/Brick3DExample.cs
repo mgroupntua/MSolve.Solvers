@@ -78,6 +78,8 @@ namespace MGroup.Solvers.DDM.Tests.ExampleModels
 				neumannBCs.Add(new NodalLoad(node, StructuralDof.TranslationZ, load));
 			}
 
+			model.BoundaryConditions.Add(new StructuralBoundaryConditionSet(dirichletBCs, neumannBCs));
+
 			return model;
 		}
 

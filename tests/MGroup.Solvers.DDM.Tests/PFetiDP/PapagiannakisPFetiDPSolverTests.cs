@@ -1,4 +1,4 @@
-using MGroup.Constitutive.Thermal;
+using MGroup.Constitutive.Structural;
 using MGroup.Environments;
 using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
 using MGroup.LinearAlgebra.Iterative;
@@ -89,7 +89,7 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 			PsmSolver<SymmetricCscMatrix> solver = solverFactory.BuildSolver(model, algebraicModel);
 
 			// Linear static analysis
-			var problem = new ProblemThermal(model, algebraicModel);
+			var problem = new ProblemStructural(model, algebraicModel);
 			var childAnalyzer = new LinearAnalyzer(algebraicModel, solver, problem);
 			var parentAnalyzer = new StaticAnalyzer(algebraicModel, problem, childAnalyzer);
 
@@ -170,7 +170,7 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 			PsmSolver<SymmetricCscMatrix> solver = solverFactory.BuildSolver(model, algebraicModel);
 
 			// Linear static analysis
-			var problem = new ProblemThermal(model, algebraicModel);
+			var problem = new ProblemStructural(model, algebraicModel);
 			var childAnalyzer = new LinearAnalyzer(algebraicModel, solver, problem);
 			var parentAnalyzer = new StaticAnalyzer(algebraicModel, problem, childAnalyzer);
 
@@ -253,7 +253,7 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 			PsmSolver<SymmetricCscMatrix> solver = solverFactory.BuildSolver(model, algebraicModel);
 
 			// Linear static analysis
-			var problem = new ProblemThermal(model, algebraicModel);
+			var problem = new ProblemStructural(model, algebraicModel);
 			var childAnalyzer = new LinearAnalyzer(algebraicModel, solver, problem);
 			var parentAnalyzer = new StaticAnalyzer(algebraicModel, problem, childAnalyzer);
 

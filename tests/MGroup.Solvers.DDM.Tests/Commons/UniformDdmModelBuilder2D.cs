@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Linq;
+
 using MGroup.Constitutive.Structural;
-using MGroup.Constitutive.Structural.BoundaryConditions;
 using MGroup.Constitutive.Structural.Continuum;
 using MGroup.Constitutive.Structural.Planar;
 using MGroup.Constitutive.Structural.Transient;
@@ -17,6 +14,7 @@ using MGroup.MSolve.Meshes.Structured;
 using MGroup.Solvers.DDM.DiscretizationExtensions;
 using MGroup.Solvers.DDM.FetiDP.Dofs;
 using MGroup.Solvers.DDM.Partitioning;
+using MGroup.Solvers.DDM.Tests.DiscretizationExtensions;
 
 //TODO: Allow option for prescribed displacement/load at corners or specific node index/ID.
 namespace MGroup.Solvers.DDM.Tests.Commons
@@ -158,6 +156,7 @@ namespace MGroup.Solvers.DDM.Tests.Commons
 
 		private void ApplyBoundaryConditions(Model model)
 		{
+			var bcBuilder = new IncrementalBCBuilderStructural(model);
 			double dx = (MaxCoords[0] - MinCoords[0]) / NumElementsTotal[0];
 			double dy = (MaxCoords[1] - MinCoords[1]) / NumElementsTotal[1];
 			double meshTolerance = 1E-10 * Math.Min(dx, dy);
@@ -166,50 +165,24 @@ namespace MGroup.Solvers.DDM.Tests.Commons
 			foreach ((BoundaryRegion region, IStructuralDofType dof, double displacement) in prescribedDisplacements)
 			{
 				INode[] nodes = FindBoundaryNodes(region, model, meshTolerance);
-				var regionDisplacements = new List<INodalDisplacementBoundaryCondition>();
-				var regionLoads = new List<INodalLoadBoundaryCondition>();
 				foreach (INode node in nodes)
 				{
-					// Only apply the Dirichlet BC, if it has not already been applied.
-					INodalDirichletBoundaryCondition<IDofType>[] bcs = model.FindDirichletBCsOfDof(node, dof);
-					if (bcs.Length == 0)
-					{
-						regionDisplacements.Add(new NodalDisplacement(node, dof, displacement));
-					}
-					else if (bcs.Length == 1)
-					{
-						if (bcs[0].Amount != displacement)
-						{
-							throw new Exception($"At node {node.ID}, dof = {dof}, u = {bcs[0].Amount} has already" +
-								$" been prescribed. Cannot apply both u = {displacement} too.");
-						}
-					}
-					else
-					{
-						throw new Exception($"There are 2 Dirichlet boundary conditions at node {node.ID}, dof = {dof}.");
-					}
+					bcBuilder.AddDirichletBC(node, dof, displacement);
 				}
-				model.BoundaryConditions.Add(new StructuralBoundaryConditionSet(regionDisplacements, regionLoads));
 			}
 
 			// Apply prescribed loads
 			foreach ((BoundaryRegion region, IStructuralDofType dof, double totalLoad) in prescribedLoads)
 			{
 				INode[] nodes = FindBoundaryNodes(region, model, meshTolerance);
-				var regionDisplacements = new List<INodalDisplacementBoundaryCondition>();
-				var regionLoads = new List<INodalLoadBoundaryCondition>();
 				double load = totalLoad / nodes.Length;
 				foreach (INode node in nodes)
 				{
-					// Only apply load at this (node, dof) if there are no Dirichlet BCs
-					INodalDirichletBoundaryCondition<IDofType>[] bcs = model.FindDirichletBCsOfDof(node, dof);
-					if (bcs.Length == 0)
-					{
-						regionLoads.Add(new NodalLoad(node, dof, load));
-					}
+					bcBuilder.AddNeumannBC(node, dof, load);
 				}
-				model.BoundaryConditions.Add(new StructuralBoundaryConditionSet(regionDisplacements, regionLoads));
 			}
+
+			bcBuilder.ConfirmBoundaryConditions();
 		}
 
 		private UniformCartesianMesh2D BuildMesh()

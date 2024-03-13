@@ -58,7 +58,7 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 			model.ConnectDataStructures();
 
 			Dictionary<int, ISubdomainFreeDofOrdering> dofOrderings = environment.CalcNodeData(
-				s => ModelUtilities.OrderDofs(model.GetSubdomain(s), new MockBCInterpreter()));
+				s => ModelUtilities.OrderDofs(model.GetSubdomain(s), new MockBCInterpreter(model)));
 			var subdomainTopology = new SubdomainTopologyGeneral();
 			subdomainTopology.Initialize(environment, model, s => dofOrderings[s]);
 
