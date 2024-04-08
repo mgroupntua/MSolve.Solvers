@@ -28,7 +28,9 @@ namespace MGroup.Solvers.DDM.LinearAlgebraExtensions
 		/// </summary>
 		public static void CalcSchurComplement(SymmetricMatrix A11, CsrMatrix A12, ITriangulation inverseA22, 
 			SymmetricMatrix result)
-		{ //TODO: Unfortunately this cannot take advantage of MKL for CSR * matrix or even CSR * vector.
+		{ 
+			//TODO: Unfortunately this cannot take advantage of MKL for CSR * matrix or even CSR * vector. Instead there should
+			////	be faster implementations of this whole class 
 			// Column j of A21 = row j of A12
 			for (int j = 0; j < A12.NumRows; ++j)
 			{
@@ -42,11 +44,26 @@ namespace MGroup.Solvers.DDM.LinearAlgebraExtensions
 				for (int i = 0; i <= j; ++i)
 				{
 					// Perform the subtraction S = A11 - (A21^T * inv(A22) * A21) for the current (i, j)
-					double dot = A12.MultiplyRowTimesVector(i, colInvA22A21);
+					double dot = MultiplyRowTimesVector(A12, i, colInvA22A21);
 					int indexS = i + (j * (j + 1)) / 2;
 					result.RawData[indexS] = A11.RawData[indexS] - dot;
 				}
 			}
+		}
+
+		private static double MultiplyRowTimesVector(CsrMatrix csr, int rowIdx, double[] vector)
+		{
+			double[] values = csr.RawValues;
+			int[] colIndices = csr.RawColIndices;
+			int[] rowOffsets = csr.RawRowOffsets;
+			double dot = 0.0;
+			int start = rowOffsets[rowIdx]; //inclusive
+			int end = rowOffsets[rowIdx + 1]; //exclusive
+			for (int k = start; k < end; ++k)
+			{
+				dot += values[k] * vector[colIndices[k]];
+			}
+			return dot;
 		}
 	}
 }
