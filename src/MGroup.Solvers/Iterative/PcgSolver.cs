@@ -22,28 +22,27 @@ namespace MGroup.Solvers.Iterative
 {
 	/// <summary>
 	/// Iterative solver for models with only 1 subdomain. Uses the Proconditioned Conjugate Gradient algorithm.
-	/// Authors: Serafeim Bakalakos
 	/// </summary>
 	public class PcgSolver : SingleSubdomainSolverBase<CsrMatrix>
 	{
 		private readonly PcgAlgorithm pcgAlgorithm;
-		private readonly IPreconditionerFactory preconditionerFactory;
+		private readonly bool matrixPatternWillNotBeModified;
+		private readonly IPreconditioner preconditioner;
 
-		private bool mustUpdatePreconditioner = true;
-		private IPreconditioner preconditioner;
+		private bool mustUpdatePreconditioner = true; 
 
-		private PcgSolver(GlobalAlgebraicModel<CsrMatrix> model, PcgAlgorithm pcgAlgorithm, 
-			IPreconditionerFactory preconditionerFactory) 
+		private PcgSolver(GlobalAlgebraicModel<CsrMatrix> model, PcgAlgorithm pcgAlgorithm,
+			IPreconditioner preconditioner, bool matrixPatternWillNotBeModified) 
 			: base(model,"PcgSolver")
 		{
 			this.pcgAlgorithm = pcgAlgorithm;
-			this.preconditionerFactory = preconditionerFactory;
+			this.matrixPatternWillNotBeModified = matrixPatternWillNotBeModified;
+			this.preconditioner = preconditioner;
 		}
 
 		public override void HandleMatrixWillBeSet()
 		{
 			mustUpdatePreconditioner = true;
-			preconditioner = null;
 		}
 
 		public override void Initialize() { }
@@ -72,7 +71,7 @@ namespace MGroup.Solvers.Iterative
 			if (mustUpdatePreconditioner)
 			{
 				watch.Start();
-				preconditioner = preconditionerFactory.CreatePreconditionerFor(matrix);
+				preconditioner.UpdateMatrix(matrix, !matrixPatternWillNotBeModified);
 				watch.Stop();
 				Logger.LogTaskDuration("Calculating preconditioner", watch.ElapsedMilliseconds);
 				watch.Reset();
@@ -108,7 +107,7 @@ namespace MGroup.Solvers.Iterative
 			if (mustUpdatePreconditioner)
 			{
 				watch.Start();
-				preconditioner = preconditionerFactory.CreatePreconditionerFor(matrix);
+				preconditioner.UpdateMatrix(matrix, !matrixPatternWillNotBeModified);
 				watch.Stop();
 				Logger.LogTaskDuration("Calculating preconditioner", watch.ElapsedMilliseconds);
 				watch.Reset();
@@ -147,13 +146,14 @@ namespace MGroup.Solvers.Iterative
 			public IDofOrderer DofOrderer { get; set; }
 				= new DofOrderer(new NodeMajorDofOrderingStrategy(), new NullReordering());
 
-			public PcgAlgorithm PcgAlgorithm { get; set; } = (new PcgAlgorithm.Builder()).Build();
+			public bool MatrixPatternWillNotBeModified { get; set; } = false;
 
-			public IPreconditionerFactory PreconditionerFactory { get; set; } = new JacobiPreconditioner.Factory();
+			public PcgAlgorithm PcgAlgorithm { get; set; } = (new PcgAlgorithm.Factory()).Build();
 
+			public IPreconditioner Preconditioner { get; set; } = new JacobiPreconditioner();
 
 			public PcgSolver BuildSolver(GlobalAlgebraicModel<CsrMatrix> model)
-				=> new PcgSolver(model, PcgAlgorithm, PreconditionerFactory);
+				=> new PcgSolver(model, PcgAlgorithm, Preconditioner.CopyWithInitialSettings(), MatrixPatternWillNotBeModified);
 
 			public GlobalAlgebraicModel<CsrMatrix> BuildAlgebraicModel(IModel model)
 				=> new GlobalAlgebraicModel<CsrMatrix>(model, DofOrderer, new CsrMatrixAssembler(true));

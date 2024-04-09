@@ -2,31 +2,25 @@ namespace MGroup.Solvers.MachineLearning.Tests.Examples
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
+	using System.IO;
 	using System.Linq;
-	using System.Reflection.PortableExecutable;
-
-	using global::MGroup.Solvers.MachineLearning.PodAmg;
 
 	using MathNet.Numerics.Distributions;
-
-	using MGroup.Solvers.MachineLearning.Tests.Mesh;
 	using MGroup.Constitutive.Structural;
 	using MGroup.Constitutive.Structural.BoundaryConditions;
 	using MGroup.Constitutive.Structural.Continuum;
-	using MGroup.Constitutive.Structural.MachineLearning.Surrogates;
 	using MGroup.FEM.Structural.Continuum;
 	using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
 	using MGroup.LinearAlgebra.Output;
 	using MGroup.LinearAlgebra.Output.Formatting;
 	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MachineLearning.TensorFlow;
 	using MGroup.MachineLearning.Utilities;
 	using MGroup.MSolve.Discretization.Entities;
 	using MGroup.MSolve.Discretization.Meshes.Generation;
-	using MGroup.MSolve.Solution;
 	using MGroup.NumericalAnalyzers;
-	using MGroup.Solvers.Direct;
-	using System.IO;
-	using System.Diagnostics;
+	using MGroup.Solvers.MachineLearning.Tests.Mesh;
 
 	public static class Elasticity3DExample
 	{

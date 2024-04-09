@@ -16,8 +16,15 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="MGroup.LinearAlgebra.Distributed" Version="0.1.0-unstable.129" />
-    <PackageReference Include="MGroup.MSolve.Core" Version="0.2.0-unstable.76" />
+    <PackageReference Include="MGroup.LinearAlgebra.Distributed" Version="0.1.0-unstable.167" />
+    <PackageReference Include="MGroup.MSolve.Core" Version="0.2.0-unstable.88" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

@@ -16,11 +16,18 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="MGroup.Constitutive.Structural.MachineLearning" Version="0.2.0-unstable.34" />
+    <PackageReference Include="MGroup.Constitutive.Structural.MachineLearning" Version="0.2.0-unstable.42" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\MGroup.Solvers\MGroup.Solvers.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>
