@@ -12,9 +12,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MGroup.Solvers", "src\MGrou
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{70B6F5C0-C6BF-49B2-AFD2-97BB2616F504}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MGroup.Solvers.MachineLearning", "tests\MGroup.Solvers.MachineLearning.Tests\MGroup.Solvers.MachineLearning.Tests.csproj", "{730C8FA3-283B-4CFC-B05E-9496D4BFC84C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MGroup.Solvers.MachineLearning.Tests", "tests\MGroup.Solvers.MachineLearning.Tests\MGroup.Solvers.MachineLearning.Tests.csproj", "{730C8FA3-283B-4CFC-B05E-9496D4BFC84C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MGroup.Solvers.MachineLearning", "src\MGroup.Solvers.MachineLearning\MGroup.Solvers.MachineLearning.csproj", "{D1336E82-439E-463E-BA80-5FBD3EF8D390}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MGroup.Solvers.Tests", "MGroup.Solvers.Tests\MGroup.Solvers.Tests.csproj", "{A15E81C8-CAEC-4A42-8182-B604EFCA2F9F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +36,10 @@ Global
 		{D1336E82-439E-463E-BA80-5FBD3EF8D390}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1336E82-439E-463E-BA80-5FBD3EF8D390}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1336E82-439E-463E-BA80-5FBD3EF8D390}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A15E81C8-CAEC-4A42-8182-B604EFCA2F9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A15E81C8-CAEC-4A42-8182-B604EFCA2F9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A15E81C8-CAEC-4A42-8182-B604EFCA2F9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A15E81C8-CAEC-4A42-8182-B604EFCA2F9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,6 +48,7 @@ Global
 		{90A9B907-EBB8-4E98-9515-D93AE229992B} = {9516266B-5BDB-4C5E-AA63-8D560BC7B1F4}
 		{730C8FA3-283B-4CFC-B05E-9496D4BFC84C} = {70B6F5C0-C6BF-49B2-AFD2-97BB2616F504}
 		{D1336E82-439E-463E-BA80-5FBD3EF8D390} = {9516266B-5BDB-4C5E-AA63-8D560BC7B1F4}
+		{A15E81C8-CAEC-4A42-8182-B604EFCA2F9F} = {70B6F5C0-C6BF-49B2-AFD2-97BB2616F504}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C4A38F9A-7AAB-41F9-BA59-93D03FCB7902}
