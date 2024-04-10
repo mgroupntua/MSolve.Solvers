@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\MGroup.Solvers\MGroup.Solvers.csproj" />
+    <ProjectReference Include="..\..\src\MGroup.Solvers\MGroup.Solvers.csproj" />
   </ItemGroup>
 
 </Project>
