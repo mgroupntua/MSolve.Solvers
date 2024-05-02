@@ -16,14 +16,14 @@
     <PackageReference Include="coverlet.msbuild" Version="2.6.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="MGroup.Constitutive.Structural.MachineLearning" Version="0.2.0-unstable.35" />
-    <PackageReference Include="MGroup.LinearAlgebra" Version="0.1.0-unstable.141" />
-    <PackageReference Include="MGroup.NumericalAnalyzers" Version="0.2.0-unstable.62" />
-    <PackageReference Include="MGroup.NumericalAnalyzers.Discretization" Version="0.2.0-unstable.62" /> 
-	<PackageReference Include="MathNet.Numerics" Version="5.0.0" />
-    <PackageReference Include="MGroup.FEM.Structural" Version="0.2.0-unstable.131" />
-    <PackageReference Include="MGroup.MSolve.Core" Version="0.2.0-unstable.76" />
+    </PackageReference> 
+	<PackageReference Include="MathNet.Numerics" Version="5.0.0" /> 
+	<PackageReference Include="MGroup.Constitutive.Structural.MachineLearning" Version="0.2.0-unstable.43" /> 
+	<PackageReference Include="MGroup.FEM.Structural" Version="0.2.0-unstable.134" /> 
+	<PackageReference Include="MGroup.LinearAlgebra" Version="0.1.0-unstable.192" /> 
+	<PackageReference Include="MGroup.MSolve.Core" Version="0.2.0-unstable.89" /> 
+	<PackageReference Include="MGroup.NumericalAnalyzers" Version="0.2.0-unstable.65" /> 
+	<PackageReference Include="MGroup.NumericalAnalyzers.Discretization" Version="0.2.0-unstable.65" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="Moq" Version="4.13.0" />
     <PackageReference Include="OpenCover" Version="4.7.922" />
