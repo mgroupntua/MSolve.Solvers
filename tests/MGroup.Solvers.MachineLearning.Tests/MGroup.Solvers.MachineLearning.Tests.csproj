@@ -17,10 +17,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="MGroup.NumericalAnalyzers" Version="0.2.0-unstable.64" />
-    <PackageReference Include="MGroup.NumericalAnalyzers.Discretization" Version="0.2.0-unstable.64" /> 
+    <PackageReference Include="MGroup.NumericalAnalyzers" Version="0.2.0-unstable.65" />
+    <PackageReference Include="MGroup.NumericalAnalyzers.Discretization" Version="0.2.0-unstable.65" /> 
 	<PackageReference Include="MathNet.Numerics" Version="5.0.0" />
-    <PackageReference Include="MGroup.FEM.Structural" Version="0.2.0-unstable.133" />
+    <PackageReference Include="MGroup.FEM.Structural" Version="0.2.0-unstable.134" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0-release-24177-07" />
     <PackageReference Include="Moq" Version="4.13.0" />
     <PackageReference Include="OpenCover" Version="4.7.922" />
