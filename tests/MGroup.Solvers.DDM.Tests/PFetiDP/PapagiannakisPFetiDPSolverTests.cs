@@ -1,26 +1,26 @@
-using MGroup.Constitutive.Structural;
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
-using MGroup.LinearAlgebra.Iterative;
-using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.NumericalAnalyzers;
-using MGroup.Solvers.DDM.FetiDP.CoarseProblem;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
-using MGroup.Solvers.DDM.LinearSystem;
-using MGroup.Solvers.DDM.PFetiDP;
-using MGroup.Solvers.DDM.Psm;
-using MGroup.Solvers.DDM.PSM.InterfaceProblem;
-using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
-using MGroup.Solvers.DDM.Tests.ExampleModels;
-using MGroup.Solvers.Results;
-
-using Xunit;
-
 namespace MGroup.Solvers.DDM.Tests.PFetiDP
 {
+	using MGroup.Constitutive.Structural;
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
+	using MGroup.LinearAlgebra.Iterative;
+	using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.NumericalAnalyzers;
+	using MGroup.Solvers.DDM.FetiDP.CoarseProblem;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
+	using MGroup.Solvers.DDM.LinearSystem;
+	using MGroup.Solvers.DDM.PFetiDP;
+	using MGroup.Solvers.DDM.Psm;
+	using MGroup.Solvers.DDM.PSM.InterfaceProblem;
+	using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
+	using MGroup.Solvers.DDM.Tests.ExampleModels;
+	using MGroup.Solvers.Results;
+
+	using Xunit;
+
 	[Collection("Sequential")]
 	public static class PapagiannakisPFetiDPSolverTests
 	{

@@ -1,8 +1,8 @@
-using MGroup.Environments.Mpi;
-using MGroup.Solvers.DDM.Tests.ScalabilityAnalysis;
-
 namespace MGroup.Solvers.DDM.Tests
 {
+	using MGroup.Environments.Mpi;
+	using MGroup.Solvers.DDM.Tests.ScalabilityAnalysis;
+
 	public class MpiScalabilityAnalysisRunner
 	{
 		public static void RunScalabilityAnalysesWith4Processes()

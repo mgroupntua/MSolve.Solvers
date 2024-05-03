@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.Environments;
-using MGroup.Environments.Mpi;
-
 namespace MGroup.Solvers.DDM.Tests
 {
+	using System;
+
+	using MGroup.Environments;
+	using MGroup.Environments.Mpi;
+
 	public enum EnvironmentChoice
 	{
 		SequentialShared, TplShared, Mpi

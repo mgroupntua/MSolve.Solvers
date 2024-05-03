@@ -1,7 +1,3 @@
-using MGroup.Environments.Mpi;
-using MGroup.Solvers.DDM.Tests.PFetiDP;
-using MGroup.Solvers.DDM.Tests.PSM;
-
 //TODO: Allow client to register tests to be run, schedule them, run them with appropriate before and after messages, 
 //      handle exceptions by adequately notifying user, but without crushing and omitting the next tests. 
 //TODO: Hande the case of 1 machine running multiple tests that need different number of processes (make sure the max needed 
@@ -9,6 +5,10 @@ using MGroup.Solvers.DDM.Tests.PSM;
 //      Handle the case of multiple machines running tests. Facilite user with command line parameters to MPI exec
 namespace MGroup.Solvers.DDM.Tests
 {
+	using MGroup.Environments.Mpi;
+	using MGroup.Solvers.DDM.Tests.PFetiDP;
+	using MGroup.Solvers.DDM.Tests.PSM;
+
 	public static class MpiTestSuite
 	{
 		public static void RunTestsWith5Processes()

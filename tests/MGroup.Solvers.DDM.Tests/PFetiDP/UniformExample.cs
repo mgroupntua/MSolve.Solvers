@@ -1,21 +1,21 @@
-using MGroup.Constitutive.Structural;
-using MGroup.Constitutive.Structural.Continuum;
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.MSolve.Solution;
-using MGroup.MSolve.Solution.AlgebraicModel;
-using MGroup.NumericalAnalyzers;
-using MGroup.Solvers.DDM.FetiDP.CoarseProblem;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
-using MGroup.Solvers.DDM.PFetiDP;
-using MGroup.Solvers.DDM.PSM.InterfaceProblem;
-using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
-using MGroup.Solvers.DDM.Tests.Commons;
-
 namespace MGroup.Solvers.DDM.Tests.PFetiDP
 {
+	using MGroup.Constitutive.Structural;
+	using MGroup.Constitutive.Structural.Continuum;
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.MSolve.Solution;
+	using MGroup.MSolve.Solution.AlgebraicModel;
+	using MGroup.NumericalAnalyzers;
+	using MGroup.Solvers.DDM.FetiDP.CoarseProblem;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
+	using MGroup.Solvers.DDM.PFetiDP;
+	using MGroup.Solvers.DDM.PSM.InterfaceProblem;
+	using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
+	using MGroup.Solvers.DDM.Tests.Commons;
+
 	public class UniformExample
 	{
 		public static void Run()

@@ -1,20 +1,20 @@
-using MGroup.Constitutive.Structural;
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Iterative;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.NumericalAnalyzers;
-using MGroup.Solvers.DDM.LinearSystem;
-using MGroup.Solvers.DDM.Psm;
-using MGroup.Solvers.DDM.PSM.InterfaceProblem;
-using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
-using MGroup.Solvers.DDM.Tests.ExampleModels;
-using MGroup.Solvers.Results;
-
-using Xunit;
-
 namespace MGroup.Solvers.DDM.Tests.PSM
 {
+	using MGroup.Constitutive.Structural;
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Iterative;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.NumericalAnalyzers;
+	using MGroup.Solvers.DDM.LinearSystem;
+	using MGroup.Solvers.DDM.Psm;
+	using MGroup.Solvers.DDM.PSM.InterfaceProblem;
+	using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
+	using MGroup.Solvers.DDM.Tests.ExampleModels;
+	using MGroup.Solvers.Results;
+
+	using Xunit;
+
 	[Collection("Sequential")]
 	public static class PapagiannakisPsmSolverTests
 	{

@@ -1,19 +1,3 @@
-using System.Diagnostics;
-
-using MGroup.Constitutive.Structural;
-using MGroup.Constitutive.Structural.BoundaryConditions;
-using MGroup.Constitutive.Structural.Planar;
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.MSolve.DataStructures;
-using MGroup.MSolve.Discretization.Dofs;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.Tests.Commons;
-using MGroup.Solvers.Results;
-
-using Xunit;
-
 // Global
 // 72--73--74--75--76--77--78--79--80
 //  |   |   |   |   |   |   |   |   |
@@ -85,6 +69,22 @@ using Xunit;
 
 namespace MGroup.Solvers.DDM.Tests.ExampleModels
 {
+	using System.Diagnostics;
+
+	using MGroup.Constitutive.Structural;
+	using MGroup.Constitutive.Structural.BoundaryConditions;
+	using MGroup.Constitutive.Structural.Planar;
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.MSolve.DataStructures;
+	using MGroup.MSolve.Discretization.Dofs;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.Tests.Commons;
+	using MGroup.Solvers.Results;
+
+	using Xunit;
+
 	//TODOMPI: In this class the partitioning and subdomain topologies should be hardcoded. However also provide an automatic 
 	//      way for 1D, 2D, 3D rectilinear meshes. Then use these hardcoded data for testing the automatic ones.
 	//TODO: Add another row of clusters up top. Being symmetric is not good for tests, since a lot of mistakes are covered by the symmetry

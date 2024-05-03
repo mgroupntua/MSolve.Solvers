@@ -1,18 +1,18 @@
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.Solvers.DDM.LinearSystem;
-using MGroup.Solvers.DDM.PSM.Dofs;
-using MGroup.Solvers.DDM.Tests.Commons;
-using MGroup.Solvers.DDM.Tests.ExampleModels;
-using MGroup.Solvers.DofOrdering;
-
-using Xunit;
-
 namespace MGroup.Solvers.DDM.Tests.PSM
 {
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.Solvers.DDM.LinearSystem;
+	using MGroup.Solvers.DDM.PSM.Dofs;
+	using MGroup.Solvers.DDM.Tests.Commons;
+	using MGroup.Solvers.DDM.Tests.ExampleModels;
+	using MGroup.Solvers.DofOrdering;
+
+	using Xunit;
+
 	[Collection("Sequential")]
 	public class PsmInterfaceProblemDofsTests
 	{

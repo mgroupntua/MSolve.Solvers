@@ -1,11 +1,10 @@
-using MGroup.MSolve.Discretization;
-using MGroup.MSolve.Discretization.Dofs;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.MSolve.Solution.AlgebraicModel;
-using MGroup.Solvers.DofOrdering;
-
 namespace MGroup.Solvers.DDM.Tests.Commons
 {
+	using MGroup.MSolve.Discretization;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.MSolve.Solution.AlgebraicModel;
+	using MGroup.Solvers.DofOrdering;
+
 	public static class ModelUtilities
 	{
 		public static ISubdomainFreeDofOrdering OrderDofs(ISubdomain subdomain, IAlgebraicModelInterpreter bcInterpreter)

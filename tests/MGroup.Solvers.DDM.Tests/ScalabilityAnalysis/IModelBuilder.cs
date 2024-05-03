@@ -1,9 +1,9 @@
-using MGroup.Environments;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-
 namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 {
+	using MGroup.Environments;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+
 	public interface IModelBuilder
 	{
 		double[] DomainLengthPerAxis { get; set; }

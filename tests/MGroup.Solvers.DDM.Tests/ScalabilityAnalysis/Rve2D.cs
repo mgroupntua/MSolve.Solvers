@@ -1,12 +1,12 @@
-using MGroup.Constitutive.Structural;
-using MGroup.Constitutive.Structural.Planar;
-using MGroup.Environments;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.Tests.Commons;
-
 namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 {
+	using MGroup.Constitutive.Structural;
+	using MGroup.Constitutive.Structural.Planar;
+	using MGroup.Environments;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.Tests.Commons;
+
 	public class Rve2D : IModelBuilder
 	{
 		public double[] DomainLengthPerAxis { get; set; } = { 2, 2 };

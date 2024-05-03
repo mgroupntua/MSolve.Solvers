@@ -1,20 +1,3 @@
-using System.Diagnostics;
-
-using MGroup.Constitutive.Structural.BoundaryConditions;
-using MGroup.Constitutive.Structural;
-using MGroup.Constitutive.Thermal;
-using MGroup.Environments;
-using MGroup.FEM.Thermal.Line;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.MSolve.DataStructures;
-using MGroup.MSolve.Discretization.Dofs;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.Solvers.DDM.Tests.Commons;
-using MGroup.Solvers.Results;
-
-using Xunit;
-using MGroup.Constitutive.Thermal.BoundaryConditions;
-
 // Global:
 // 0--1--2--3--4--5--6--7--8--9--10--11--12--13--14--15--[16] -> 16 is constrained, 0 is loaded
 //
@@ -36,6 +19,20 @@ using MGroup.Constitutive.Thermal.BoundaryConditions;
 //
 namespace MGroup.Solvers.DDM.Tests.ExampleModels
 {
+	using System.Diagnostics;
+
+	using MGroup.Constitutive.Thermal;
+	using MGroup.Constitutive.Thermal.BoundaryConditions;
+	using MGroup.Environments;
+	using MGroup.FEM.Thermal.Line;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.MSolve.DataStructures;
+	using MGroup.MSolve.Discretization.Dofs;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.Solvers.DDM.Tests.Commons;
+	using MGroup.Solvers.Results;
+	using Xunit;
+
 	public class Line1DExample
 	{
 		private const double length = 2.0, sectionArea = 1.0;

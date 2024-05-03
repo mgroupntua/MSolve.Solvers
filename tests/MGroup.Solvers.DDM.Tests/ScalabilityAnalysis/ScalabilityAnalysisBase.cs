@@ -1,12 +1,12 @@
-using MGroup.Constitutive.Structural;
-using MGroup.Environments;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.MSolve.Solution;
-using MGroup.MSolve.Solution.AlgebraicModel;
-using MGroup.NumericalAnalyzers;
-
 namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 {
+	using MGroup.Constitutive.Structural;
+	using MGroup.Environments;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.MSolve.Solution;
+	using MGroup.MSolve.Solution.AlgebraicModel;
+	using MGroup.NumericalAnalyzers;
+
 	public abstract class ScalabilityAnalysisBase
 	{
 		public IModelBuilder ModelBuilder { get; set; }

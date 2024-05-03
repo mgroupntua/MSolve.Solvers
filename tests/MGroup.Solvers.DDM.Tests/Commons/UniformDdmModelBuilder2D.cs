@@ -1,24 +1,24 @@
-using System.Data;
-using System.Diagnostics;
-
-using MGroup.Constitutive.Structural;
-using MGroup.Constitutive.Structural.Continuum;
-using MGroup.Constitutive.Structural.Planar;
-using MGroup.Constitutive.Structural.Transient;
-using MGroup.Environments;
-using MGroup.FEM.Structural.Continuum;
-using MGroup.MSolve.Discretization.BoundaryConditions;
-using MGroup.MSolve.Discretization.Dofs;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.MSolve.Discretization.Meshes.Structured;
-using MGroup.Solvers.DDM.DiscretizationExtensions;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.Partitioning;
-using MGroup.Solvers.DDM.Tests.DiscretizationExtensions;
-
 //TODO: Allow option for prescribed displacement/load at corners or specific node index/ID.
 namespace MGroup.Solvers.DDM.Tests.Commons
 {
+	using System.Data;
+	using System.Diagnostics;
+
+	using MGroup.Constitutive.Structural;
+	using MGroup.Constitutive.Structural.Continuum;
+	using MGroup.Constitutive.Structural.Planar;
+	using MGroup.Constitutive.Structural.Transient;
+	using MGroup.Environments;
+	using MGroup.FEM.Structural.Continuum;
+	using MGroup.MSolve.Discretization.BoundaryConditions;
+	using MGroup.MSolve.Discretization.Dofs;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.MSolve.Discretization.Meshes.Structured;
+	using MGroup.Solvers.DDM.DiscretizationExtensions;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.Partitioning;
+	using MGroup.Solvers.DDM.Tests.DiscretizationExtensions;
+
 	public class UniformDdmModelBuilder2D
 	{
 		public enum BoundaryRegion

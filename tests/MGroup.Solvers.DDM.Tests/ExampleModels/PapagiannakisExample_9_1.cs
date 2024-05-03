@@ -1,11 +1,3 @@
-using MGroup.Constitutive.Structural;
-using MGroup.Constitutive.Structural.Planar;
-using MGroup.Environments;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.Tests.Commons;
-using MGroup.Solvers.Results;
-
 // Subdomains:
 // /|
 // /||-------|-------|-------|-------|
@@ -18,6 +10,14 @@ using MGroup.Solvers.Results;
 // /|
 namespace MGroup.Solvers.DDM.Tests.ExampleModels
 {
+	using MGroup.Constitutive.Structural;
+	using MGroup.Constitutive.Structural.Planar;
+	using MGroup.Environments;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.Tests.Commons;
+	using MGroup.Solvers.Results;
+
 	/// <summary>
 	/// See Papagiannakis Bachelor thesis, pages 134-147
 	/// </summary>

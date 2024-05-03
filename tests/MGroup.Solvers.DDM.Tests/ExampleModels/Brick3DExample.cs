@@ -1,20 +1,20 @@
-using MGroup.Constitutive.Structural;
-using MGroup.Constitutive.Structural.BoundaryConditions;
-using MGroup.Constitutive.Structural.Continuum;
-using MGroup.Environments;
-using MGroup.MSolve.DataStructures;
-using MGroup.MSolve.Discretization.Dofs;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.Tests.Commons;
-using MGroup.Solvers.Results;
-
 //TODO: different number of clusters, subdomains, elements per axis. Try to make this as nonsymmetric as possible, 
 //      but keep subdomain-elements ratio constant to have the same stiffnesses.
 //TODO: Finding the correct indexing data by hand is going to be very difficult. Take them from a correct solution and 
 //      hardcode them.
 namespace MGroup.Solvers.DDM.Tests.ExampleModels
 {
+	using MGroup.Constitutive.Structural;
+	using MGroup.Constitutive.Structural.BoundaryConditions;
+	using MGroup.Constitutive.Structural.Continuum;
+	using MGroup.Environments;
+	using MGroup.MSolve.DataStructures;
+	using MGroup.MSolve.Discretization.Dofs;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.Tests.Commons;
+	using MGroup.Solvers.Results;
+
 	public class Brick3DExample
 	{
 		private const double E = 1.0, v = 0.3;

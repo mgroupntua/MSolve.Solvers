@@ -1,13 +1,13 @@
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.MSolve.Discretization.Meshes.Structured;
-using MGroup.Solvers.DDM.Output;
-using MGroup.Solvers.DDM.Partitioning;
-using MGroup.Solvers.DDM.Tests.ExampleModels;
-
-using Xunit;
-
 namespace MGroup.Solvers.DDM.Tests.Partitioning
 {
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.MSolve.Discretization.Meshes.Structured;
+	using MGroup.Solvers.DDM.Output;
+	using MGroup.Solvers.DDM.Partitioning;
+	using MGroup.Solvers.DDM.Tests.ExampleModels;
+
+	using Xunit;
+
 	[Collection("Sequential")]
 	public static class UniformMeshPartitioner3DTests
 	{

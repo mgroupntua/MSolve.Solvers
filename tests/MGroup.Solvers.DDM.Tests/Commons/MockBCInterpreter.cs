@@ -4,7 +4,6 @@ namespace MGroup.Solvers.DDM.Tests.Commons
 	using System.Collections.Generic;
 
 	using MGroup.Constitutive.Structural;
-	using MGroup.Constitutive.Structural.BoundaryConditions;
 	using MGroup.Constitutive.Thermal;
 	using MGroup.MSolve.Discretization.BoundaryConditions;
 	using MGroup.MSolve.Discretization.Dofs;
