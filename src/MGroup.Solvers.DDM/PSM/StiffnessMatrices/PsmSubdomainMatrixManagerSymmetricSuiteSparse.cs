@@ -1,17 +1,15 @@
-using System.Collections.Generic;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Reordering;
-using MGroup.LinearAlgebra.Triangulation;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Discretization;
-using MGroup.Solvers.Assemblers;
-using MGroup.Solvers.DDM.Commons;
-using MGroup.Solvers.DDM.LinearAlgebraExtensions;
-using MGroup.Solvers.DDM.LinearSystem;
-using MGroup.Solvers.DDM.PSM.Dofs;
-
 namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 {
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Reordering;
+	using MGroup.LinearAlgebra.Triangulation;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Solvers.Assemblers;
+	using MGroup.Solvers.DDM.Commons;
+	using MGroup.Solvers.DDM.LinearAlgebraExtensions;
+	using MGroup.Solvers.DDM.LinearSystem;
+	using MGroup.Solvers.DDM.PSM.Dofs;
+
 	public class PsmSubdomainMatrixManagerSymmetricSuiteSparse : IPsmSubdomainMatrixManager
 	{
 		private readonly SubdomainLinearSystem<SymmetricCscMatrix> linearSystem;

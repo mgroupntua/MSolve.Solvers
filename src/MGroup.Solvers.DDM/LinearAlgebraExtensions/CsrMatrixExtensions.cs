@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using MGroup.LinearAlgebra.Matrices;
-
 namespace MGroup.Solvers.DDM.LinearAlgebraExtensions
 {
+	using System.Diagnostics;
+
+	using MGroup.LinearAlgebra.Matrices;
+
 	public static class CsrMatrixExtensions
 	{
 		//TODO: Implement a SchurComplement with A11 being CSR and replace this method. 

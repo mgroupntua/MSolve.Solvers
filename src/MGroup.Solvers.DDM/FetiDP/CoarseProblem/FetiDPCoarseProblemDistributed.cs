@@ -1,18 +1,18 @@
-using System.Diagnostics;
-
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.IterativeMethods;
-using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.LinearAlgebra.Iterative;
-using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
-using MGroup.Solvers.DDM.Output;
-
 namespace MGroup.Solvers.DDM.FetiDP.CoarseProblem
 {
+	using System.Diagnostics;
+
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods;
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Iterative;
+	using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
+	using MGroup.Solvers.DDM.Output;
+
 	public class FetiDPCoarseProblemDistributed : IFetiDPCoarseProblem
 	{
 		private readonly IComputeEnvironment environment;

@@ -1,14 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Matrices.Builders;
-using MGroup.LinearAlgebra.Providers;
-using MGroup.LinearAlgebra.Reduction;
-using MGroup.LinearAlgebra.Vectors;
-
 namespace MGroup.Solvers.DDM.LinearAlgebraExtensions
 {
+	using System;
+
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Providers;
+	using MGroup.LinearAlgebra.Reduction;
+	using MGroup.LinearAlgebra.Vectors;
+
 	public class DokMatrixAdapter<TMatrix> : IMatrix where TMatrix : IIndexable2D
 	{
 		public DokMatrixAdapter(TMatrix dok)

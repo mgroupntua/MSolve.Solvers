@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Commons;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-
 namespace MGroup.Solvers.DDM.Mappings
 {
+	using System.Collections.Generic;
+
+	using MGroup.LinearAlgebra.Commons;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+
 	public class MappingMatrixN : IMappingMatrix
 	{
 		public MappingMatrixN(int numRows, int numColumns, Dictionary<int, int> rowsToColumns)

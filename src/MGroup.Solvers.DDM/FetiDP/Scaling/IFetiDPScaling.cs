@@ -1,8 +1,8 @@
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-
 namespace MGroup.Solvers.DDM.FetiDP.Scaling
 {
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+
 	public interface IFetiDPScaling
 	{
 		IDictionary<int, DiagonalMatrix> SubdomainMatricesWbr { get; }

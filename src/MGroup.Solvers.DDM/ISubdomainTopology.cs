@@ -1,11 +1,10 @@
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.MSolve.Discretization.Dofs;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.Solvers.DofOrdering;
-
 namespace MGroup.Solvers.DDM
 {
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.Solvers.DofOrdering;
+
 	public interface ISubdomainTopology
 	{
 		DistributedOverlappingIndexer CreateDistributedVectorIndexer(Func<int, IntDofTable> getSubdomainDofs);

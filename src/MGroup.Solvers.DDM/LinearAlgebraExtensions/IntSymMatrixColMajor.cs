@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-
 namespace MGroup.Solvers.DDM.LinearAlgebraExtensions
 {
+	using System.Runtime.CompilerServices;
+
 	public class IntSymMatrixColMajor
 	{
 		private readonly int order;

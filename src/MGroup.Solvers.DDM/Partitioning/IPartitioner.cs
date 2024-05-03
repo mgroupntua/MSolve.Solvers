@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.MSolve.Discretization.Entities;
-
 namespace MGroup.Solvers.DDM.Partitioning
 {
-    public interface IPartitioner
+	using System.Collections.Generic;
+
+	using MGroup.MSolve.Discretization.Entities;
+
+	public interface IPartitioner
     {
         int NumSubdomainsTotal { get; }
 

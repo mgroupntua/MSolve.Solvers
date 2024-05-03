@@ -1,10 +1,10 @@
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
-using MGroup.Solvers.DDM.LinearSystem;
-
 namespace MGroup.Solvers.DDM.FetiDP.Vectors
 {
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
+	using MGroup.Solvers.DDM.LinearSystem;
+
 	public class FetiDPSubdomainRhsVectors
 	{
 		private readonly ISubdomainLinearSystem linearSystem;

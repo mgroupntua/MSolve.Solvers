@@ -1,9 +1,9 @@
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.Output;
-
 namespace MGroup.Solvers.DDM.FetiDP.CoarseProblem
 {
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.Output;
+
 	public interface IFetiDPCoarseProblem
 	{
 		void FindCoarseProblemDofs(DdmLogger logger, IModifiedCornerDofs modifiedCornerDofs);

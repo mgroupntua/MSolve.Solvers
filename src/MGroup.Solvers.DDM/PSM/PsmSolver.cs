@@ -1,36 +1,32 @@
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.IterativeMethods;
-using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.LinearAlgebra.Iterative;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Discretization;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.MSolve.Solution;
-using MGroup.MSolve.Solution.LinearSystem;
-using MGroup.Solvers.DDM.LinearSystem;
-using MGroup.Solvers.DDM.Output;
-using MGroup.Solvers.DDM.PSM;
-using MGroup.Solvers.DDM.PSM.Dofs;
-using MGroup.Solvers.DDM.PSM.InterfaceProblem;
-using MGroup.Solvers.DDM.PSM.Preconditioning;
-using MGroup.Solvers.DDM.PSM.Reanalysis;
-using MGroup.Solvers.DDM.PSM.Scaling;
-using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
-using MGroup.Solvers.DDM.PSM.Vectors;
-using MGroup.Solvers.DofOrdering;
-using MGroup.Solvers.DofOrdering.Reordering;
-using MGroup.Solvers.Exceptions;
-using MGroup.Solvers.Logging;
-
 namespace MGroup.Solvers.DDM.Psm
 {
+	using System.Collections.Concurrent;
+	using System.Collections.Generic;
+	using System.Diagnostics;
+
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods;
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Iterative;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.MSolve.Solution;
+	using MGroup.MSolve.Solution.LinearSystem;
+	using MGroup.Solvers.DDM.LinearSystem;
+	using MGroup.Solvers.DDM.Output;
+	using MGroup.Solvers.DDM.PSM.Dofs;
+	using MGroup.Solvers.DDM.PSM.InterfaceProblem;
+	using MGroup.Solvers.DDM.PSM.Preconditioning;
+	using MGroup.Solvers.DDM.PSM.Reanalysis;
+	using MGroup.Solvers.DDM.PSM.Scaling;
+	using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
+	using MGroup.Solvers.DDM.PSM.Vectors;
+	using MGroup.Solvers.DofOrdering;
+	using MGroup.Solvers.DofOrdering.Reordering;
+	using MGroup.Solvers.Logging;
+
 	public class PsmSolver<TMatrix> : ISolver
 		where TMatrix : class, IMatrix
 	{

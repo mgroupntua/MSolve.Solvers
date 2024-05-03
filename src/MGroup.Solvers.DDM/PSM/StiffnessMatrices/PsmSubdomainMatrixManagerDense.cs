@@ -1,12 +1,12 @@
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.Solvers.Assemblers;
-using MGroup.Solvers.DDM.Commons;
-using MGroup.Solvers.DDM.LinearSystem;
-using MGroup.Solvers.DDM.PSM.Dofs;
-
 namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 {
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Solvers.Assemblers;
+	using MGroup.Solvers.DDM.Commons;
+	using MGroup.Solvers.DDM.LinearSystem;
+	using MGroup.Solvers.DDM.PSM.Dofs;
+
 	public class PsmSubdomainMatrixManagerDense : IPsmSubdomainMatrixManager
 	{
 		private readonly SubdomainLinearSystem<Matrix> linearSystem;

@@ -1,31 +1,29 @@
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.DataStructures;
-using MGroup.MSolve.Discretization;
-using MGroup.MSolve.Discretization.BoundaryConditions;
-using MGroup.MSolve.Discretization.Dofs;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.MSolve.Discretization.Providers;
-using MGroup.MSolve.Solution.AlgebraicModel;
-using MGroup.MSolve.Solution.LinearSystem;
-using MGroup.Solvers.Assemblers;
-using MGroup.Solvers.DDM.DiscretizationExtensions;
-using MGroup.Solvers.DofOrdering;
-using MGroup.Solvers.LinearSystem;
-using MGroup.Solvers.Results;
-
-
 //TODO: Move all Extract~() methods to a dedicated DistributedValueExtractor class.
 namespace MGroup.Solvers.DDM.LinearSystem
 {
+	using System;
+	using System.Collections.Concurrent;
+	using System.Collections.Generic;
+	using System.Diagnostics;
+	using System.Linq;
+
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.DataStructures;
+	using MGroup.MSolve.Discretization;
+	using MGroup.MSolve.Discretization.BoundaryConditions;
+	using MGroup.MSolve.Discretization.Dofs;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.MSolve.Discretization.Providers;
+	using MGroup.MSolve.Solution.AlgebraicModel;
+	using MGroup.MSolve.Solution.LinearSystem;
+	using MGroup.Solvers.Assemblers;
+	using MGroup.Solvers.DDM.DiscretizationExtensions;
+	using MGroup.Solvers.DofOrdering;
+	using MGroup.Solvers.Results;
+
 	public class DistributedAlgebraicModel<TMatrix> : IAlgebraicModel
 		where TMatrix : class, IMatrix
 	{

@@ -1,14 +1,11 @@
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using MGroup.Environments;
-using MGroup.MSolve.Discretization.Dofs;
-using MGroup.Solvers.DDM.LinearSystem;
-
 namespace MGroup.Solvers.DDM.FetiDP.Dofs
 {
+	using System;
+	using System.Collections.Concurrent;
+
+	using MGroup.Environments;
+	using MGroup.Solvers.DDM.LinearSystem;
+
 	public class GeneralModifiedCornerDofs : IModifiedCornerDofs
 	{
 		private readonly IComputeEnvironment environment;

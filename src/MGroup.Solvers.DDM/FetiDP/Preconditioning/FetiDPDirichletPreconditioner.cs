@@ -1,16 +1,16 @@
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.IterativeMethods.Preconditioning;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Matrices.Operators;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Solution.LinearSystem;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.FetiDP.Scaling;
-using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
-
 namespace MGroup.Solvers.DDM.FetiDP.Preconditioning
 {
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods.Preconditioning;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Matrices.Operators;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.Solution.LinearSystem;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.FetiDP.Scaling;
+	using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
+
 	public class FetiDPDirichletPreconditioner : IFetiDPPreconditioner
 	{
 		private IComputeEnvironment environment;

@@ -1,15 +1,14 @@
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Discretization.Dofs;
-using MGroup.Solvers.DDM.PSM.Dofs;
-
 namespace MGroup.Solvers.DDM.PSM.Reanalysis
 {
+	using System;
+	using System.Collections.Concurrent;
+	using System.Collections.Generic;
+
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Solvers.DDM.PSM.Dofs;
+
 	/// <summary>
 	/// Finds the common dofs between 2 propagation steps and uses the previous values for them, while the rest start from 0.
 	/// </summary>

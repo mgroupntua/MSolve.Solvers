@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.Solvers.DDM.LinearSystem;
-
 namespace MGroup.Solvers.DDM
 {
+	using MGroup.Solvers.DDM.LinearSystem;
+
 	public class ReanalysisOptions
 	{
 		protected ReanalysisOptions(bool commonValueForFlags, IModifiedSubdomains modifiedSubdomains)

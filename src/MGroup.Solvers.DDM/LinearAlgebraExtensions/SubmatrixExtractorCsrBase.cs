@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Matrices;
-
 namespace MGroup.Solvers.DDM.LinearAlgebraExtensions
 {
+	using MGroup.LinearAlgebra.Matrices;
+
 	public abstract class SubmatrixExtractorCsrBase
 	{
 		protected CsrMatrix originalMatrix;

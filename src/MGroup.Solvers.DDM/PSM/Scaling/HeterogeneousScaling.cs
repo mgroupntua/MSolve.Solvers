@@ -1,22 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-using System.Collections.Concurrent;
-using MGroup.Environments;
-using MGroup.Solvers.DDM.PSM.Dofs;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.MSolve.Discretization;
-using MGroup.MSolve.DataStructures;
-using MGroup.Solvers.DDM.LinearSystem;
-using System.Diagnostics;
-
 //TODO: If Jacobi preconditioning is used, then the most time consuming part of finding the relative stiffnesses 
 //		(distributedVector.SumOverlappingEntries()) is done there too. The two objects should synchronize to only do that once. 
 namespace MGroup.Solvers.DDM.PSM.Scaling
 {
+	using System;
+	using System.Collections.Generic;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+	using System.Collections.Concurrent;
+	using MGroup.Environments;
+	using MGroup.Solvers.DDM.PSM.Dofs;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.Solvers.DDM.LinearSystem;
+	using System.Diagnostics;
+
 	public class HeterogeneousScaling : IBoundaryDofScaling
 	{
 		private readonly IComputeEnvironment environment;

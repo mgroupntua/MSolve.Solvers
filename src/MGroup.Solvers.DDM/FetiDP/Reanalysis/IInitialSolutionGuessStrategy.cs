@@ -1,7 +1,7 @@
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-
 namespace MGroup.Solvers.DDM.FetiDP.Reanalysis
 {
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+
 	//TODO: I could reuse the one of PSM
 	public interface IInitialSolutionGuessStrategy
 	{

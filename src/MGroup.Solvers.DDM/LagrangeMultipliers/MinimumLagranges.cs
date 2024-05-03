@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-
 namespace MGroup.Solvers.DDM.LagrangeMultipliers
 {
+	using System.Collections.Generic;
+	using System.Diagnostics;
+	using System.Linq;
+
 	public class MinimumLagranges : ICrossPointStrategy
 	{
 		public List<(int subdomainPlus, int subdomainMinus)> ListSubdomainCombinations(IEnumerable<int> subdomainIDs)

@@ -1,13 +1,13 @@
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.Solvers.DDM.FetiDP.CoarseProblem;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
-using MGroup.Solvers.DDM.FetiDP.Vectors;
-
 namespace MGroup.Solvers.DDM.FetiDP.InterfaceProblem
 {
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Solvers.DDM.FetiDP.CoarseProblem;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
+	using MGroup.Solvers.DDM.FetiDP.Vectors;
+
 	public class FetiDPInterfaceProblemVectors : IFetiDPInterfaceProblemVectors
 	{
 		private readonly IFetiDPCoarseProblem coarseProblem;

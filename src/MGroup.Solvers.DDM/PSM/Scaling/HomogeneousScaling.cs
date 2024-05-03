@@ -1,19 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MGroup.LinearAlgebra.Vectors;
-using System.Collections.Concurrent;
-using MGroup.Environments;
-using MGroup.Solvers.DDM.PSM.Dofs;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using System.Diagnostics;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.Solvers.DDM.LinearSystem;
-using MGroup.Solvers.DDM.PSM.Reanalysis;
-
 namespace MGroup.Solvers.DDM.PSM.Scaling
 {
+	using System;
+	using System.Collections.Generic;
+	using MGroup.LinearAlgebra.Vectors;
+	using System.Collections.Concurrent;
+	using MGroup.Environments;
+	using MGroup.Solvers.DDM.PSM.Dofs;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using System.Diagnostics;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.Solvers.DDM.PSM.Reanalysis;
+
 	public class HomogeneousScaling : IBoundaryDofScaling
 	{
 		private readonly IComputeEnvironment environment;

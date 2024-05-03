@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.Solvers.DofOrdering;
-
 namespace MGroup.Solvers.DDM.LinearSystem
 {
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Solvers.DofOrdering;
+
 	public class SubdomainLinearSystem<TMatrix> : ISubdomainLinearSystem
 		where TMatrix : class, IMatrix
 	{

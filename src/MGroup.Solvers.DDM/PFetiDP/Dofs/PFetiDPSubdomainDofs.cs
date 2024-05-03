@@ -1,10 +1,11 @@
-using System.Diagnostics;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.Mappings;
-using MGroup.Solvers.DDM.PSM.Dofs;
-
 namespace MGroup.Solvers.DDM.PFetiDP.Dofs
 {
+	using System.Diagnostics;
+
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.Mappings;
+	using MGroup.Solvers.DDM.PSM.Dofs;
+
 	public class PFetiDPSubdomainDofs
 	{
 		private readonly PsmSubdomainDofs psmDofs;

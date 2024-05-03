@@ -1,7 +1,7 @@
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-
 namespace MGroup.Solvers.DDM.FetiDP.InterfaceProblem
 {
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+
 	public interface IFetiDPInterfaceProblemVectors
 	{
 		DistributedOverlappingVector InterfaceProblemRhs { get; }

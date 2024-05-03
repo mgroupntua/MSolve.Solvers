@@ -1,7 +1,7 @@
-using MGroup.LinearAlgebra.Vectors;
-
 namespace MGroup.Solvers.DDM.FetiDP.CoarseProblem
 {
+	using MGroup.LinearAlgebra.Vectors;
+
 	public class FetiDPCoarseProblemGlobalSolver
 	{
 		private readonly IFetiDPCoarseProblemGlobalMatrix coarseProblemMatrix;

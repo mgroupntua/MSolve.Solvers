@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Matrices;
-
 namespace MGroup.Solvers.DDM.LinearAlgebraExtensions
 {
+	using System.Collections.Generic;
+
+	using MGroup.LinearAlgebra.Matrices;
+
 	public abstract class SubmatrixExtractorCscSymBase
 	{
 		protected SymmetricCscMatrix originalMatrix;

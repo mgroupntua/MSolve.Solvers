@@ -1,11 +1,11 @@
-using MGroup.LinearAlgebra.Distributed.IterativeMethods;
-using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
-using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
-
 //TODO: This is basically an adapter because these strategies are not generalized to iterative methods other than PCG.
 //		Refactor the iterative methods in LinearAlgebra and remove this kind of adapters.
 namespace MGroup.Solvers.DDM.FetiDP.InterfaceProblem
 {
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods;
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
+	using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
+
 	public class FetiDPInterfaceProblemSolverFactoryPcg : IFetiDPInterfaceProblemSolverFactory
 	{
 		public int MaxIterations { get; set; } = 1000;

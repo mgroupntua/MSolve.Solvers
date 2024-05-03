@@ -1,13 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.Solvers.DDM.PSM.Vectors;
-
 namespace MGroup.Solvers.DDM.PSM.InterfaceProblem
 {
+	using System.Collections.Generic;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.Solvers.DDM.PSM.Vectors;
+
 	public class PsmInterfaceProblemVectors : IPsmInterfaceProblemVectors
 	{
 		private const bool cacheDistributedVectorBuffers = true;

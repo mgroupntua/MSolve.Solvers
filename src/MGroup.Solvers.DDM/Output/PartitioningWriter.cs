@@ -1,15 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using MGroup.MSolve.Discretization;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.MSolve.Meshes.Output.VTK;
-using MGroup.Solvers.DDM.Partitioning;
-
 namespace MGroup.Solvers.DDM.Output
 {
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Linq;
+
+	using MGroup.MSolve.Discretization;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.MSolve.Meshes.Output.VTK;
+	using MGroup.Solvers.DDM.Partitioning;
+
 	public class PartitioningWriter
 	{
 		private readonly string outputDirectory;

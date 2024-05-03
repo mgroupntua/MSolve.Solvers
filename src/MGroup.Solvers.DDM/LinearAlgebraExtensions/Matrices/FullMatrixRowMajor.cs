@@ -1,14 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Providers;
-using MGroup.LinearAlgebra.Reduction;
-using MGroup.LinearAlgebra.Vectors;
-
 namespace MGroup.Solvers.DDM.LinearAlgebraExtensions.Matrices
 {
+	using System;
+	using System.Diagnostics;
+
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Providers;
+	using MGroup.LinearAlgebra.Reduction;
+	using MGroup.LinearAlgebra.Vectors;
+
 	public class FullMatrixRowMajor : IMatrixView
 	{
 		private readonly double[] data;

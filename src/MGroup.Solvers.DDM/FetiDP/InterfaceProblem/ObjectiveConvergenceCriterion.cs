@@ -1,16 +1,15 @@
-using System.Diagnostics;
-
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.MSolve.Solution.LinearSystem;
-using MGroup.Solvers.DDM.FetiDP.Vectors;
-using MGroup.Solvers.DDM.LinearAlgebraExtensions;
-using MGroup.Solvers.DDM.LinearSystem;
-
 namespace MGroup.Solvers.DDM.FetiDP.InterfaceProblem
 {
+	using System.Diagnostics;
+
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.MSolve.Solution.LinearSystem;
+	using MGroup.Solvers.DDM.FetiDP.Vectors;
+	using MGroup.Solvers.DDM.LinearSystem;
+
 	/// <summary>
 	/// At each iteration, it checks if ||K * u - f|| / ||f|| &lt; tol, where all vectors and matrices correspond to the free 
 	/// dofs of the whole model. Since this is very inefficient, it is recommended to use this class only for testing, 

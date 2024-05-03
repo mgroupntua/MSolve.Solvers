@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Matrices.Builders;
-
 namespace MGroup.Solvers.DDM.LinearAlgebraExtensions
 {
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Matrices.Builders;
+
 	public static class SymmetricCscMatrixExtensions
 	{
 		public static CsrMatrix ConvertToCsr(this SymmetricCscMatrix original)

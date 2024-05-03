@@ -1,14 +1,14 @@
-using System.Collections.Concurrent;
-
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.LagrangeMultipliers;
-
 namespace MGroup.Solvers.DDM.FetiDP.Scaling
 {
+	using System.Collections.Concurrent;
+
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.LagrangeMultipliers;
+
 	public class HomogeneousScaling : IFetiDPScaling
 	{
 		private readonly IComputeEnvironment environment;

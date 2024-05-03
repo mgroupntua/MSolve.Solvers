@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.MSolve.Discretization.Dofs;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.Solvers.DofOrdering;
-
 //TODO: Perhaps the common nodes and common dofs should be calculated and handled by different classes. Common dofs must be created
 //		immediately after ordering subdomain free dofs. Common nodes, immediately after partitioning/repartitioning.
 //TODO: Another way to make this class smaller is to delegate local subdomain operations to a dedicated class, while this one 
@@ -14,6 +5,15 @@ using MGroup.Solvers.DofOrdering;
 //TODO: There is some duplication between processing nodes and processing dofs.
 namespace MGroup.Solvers.DDM
 {
+	using System;
+	using System.Collections.Concurrent;
+	using System.Diagnostics;
+
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.Solvers.DofOrdering;
+
 	/// <remarks>
 	/// In the current design, the subdomain neighbors and their common (boundary) nodes are supposed to remain constant 
 	/// throughout the analysis. The dofs at these nodes may be different per subdomain and even change during the analysis. 

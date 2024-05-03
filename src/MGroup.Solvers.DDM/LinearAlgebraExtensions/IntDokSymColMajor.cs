@@ -1,9 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace MGroup.Solvers.DDM.LinearAlgebraExtensions
 {
+	using System;
+	using System.Collections.Generic;
+
 	public class IntDokSymColMajor
 	{
 		private readonly int order;

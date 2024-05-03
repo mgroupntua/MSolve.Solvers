@@ -1,7 +1,7 @@
-using MGroup.Solvers.DDM.LinearSystem;
-
 namespace MGroup.Solvers.DDM.FetiDP
 {
+	using MGroup.Solvers.DDM.LinearSystem;
+
 	public class FetiDPReanalysisOptions : ReanalysisOptions
 	{
 		public FetiDPReanalysisOptions(bool commonValueForFlags, IModifiedSubdomains modifiedSubdomains)

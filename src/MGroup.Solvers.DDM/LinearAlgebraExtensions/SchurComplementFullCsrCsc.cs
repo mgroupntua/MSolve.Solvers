@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Triangulation;
-using MGroup.LinearAlgebra.Vectors;
-
 namespace MGroup.Solvers.DDM.LinearAlgebraExtensions
 {
+	using System;
+
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Triangulation;
+	using MGroup.LinearAlgebra.Vectors;
+
 	public static class SchurComplementFullCsrCsc
 	{
 		/// <summary>

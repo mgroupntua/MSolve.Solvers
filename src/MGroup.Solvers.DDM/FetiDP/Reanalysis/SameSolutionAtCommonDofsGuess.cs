@@ -1,13 +1,13 @@
-using System.Collections.Concurrent;
-
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.LagrangeMultipliers;
-
 namespace MGroup.Solvers.DDM.FetiDP.Reanalysis
 {
+	using System.Collections.Concurrent;
+
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.LagrangeMultipliers;
+
 	/// <summary>
 	/// Finds the common dofs between 2 propagation steps and uses the previous values for them, while the rest start from 0.
 	/// </summary>

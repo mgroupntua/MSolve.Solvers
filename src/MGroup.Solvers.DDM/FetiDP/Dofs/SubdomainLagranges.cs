@@ -1,13 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.LinearAlgebra.Matrices.Operators;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.Solvers.DDM.LagrangeMultipliers;
-
 namespace MGroup.Solvers.DDM.FetiDP.Dofs
 {
+	using System.Collections.Generic;
+	using System.Diagnostics;
+
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Matrices.Operators;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.Solvers.DDM.LagrangeMultipliers;
+
 	public class SubdomainLagranges
 	{
 		private readonly ICrossPointStrategy crossPointStrategy;

@@ -1,10 +1,11 @@
-using System.Diagnostics;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.MSolve.Meshes.Structured;
-
 namespace MGroup.Solvers.DDM.Partitioning
 {
-    public class UniformMeshPartitioner2D : IPartitioner
+	using System.Diagnostics;
+
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.MSolve.Meshes.Structured;
+
+	public class UniformMeshPartitioner2D : IPartitioner
     {
         private const int dim = 2;
         private const int invalidID = int.MinValue;

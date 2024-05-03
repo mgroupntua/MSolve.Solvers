@@ -1,12 +1,12 @@
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.Commons;
-using MGroup.Solvers.DDM.LinearSystem;
-using MGroup.Solvers.Assemblers;
-
 namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 {
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.Commons;
+	using MGroup.Solvers.DDM.LinearSystem;
+	using MGroup.Solvers.Assemblers;
+
 	public class FetiDPSubdomainMatrixManagerDense : IFetiDPSubdomainMatrixManager
 	{
 		private readonly SubdomainLinearSystem<Matrix> linearSystem;

@@ -1,12 +1,12 @@
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Reordering;
-using MGroup.LinearAlgebra.Triangulation;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.Solvers.DDM.Commons;
-using MGroup.Solvers.DDM.SolversExtensions.Assemblers;
-
 namespace MGroup.Solvers.DDM.FetiDP.CoarseProblem
 {
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Reordering;
+	using MGroup.LinearAlgebra.Triangulation;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Solvers.DDM.Commons;
+	using MGroup.Solvers.DDM.SolversExtensions.Assemblers;
+
 	public class FetiDPCoarseProblemMatrixSymmetricCSparse : IFetiDPCoarseProblemGlobalMatrix
 	{
 		private readonly SymmetricCscMatrixAssembler assembler = new SymmetricCscMatrixAssembler(true);

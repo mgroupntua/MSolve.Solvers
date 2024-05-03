@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.MSolve.Discretization;
-
 namespace MGroup.Solvers.DDM.LagrangeMultipliers
 {
+	using System.Collections.Generic;
+
 	public interface ICrossPointStrategy
 	{
 		List<(int subdomainPlus, int subdomainMinus)> ListSubdomainCombinations(IEnumerable<int> subdomainIDs);

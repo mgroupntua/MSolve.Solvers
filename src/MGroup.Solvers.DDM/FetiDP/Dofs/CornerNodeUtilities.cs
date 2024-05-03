@@ -1,7 +1,7 @@
-using MGroup.MSolve.Discretization.Entities;
-
 namespace MGroup.Solvers.DDM.FetiDP.Dofs
 {
+	using MGroup.MSolve.Discretization.Entities;
+
 	public static class CornerNodeUtilities
 	{
 		public static INode[] FindCornersOfBrick3D(ISubdomain subdomain)

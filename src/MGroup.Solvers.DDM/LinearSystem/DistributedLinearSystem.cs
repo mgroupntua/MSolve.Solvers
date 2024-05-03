@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
-using MGroup.LinearAlgebra.Distributed;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.MSolve.Solution.LinearSystem;
-
 namespace MGroup.Solvers.DDM.LinearSystem
 {
+	using System;
+	using System.Collections.Generic;
+
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.MSolve.Solution.LinearSystem;
+
 	public class DistributedLinearSystem<TMatrix> : IGlobalLinearSystem
 		where TMatrix : class, IMatrix
 	{

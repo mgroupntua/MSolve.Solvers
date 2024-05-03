@@ -1,14 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using MGroup.Environments;
-using MGroup.Solvers.Logging;
-
 namespace MGroup.Solvers.DDM.Output
 {
+	using System;
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Linq;
+	using System.Text;
+
+	using MGroup.Environments;
+	using MGroup.Solvers.Logging;
+
 	public class DdmLogger
 	{
 		private readonly IComputeEnvironment environment;

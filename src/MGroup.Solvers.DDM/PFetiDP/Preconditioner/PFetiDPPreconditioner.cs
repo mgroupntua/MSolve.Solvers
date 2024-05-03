@@ -1,21 +1,21 @@
-using System.Collections.Concurrent;
-
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.IterativeMethods.Preconditioning;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Solution.LinearSystem;
-using MGroup.Solvers.DDM.FetiDP.CoarseProblem;
-using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
-using MGroup.Solvers.DDM.Mappings;
-using MGroup.Solvers.DDM.PFetiDP.Dofs;
-using MGroup.Solvers.DDM.PSM.InterfaceProblem;
-using MGroup.Solvers.DDM.PSM.Preconditioning;
-using MGroup.Solvers.DDM.PSM.Scaling;
-
 namespace MGroup.Solvers.DDM.PFetiDP.Preconditioner
 {
+	using System.Collections.Concurrent;
+
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods.Preconditioning;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.Solution.LinearSystem;
+	using MGroup.Solvers.DDM.FetiDP.CoarseProblem;
+	using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
+	using MGroup.Solvers.DDM.Mappings;
+	using MGroup.Solvers.DDM.PFetiDP.Dofs;
+	using MGroup.Solvers.DDM.PSM.InterfaceProblem;
+	using MGroup.Solvers.DDM.PSM.Preconditioning;
+	using MGroup.Solvers.DDM.PSM.Scaling;
+
 	public class PFetiDPPreconditioner : IPsmPreconditioner, IPreconditioner
 	{
 		private readonly IComputeEnvironment environment;

@@ -1,9 +1,8 @@
-using System.Diagnostics;
-using MGroup.MSolve.Discretization.Dofs;
-
 //TODO: Needs a better name
 namespace MGroup.Solvers.DDM
 {
+	using System.Diagnostics;
+
 	/// <remarks>
 	/// Similar to <see cref="SubdomainTopologyGeneral"/>, but assumes that all subdomains have the same dofs at their common 
 	/// nodes, thus many operations can be done more efficiently and simply. 

@@ -1,23 +1,23 @@
-using System.Collections.Concurrent;
-using System.Diagnostics;
-
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.Solvers.DDM.FetiDP.CoarseProblem;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
-using MGroup.Solvers.DDM.LinearSystem;
-using MGroup.Solvers.DDM.Output;
-using MGroup.Solvers.DDM.PFetiDP.Dofs;
-using MGroup.Solvers.DDM.PFetiDP.Preconditioner;
-using MGroup.Solvers.DDM.Psm;
-using MGroup.Solvers.DDM.PSM.InterfaceProblem;
-using MGroup.Solvers.DDM.PSM.Preconditioning;
-using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
-
 namespace MGroup.Solvers.DDM.PFetiDP
 {
+	using System.Collections.Concurrent;
+	using System.Diagnostics;
+
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.Solvers.DDM.FetiDP.CoarseProblem;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
+	using MGroup.Solvers.DDM.LinearSystem;
+	using MGroup.Solvers.DDM.Output;
+	using MGroup.Solvers.DDM.PFetiDP.Dofs;
+	using MGroup.Solvers.DDM.PFetiDP.Preconditioner;
+	using MGroup.Solvers.DDM.Psm;
+	using MGroup.Solvers.DDM.PSM.InterfaceProblem;
+	using MGroup.Solvers.DDM.PSM.Preconditioning;
+	using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
+
 	public class PFetiDPSolver<TMatrix> : PsmSolver<TMatrix>
 		where TMatrix : class, IMatrix
 	{

@@ -1,9 +1,9 @@
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.Solvers.DDM.Commons;
-using MGroup.Solvers.DDM.LinearSystem;
-
 namespace MGroup.Solvers.DDM.FetiDP.Dofs
 {
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.Solvers.DDM.Commons;
+	using MGroup.Solvers.DDM.LinearSystem;
+
 	public class FetiDPSubdomainDofs
 	{
 		private readonly ISubdomain subdomain;

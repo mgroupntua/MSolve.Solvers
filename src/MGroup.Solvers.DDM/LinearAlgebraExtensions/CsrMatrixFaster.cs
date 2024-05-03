@@ -1,14 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Commons;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Providers;
-using MGroup.LinearAlgebra.Reduction;
-using MGroup.LinearAlgebra.Vectors;
-
 namespace MGroup.Solvers.DDM.LinearAlgebraExtensions
 {
+	using System;
+
+	using MGroup.LinearAlgebra.Commons;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Providers;
+	using MGroup.LinearAlgebra.Reduction;
+	using MGroup.LinearAlgebra.Vectors;
+
 	public class CsrMatrixFaster : IMatrixView
 	{
 		private readonly CsrMatrix simpleCsr;

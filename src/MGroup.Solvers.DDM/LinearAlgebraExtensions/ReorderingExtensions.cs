@@ -1,14 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-using CSparse;
-using CSparse.Double;
-using CSparse.Ordering;
-using MGroup.LinearAlgebra.Reordering;
-
 namespace MGroup.Solvers.DDM.LinearAlgebraExtensions
 {
+	using System;
+
+	using CSparse;
+	using CSparse.Double;
+	using CSparse.Ordering;
+
+	using MGroup.LinearAlgebra.Reordering;
+
 	public static class ReorderingExtensions
 	{
 		/// <summary>

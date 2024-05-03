@@ -1,8 +1,8 @@
-using MGroup.Solvers.DDM.LinearSystem;
-using MGroup.Solvers.DDM.PSM.Reanalysis;
-
 namespace MGroup.Solvers.DDM.PFetiDP
 {
+	using MGroup.Solvers.DDM.LinearSystem;
+	using MGroup.Solvers.DDM.PSM.Reanalysis;
+
 	public class PFetiDPReanalysisOptions : PsmReanalysisOptions
 	{
 		protected PFetiDPReanalysisOptions(bool commonValueForFlags, IModifiedSubdomains modifiedSubdomains)

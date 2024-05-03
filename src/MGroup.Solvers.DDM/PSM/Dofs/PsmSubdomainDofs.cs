@@ -1,7 +1,3 @@
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.Solvers.DDM.Commons;
-using MGroup.Solvers.DDM.LinearSystem;
-
 //TODOMPI: DofTable should be replaced with an IntTable that stores ids, instead of actual references to nodes and dofs. 
 //		This will make transfering it via MPI much faster.
 //TODO: Naming convention for dofs (free/constrained, boundary/internal/corner/intercluster, subdomain/cluster/global) that will
@@ -9,6 +5,10 @@ using MGroup.Solvers.DDM.LinearSystem;
 //TODOMPI: Replace DofTable with an equivalent class that uses integers. Also allow clients to choose sorted versions
 namespace MGroup.Solvers.DDM.PSM.Dofs
 {
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.Solvers.DDM.Commons;
+	using MGroup.Solvers.DDM.LinearSystem;
+
 	public class PsmSubdomainDofs
 	{
 		private readonly ISubdomain subdomain;

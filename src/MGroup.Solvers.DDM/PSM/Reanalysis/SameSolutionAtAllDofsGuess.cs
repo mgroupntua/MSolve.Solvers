@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-
 namespace MGroup.Solvers.DDM.PSM.Reanalysis
 {
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+
 	/// <summary>
 	/// Will reuse the previous solution if ALL dofs are the same between the 2 iterations.
 	/// </summary>

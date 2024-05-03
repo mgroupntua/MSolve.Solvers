@@ -1,13 +1,13 @@
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.Solvers.DDM.Commons;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
-using MGroup.Solvers.DDM.Output;
-
 namespace MGroup.Solvers.DDM.FetiDP.CoarseProblem
 {
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Solvers.DDM.Commons;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
+	using MGroup.Solvers.DDM.Output;
+
 	public class FetiDPCoarseProblemGlobal : IFetiDPCoarseProblem
 	{
 		private readonly IComputeEnvironment environment;

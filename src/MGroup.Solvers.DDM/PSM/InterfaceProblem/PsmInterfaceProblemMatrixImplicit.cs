@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.Solvers.DDM.PSM.Dofs;
-using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
-using MGroup.Solvers.DDM.LinearSystem;
-
 namespace MGroup.Solvers.DDM.PSM.InterfaceProblem
 {
+	using System;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.Solvers.DDM.PSM.Dofs;
+	using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
+
 	/// <summary>
 	/// Each subdomain's matrix is implicitly represented by an expression invovling multiple intermediate matrices, 
 	/// all refering to the same subdomain. Taking advantage of the distributed property of matrix-vector multiplication, 

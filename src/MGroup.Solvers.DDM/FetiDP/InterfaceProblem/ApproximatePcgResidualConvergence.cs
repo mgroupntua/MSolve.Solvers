@@ -1,9 +1,9 @@
-using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.Solvers.DDM.LinearSystem;
-
 namespace MGroup.Solvers.DDM.FetiDP.InterfaceProblem
 {
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.Solvers.DDM.LinearSystem;
+
 	public class ApproximatePcgResidualConvergence<TMatrix> : IPcgResidualConvergence
 		where TMatrix : class, IMatrix
 	{

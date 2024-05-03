@@ -1,7 +1,7 @@
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-
 namespace MGroup.Solvers.DDM.FetiDP.Reanalysis
 {
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+
 	/// <summary>
 	/// Will always start the new solution from 0.
 	/// </summary>

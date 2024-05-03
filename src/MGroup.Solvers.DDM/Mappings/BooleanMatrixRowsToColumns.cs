@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Commons;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-
 namespace MGroup.Solvers.DDM.Mappings
 {
+	using MGroup.LinearAlgebra.Commons;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+
 	public class BooleanMatrixRowsToColumns : IMappingMatrix
 	{
 		public BooleanMatrixRowsToColumns(int numRows, int numColumns, int[] rowsToColumns)

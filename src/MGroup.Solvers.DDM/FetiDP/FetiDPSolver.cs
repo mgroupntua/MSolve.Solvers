@@ -1,32 +1,32 @@
-using System.Collections.Concurrent;
-using System.Diagnostics;
-
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed.IterativeMethods;
-using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.LinearAlgebra.Iterative;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.MSolve.Solution;
-using MGroup.MSolve.Solution.LinearSystem;
-using MGroup.Solvers.DDM.FetiDP.CoarseProblem;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.FetiDP.InterfaceProblem;
-using MGroup.Solvers.DDM.FetiDP.Preconditioning;
-using MGroup.Solvers.DDM.FetiDP.Reanalysis;
-using MGroup.Solvers.DDM.FetiDP.Scaling;
-using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
-using MGroup.Solvers.DDM.FetiDP.Vectors;
-using MGroup.Solvers.DDM.LagrangeMultipliers;
-using MGroup.Solvers.DDM.LinearSystem;
-using MGroup.Solvers.DDM.Output;
-using MGroup.Solvers.DofOrdering;
-using MGroup.Solvers.DofOrdering.Reordering;
-using MGroup.Solvers.Logging;
-
 namespace MGroup.Solvers.DDM.FetiDP
 {
+	using System.Collections.Concurrent;
+	using System.Diagnostics;
+
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods;
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Iterative;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.MSolve.Solution;
+	using MGroup.MSolve.Solution.LinearSystem;
+	using MGroup.Solvers.DDM.FetiDP.CoarseProblem;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.FetiDP.InterfaceProblem;
+	using MGroup.Solvers.DDM.FetiDP.Preconditioning;
+	using MGroup.Solvers.DDM.FetiDP.Reanalysis;
+	using MGroup.Solvers.DDM.FetiDP.Scaling;
+	using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
+	using MGroup.Solvers.DDM.FetiDP.Vectors;
+	using MGroup.Solvers.DDM.LagrangeMultipliers;
+	using MGroup.Solvers.DDM.LinearSystem;
+	using MGroup.Solvers.DDM.Output;
+	using MGroup.Solvers.DofOrdering;
+	using MGroup.Solvers.DofOrdering.Reordering;
+	using MGroup.Solvers.Logging;
+
 	public class FetiDPSolver<TMatrix> : ISolver
 		where TMatrix : class, IMatrix
 	{

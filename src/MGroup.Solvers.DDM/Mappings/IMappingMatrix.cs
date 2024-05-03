@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-
 //TODOMPI: Standardize the mappings. I think 100% of the cases, the following case holds: 
 //		There are 2 sets of entries, the full entries and a subset. There is an array that takes indices from the subset and
 //		its values are in the full entries. E.g. localToGlobal[i] = j, where i = 0 ... numLocal-1 and j = 0 ... numGlobal-1.
@@ -15,6 +9,9 @@ using MGroup.LinearAlgebra.Vectors;
 //		internal array exposed from the IMappingMatrix).
 namespace MGroup.Solvers.DDM.Mappings
 {
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+
 	public interface IMappingMatrix
 	{
 		int NumColumns { get; }

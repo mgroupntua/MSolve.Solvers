@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Iterative;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.Solvers.DDM.LinearSystem;
-
 namespace MGroup.Solvers.DDM.PSM.InterfaceProblem
 {
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+
 	public interface IPsmInterfaceProblemMatrix
 	{
 		DistributedOverlappingTransformation Matrix { get; }

@@ -1,9 +1,9 @@
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.Solvers.DDM.Commons;
-
 namespace MGroup.Solvers.DDM.FetiDP.CoarseProblem
 {
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Solvers.DDM.Commons;
+
 	public interface IFetiDPCoarseProblemGlobalMatrix
 	{
 		void Clear();

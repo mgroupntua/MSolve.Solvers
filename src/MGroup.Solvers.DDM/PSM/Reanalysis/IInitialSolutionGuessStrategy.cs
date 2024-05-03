@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.Solvers.DDM.LinearSystem;
-
 namespace MGroup.Solvers.DDM.PSM.Reanalysis
 {
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+
 	public interface IInitialSolutionGuessStrategy
 	{
 		(DistributedOverlappingVector guess, bool isZero) GuessFirstSolution(

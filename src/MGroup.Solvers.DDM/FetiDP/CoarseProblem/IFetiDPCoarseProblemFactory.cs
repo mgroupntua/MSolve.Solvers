@@ -1,9 +1,9 @@
-using MGroup.Environments;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
-
 namespace MGroup.Solvers.DDM.FetiDP.CoarseProblem
 {
+	using MGroup.Environments;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.FetiDP.StiffnessMatrices;
+
 	public interface IFetiDPCoarseProblemFactory
 	{
 		IFetiDPCoarseProblem CreateCoarseProblem(

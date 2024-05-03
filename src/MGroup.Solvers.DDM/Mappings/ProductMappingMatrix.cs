@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-
 namespace MGroup.Solvers.DDM.Mappings
 {
+	using System.Collections.Generic;
+	using System.Linq;
+
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+
 	public class ProductMappingMatrix : IMappingMatrix
 	{
 		private readonly IList<IMappingMatrix> matricesLeftToRight;

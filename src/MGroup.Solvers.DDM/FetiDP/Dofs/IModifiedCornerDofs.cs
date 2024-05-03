@@ -1,7 +1,7 @@
-using MGroup.Solvers.DDM.LinearSystem;
-
 namespace MGroup.Solvers.DDM.FetiDP.Dofs
 {
+	using MGroup.Solvers.DDM.LinearSystem;
+
 	public interface IModifiedCornerDofs
 	{
 		bool AreGlobalCornerDofsModified { get; }

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace MGroup.Solvers.DDM.LinearSystem
 {
 	public class NullModifiedSubdomains : IModifiedSubdomains

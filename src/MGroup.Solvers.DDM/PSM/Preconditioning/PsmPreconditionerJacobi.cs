@@ -1,17 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed;
-using MGroup.LinearAlgebra.Distributed.IterativeMethods.Preconditioning;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.Solvers.DDM.PSM.InterfaceProblem;
-using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
-
 namespace MGroup.Solvers.DDM.PSM.Preconditioning
 {
-    public class PsmPreconditionerJacobi : IPsmPreconditioner
+	using System;
+	using System.Collections.Generic;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods.Preconditioning;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.Solvers.DDM.PSM.InterfaceProblem;
+
+	public class PsmPreconditionerJacobi : IPsmPreconditioner
     {
         public PsmPreconditionerJacobi()
         {

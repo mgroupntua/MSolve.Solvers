@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-
 namespace MGroup.Solvers.DDM.LagrangeMultipliers
 {
+	using System;
+
 	public class LagrangeMultiplier : IComparable<LagrangeMultiplier>
 	{
 		public LagrangeMultiplier(int nodeID, int dofID, int subdomainPlus, int subdomainMinus, int localIdx)

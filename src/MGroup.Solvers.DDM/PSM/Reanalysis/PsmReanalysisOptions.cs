@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MGroup.Solvers.DDM.LinearSystem;
-
 namespace MGroup.Solvers.DDM.PSM.Reanalysis
 {
+	using MGroup.Solvers.DDM.LinearSystem;
+
 	public class PsmReanalysisOptions : ReanalysisOptions
 	{
 		public PsmReanalysisOptions(bool commonValueForFlags, IModifiedSubdomains modifiedSubdomains)

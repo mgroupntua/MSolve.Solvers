@@ -1,15 +1,15 @@
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Triangulation;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.Solvers.DDM.FetiDP.Dofs;
-using MGroup.Solvers.DDM.LinearAlgebraExtensions;
-using MGroup.Solvers.DDM.Commons;
-using MGroup.Solvers.DDM.LinearSystem;
-using MGroup.Solvers.Assemblers;
-using MGroup.Solvers.DDM.LinearAlgebraExtensions.Matrices;
-
 namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 {
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Triangulation;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.LinearAlgebraExtensions;
+	using MGroup.Solvers.DDM.Commons;
+	using MGroup.Solvers.DDM.LinearSystem;
+	using MGroup.Solvers.Assemblers;
+	using MGroup.Solvers.DDM.LinearAlgebraExtensions.Matrices;
+
 	public class FetiDPSubdomainMatrixManagerCSparse : IFetiDPSubdomainMatrixManager
 	{
 		private readonly bool clearKrrAfterFactorization;

@@ -1,9 +1,10 @@
-using System.Diagnostics;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.MSolve.Meshes.Structured;
-
 namespace MGroup.Solvers.DDM.Partitioning
 {
+	using System.Diagnostics;
+
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.MSolve.Meshes.Structured;
+
 	public class UniformMeshPartitioner3D : IPartitioner
 	{
 		private const int dim = 3;

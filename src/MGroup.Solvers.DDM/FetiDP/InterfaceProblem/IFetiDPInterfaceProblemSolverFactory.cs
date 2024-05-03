@@ -1,8 +1,8 @@
-using MGroup.LinearAlgebra.Distributed.IterativeMethods;
-using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
-
 namespace MGroup.Solvers.DDM.FetiDP.InterfaceProblem
 {
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods;
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
+
 	public interface IFetiDPInterfaceProblemSolverFactory
 	{
 		int MaxIterations { get; set; }

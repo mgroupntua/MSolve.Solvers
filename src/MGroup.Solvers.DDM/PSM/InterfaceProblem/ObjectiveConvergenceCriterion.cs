@@ -1,20 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using MGroup.Environments;
-using MGroup.LinearAlgebra.Distributed;
-using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
-using MGroup.LinearAlgebra.Distributed.Overlapping;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Solution.LinearSystem;
-using MGroup.Solvers.DDM.LinearAlgebraExtensions;
-using MGroup.Solvers.DDM.LinearSystem;
-using MGroup.Solvers.DDM.PSM.Vectors;
-
 namespace MGroup.Solvers.DDM.PSM.InterfaceProblem
 {
+	using System;
+	using System.Diagnostics;
+
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.Solution.LinearSystem;
+	using MGroup.Solvers.DDM.LinearSystem;
+	using MGroup.Solvers.DDM.PSM.Vectors;
+
 	/// <summary>
 	/// At each iteration, it checks if ||K * u - f|| / ||f|| &lt; tol, where all vectors and matrices correspond to the free 
 	/// dofs of the whole model. Since this is very inefficient, it is recommended to use this class only for testing, 
