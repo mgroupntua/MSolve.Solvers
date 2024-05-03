@@ -26,8 +26,8 @@ namespace MGroup.Solvers.DDM.PFetiDP.Preconditioner
 		private readonly IBoundaryDofScaling scaling;
 
 		//TODO: some rows will definitely be 0 and some entries might be 0, depending on the case. I should use a block row major format or CSR.
-		private readonly ConcurrentDictionary<int, LinearAlgebraExtensions.Matrices.FullMatrixRowMajor> matricesWb_Nbr_invKrr_Krc 
-			= new ConcurrentDictionary<int, LinearAlgebraExtensions.Matrices.FullMatrixRowMajor>();
+		private readonly ConcurrentDictionary<int, FullMatrixRowMajor> matricesWb_Nbr_invKrr_Krc 
+			= new ConcurrentDictionary<int, FullMatrixRowMajor>();
 
 		public PFetiDPPreconditionerExplicit(IComputeEnvironment environment, Func<DistributedOverlappingIndexer> getBoundaryDofIndexer,
 			IBoundaryDofScaling scaling, Func<int, IFetiDPSubdomainMatrixManager> getFetiDPSubdomainMatrices,
@@ -116,7 +116,7 @@ namespace MGroup.Solvers.DDM.PFetiDP.Preconditioner
 				var Nrb = (MappingMatrixN)(pfetiDPDofs.MatrixNrb);
 
 				Matrix invKrr_Krc = fetiDPMatrices.CalcInvKrrTimesKrc();
-				LinearAlgebraExtensions.Matrices.FullMatrixRowMajor result = SelectAndScaleRows(Wb, Nrb, invKrr_Krc);
+				FullMatrixRowMajor result = SelectAndScaleRows(Wb, Nrb, invKrr_Krc);
 
 				matricesWb_Nbr_invKrr_Krc[subdomainID] = result;
 			});
@@ -126,9 +126,9 @@ namespace MGroup.Solvers.DDM.PFetiDP.Preconditioner
 
 		public void UpdateMatrix(IGlobalMatrix matrix, bool isPatternModified) { }
 
-		private static LinearAlgebraExtensions.Matrices.FullMatrixRowMajor SelectAndScaleRows(DiagonalMatrix Wb, MappingMatrixN Nrb, Matrix invKrr_Krc)
+		private static FullMatrixRowMajor SelectAndScaleRows(DiagonalMatrix Wb, MappingMatrixN Nrb, Matrix invKrr_Krc)
 		{
-			var result = LinearAlgebraExtensions.Matrices.FullMatrixRowMajor.CreateFromZero(Nrb.NumColumns, invKrr_Krc.NumColumns);
+			var result = FullMatrixRowMajor.CreateZero(Nrb.NumColumns, invKrr_Krc.NumColumns);
 			foreach (var nonZeroEntry in Nrb.RowsToColumns)
 			{
 				int remainderDof = nonZeroEntry.Key;

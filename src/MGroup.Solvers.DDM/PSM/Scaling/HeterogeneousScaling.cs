@@ -3,15 +3,16 @@
 namespace MGroup.Solvers.DDM.PSM.Scaling
 {
 	using System;
+	using System.Collections.Concurrent;
 	using System.Collections.Generic;
+	using System.Diagnostics;
+
+	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Distributed.Overlapping;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.LinearAlgebra.Vectors;
-	using System.Collections.Concurrent;
-	using MGroup.Environments;
-	using MGroup.Solvers.DDM.PSM.Dofs;
-	using MGroup.LinearAlgebra.Distributed.Overlapping;
 	using MGroup.Solvers.DDM.LinearSystem;
-	using System.Diagnostics;
+	using MGroup.Solvers.DDM.PSM.Dofs;
 
 	public class HeterogeneousScaling : IBoundaryDofScaling
 	{

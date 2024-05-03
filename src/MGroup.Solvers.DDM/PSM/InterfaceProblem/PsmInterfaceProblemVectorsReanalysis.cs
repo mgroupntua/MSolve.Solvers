@@ -1,11 +1,12 @@
 namespace MGroup.Solvers.DDM.PSM.InterfaceProblem
 {
 	using System.Collections.Generic;
-	using MGroup.LinearAlgebra.Vectors;
+
 	using MGroup.Environments;
 	using MGroup.LinearAlgebra.Distributed.Overlapping;
-	using MGroup.Solvers.DDM.PSM.Vectors;
+	using MGroup.LinearAlgebra.Vectors;
 	using MGroup.Solvers.DDM.LinearSystem;
+	using MGroup.Solvers.DDM.PSM.Vectors;
 
 	public class PsmInterfaceProblemVectorsReanalysis : IPsmInterfaceProblemVectors
 	{

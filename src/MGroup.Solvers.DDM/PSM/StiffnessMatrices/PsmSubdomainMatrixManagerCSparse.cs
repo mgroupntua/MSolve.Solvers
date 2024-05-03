@@ -1,11 +1,12 @@
 namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 {
 	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.SchurComplements;
+	using MGroup.LinearAlgebra.SchurComplements.SubmatrixExtractors;
 	using MGroup.LinearAlgebra.Triangulation;
 	using MGroup.LinearAlgebra.Vectors;
 	using MGroup.Solvers.Assemblers;
 	using MGroup.Solvers.DDM.Commons;
-	using MGroup.Solvers.DDM.LinearAlgebraExtensions;
 	using MGroup.Solvers.DDM.LinearSystem;
 	using MGroup.Solvers.DDM.PSM.Dofs;
 
@@ -33,7 +34,7 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 		{
 			//TODO: Implement a ScurComplement class where A11 is in CSR format
 			Matrix kbb = Kbb.CopyToFullMatrix();
-			return SchurComplementFullCsrCsc.CalcSchurComplement(kbb, Kbi, Kib, inverseKii);
+			return SchurComplementFullCsrCsrCsc.CalcSchurComplement(kbb, Kbi, Kib, inverseKii);
 		}
 
 		public void ClearSubMatrices()

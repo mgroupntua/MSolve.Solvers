@@ -2,11 +2,12 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 {
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.LinearAlgebra.Reordering;
+	using MGroup.LinearAlgebra.SchurComplements;
+	using MGroup.LinearAlgebra.SchurComplements.SubmatrixExtractors;
 	using MGroup.LinearAlgebra.Triangulation;
 	using MGroup.LinearAlgebra.Vectors;
 	using MGroup.Solvers.Assemblers;
 	using MGroup.Solvers.DDM.Commons;
-	using MGroup.Solvers.DDM.LinearAlgebraExtensions;
 	using MGroup.Solvers.DDM.LinearSystem;
 	using MGroup.Solvers.DDM.PSM.Dofs;
 
@@ -36,7 +37,7 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 			//TODO: Implement SchurComplement with A11 being in CSR format.
 			TriangularUpper kbbUpper = Kbb.AsSimpleCsr.CopyToUpperPacked();
 			var kbbSymm = SymmetricMatrix.CreateFromPackedColumnMajorArray(kbbUpper.RawData);
-			return SchurComplementPckCsrCscSym.CalcSchurComplement(kbbSymm, Kbi.AsSimpleCsr, inverseKii);
+			return SchurComplementPckCsrSymCsc.CalcSchurComplement(kbbSymm, Kbi.AsSimpleCsr, inverseKii);
 		}
 
 		public void ClearSubMatrices()

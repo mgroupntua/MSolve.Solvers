@@ -1,9 +1,10 @@
 namespace MGroup.Solvers.DDM.PSM.InterfaceProblem
 {
 	using System;
-	using MGroup.LinearAlgebra.Vectors;
+
 	using MGroup.Environments;
 	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Vectors;
 	using MGroup.Solvers.DDM.PSM.Dofs;
 	using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
 

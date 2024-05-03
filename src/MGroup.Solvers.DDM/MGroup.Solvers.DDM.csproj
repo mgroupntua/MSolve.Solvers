@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="LinearAlgebraExtensions\Matrices\Builder\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MGroup.LinearAlgebra.Distributed" Version="0.1.0-unstable.192" />
   </ItemGroup>
 

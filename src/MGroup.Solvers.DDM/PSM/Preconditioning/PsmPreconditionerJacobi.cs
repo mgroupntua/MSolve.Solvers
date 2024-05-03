@@ -2,10 +2,11 @@ namespace MGroup.Solvers.DDM.PSM.Preconditioning
 {
 	using System;
 	using System.Collections.Generic;
-	using MGroup.LinearAlgebra.Vectors;
+
 	using MGroup.Environments;
 	using MGroup.LinearAlgebra.Distributed.IterativeMethods.Preconditioning;
 	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Vectors;
 	using MGroup.Solvers.DDM.PSM.InterfaceProblem;
 
 	public class PsmPreconditionerJacobi : IPsmPreconditioner

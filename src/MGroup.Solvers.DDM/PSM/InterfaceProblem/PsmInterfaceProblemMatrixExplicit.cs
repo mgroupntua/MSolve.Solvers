@@ -2,12 +2,13 @@ namespace MGroup.Solvers.DDM.PSM.InterfaceProblem
 {
 	using System;
 	using System.Collections.Concurrent;
-	using MGroup.LinearAlgebra.Matrices;
-	using MGroup.LinearAlgebra.Vectors;
+
 	using MGroup.Environments;
 	using MGroup.LinearAlgebra.Distributed.Overlapping;
-	using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Vectors;
 	using MGroup.Solvers.DDM.PSM.Reanalysis;
+	using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
 
 	/// <summary>
 	/// There is only 1 explicit matrix per subdomain, which was calculated by operations between multiple intermediate matrices,

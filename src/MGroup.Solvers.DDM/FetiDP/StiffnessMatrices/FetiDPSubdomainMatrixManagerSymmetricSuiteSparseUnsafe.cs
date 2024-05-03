@@ -3,14 +3,14 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 {
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.LinearAlgebra.Reordering;
+	using MGroup.LinearAlgebra.SchurComplements;
+	using MGroup.LinearAlgebra.SchurComplements.SubmatrixExtractors;
 	using MGroup.LinearAlgebra.Triangulation;
 	using MGroup.LinearAlgebra.Vectors;
-	using MGroup.Solvers.DDM.FetiDP.Dofs;
-	using MGroup.Solvers.DDM.LinearAlgebraExtensions;
-	using MGroup.Solvers.DDM.Commons;
-	using MGroup.Solvers.DDM.LinearSystem;
 	using MGroup.Solvers.Assemblers;
-	using MGroup.Solvers.DDM.LinearAlgebraExtensions.Matrices;
+	using MGroup.Solvers.DDM.Commons;
+	using MGroup.Solvers.DDM.FetiDP.Dofs;
+	using MGroup.Solvers.DDM.LinearSystem;
 
 	public class FetiDPSubdomainMatrixManagerSymmetricSuiteSparseUnsafe : IFetiDPSubdomainMatrixManager
 	{
@@ -61,7 +61,7 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 		public void CalcSchurComplementOfRemainderDofs()
 		{
 			Scc = SymmetricMatrix.CreateZero(Kcc.Order);
-			SchurComplementPckCsrCscSym.CalcSchurComplement(Kcc, Kcr.AsSimpleCsr, inverseKrr, Scc);
+			SchurComplementPckCsrSymCsc.CalcSchurComplement(Kcc, Kcr.AsSimpleCsr, inverseKrr, Scc);
 		}
 
 		public void ClearSubMatrices()
