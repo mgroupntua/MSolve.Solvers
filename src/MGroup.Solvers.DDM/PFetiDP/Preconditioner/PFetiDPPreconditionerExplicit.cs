@@ -27,8 +27,8 @@ namespace MGroup.Solvers.DDM.PFetiDP.Preconditioner
 		private readonly IBoundaryDofScaling scaling;
 
 		//TODO: some rows will definitely be 0 and some entries might be 0, depending on the case. I should use a block row major format or CSR.
-		private readonly ConcurrentDictionary<int, FullMatrixRowMajor> matricesWb_Nbr_invKrr_Krc 
-			= new ConcurrentDictionary<int, FullMatrixRowMajor>();
+		private readonly ConcurrentDictionary<int, LinearAlgebraExtensions.Matrices.FullMatrixRowMajor> matricesWb_Nbr_invKrr_Krc 
+			= new ConcurrentDictionary<int, LinearAlgebraExtensions.Matrices.FullMatrixRowMajor>();
 
 		public PFetiDPPreconditionerExplicit(IComputeEnvironment environment, Func<DistributedOverlappingIndexer> getBoundaryDofIndexer,
 			IBoundaryDofScaling scaling, Func<int, IFetiDPSubdomainMatrixManager> getFetiDPSubdomainMatrices,
@@ -117,15 +117,19 @@ namespace MGroup.Solvers.DDM.PFetiDP.Preconditioner
 				var Nrb = (MappingMatrixN)(pfetiDPDofs.MatrixNrb);
 
 				Matrix invKrr_Krc = fetiDPMatrices.CalcInvKrrTimesKrc();
-				FullMatrixRowMajor result = SelectAndScaleRows(Wb, Nrb, invKrr_Krc);
+				LinearAlgebraExtensions.Matrices.FullMatrixRowMajor result = SelectAndScaleRows(Wb, Nrb, invKrr_Krc);
 
 				matricesWb_Nbr_invKrr_Krc[subdomainID] = result;
 			});
 		}
 
-		private static FullMatrixRowMajor SelectAndScaleRows(DiagonalMatrix Wb, MappingMatrixN Nrb, Matrix invKrr_Krc)
+		public IPreconditioner CopyWithInitialSettings() => throw new NotImplementedException();
+
+		public void UpdateMatrix(IGlobalMatrix matrix, bool isPatternModified) { }
+
+		private static LinearAlgebraExtensions.Matrices.FullMatrixRowMajor SelectAndScaleRows(DiagonalMatrix Wb, MappingMatrixN Nrb, Matrix invKrr_Krc)
 		{
-			var result = FullMatrixRowMajor.CreateFromZero(Nrb.NumColumns, invKrr_Krc.NumColumns);
+			var result = LinearAlgebraExtensions.Matrices.FullMatrixRowMajor.CreateFromZero(Nrb.NumColumns, invKrr_Krc.NumColumns);
 			foreach (var nonZeroEntry in Nrb.RowsToColumns)
 			{
 				int remainderDof = nonZeroEntry.Key;

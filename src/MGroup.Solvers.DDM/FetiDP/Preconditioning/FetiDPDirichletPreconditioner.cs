@@ -1,4 +1,5 @@
 using MGroup.Environments;
+using MGroup.LinearAlgebra.Distributed.IterativeMethods.Preconditioning;
 using MGroup.LinearAlgebra.Distributed.Overlapping;
 using MGroup.LinearAlgebra.Matrices;
 using MGroup.LinearAlgebra.Matrices.Operators;
@@ -51,6 +52,8 @@ namespace MGroup.Solvers.DDM.FetiDP.Preconditioning
 			subdomainMatrices.InvertKii(false);
 		}
 
+		public IPreconditioner CopyWithInitialSettings() => new FetiDPDirichletPreconditioner();
+
 		public void Initialize(IComputeEnvironment environment, DistributedOverlappingIndexer lagrangeVectorIndexer,
 			Func<int, SubdomainLagranges> getSubdomainLagranges, Func<int, IFetiDPSubdomainMatrixManager> getSubdomainMatrices,
 			IFetiDPScaling scaling)
@@ -61,5 +64,7 @@ namespace MGroup.Solvers.DDM.FetiDP.Preconditioning
 			this.getSubdomainMatrices = getSubdomainMatrices;
 			this.scaling = scaling;
 		}
+
+		public void UpdateMatrix(IGlobalMatrix matrix, bool isPatternModified) { }
 	}
 }

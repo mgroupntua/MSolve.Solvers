@@ -2,14 +2,12 @@ namespace MGroup.Solvers.MachineLearning.Tests.Examples
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
+	using System.IO;
 	using System.Linq;
-	using System.Reflection.PortableExecutable;
-
-	using global::MGroup.Solvers.MachineLearning.PodAmg;
 
 	using MathNet.Numerics.Distributions;
 
-	using MGroup.Solvers.MachineLearning.Tests.Mesh;
 	using MGroup.Constitutive.Structural;
 	using MGroup.Constitutive.Structural.BoundaryConditions;
 	using MGroup.Constitutive.Structural.Continuum;
@@ -18,15 +16,12 @@ namespace MGroup.Solvers.MachineLearning.Tests.Examples
 	using MGroup.LinearAlgebra.Output;
 	using MGroup.LinearAlgebra.Output.Formatting;
 	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MachineLearning.TensorFlow;
 	using MGroup.MachineLearning.Utilities;
 	using MGroup.MSolve.Discretization.Entities;
 	using MGroup.MSolve.Discretization.Meshes.Generation;
-	using MGroup.MSolve.Solution;
 	using MGroup.NumericalAnalyzers;
-	using MGroup.Solvers.Direct;
-	using System.IO;
-	using System.Diagnostics;
-	using MGroup.MachineLearning.TensorFlow;
+	using MGroup.Solvers.MachineLearning.Tests.Mesh;
 
 	public static class Elasticity3DExample
 	{
@@ -58,7 +53,7 @@ namespace MGroup.Solvers.MachineLearning.Tests.Examples
 				else
 				{
 					(double response, Vector solution, int numPcgIterations) =
-						RunSingleAnalysis(i, paramsE[i-1], paramsP[i-1], solver);
+						RunSingleAnalysis(i, paramsE[i - 1], paramsP[i - 1], solver);
 					responses.Add(response);
 					Debug.WriteLine($"Number of PCG iterations = {numPcgIterations}. Dofs = {solution.Length}.");
 					if (writeSolutionsToFile)
@@ -131,7 +126,7 @@ namespace MGroup.Solvers.MachineLearning.Tests.Examples
 			double maxX = cubeSide, maxY = cubeSide, maxZ = cubeSide;
 			var meshGenerator = new UniformMeshGenerator3D<Node>(minX, minY, minZ, maxX, maxY, maxZ,
 				numElementsPerSide, numElementsPerSide, numElementsPerSide);
-			(IReadOnlyList<Node> nodes, IReadOnlyList<CellConnectivity<Node>> elements) 
+			(IReadOnlyList<Node> nodes, IReadOnlyList<CellConnectivity<Node>> elements)
 				= meshGenerator.CreateMesh((id, x, y, z) => new Node(id, x, y, z));
 
 			// Create model

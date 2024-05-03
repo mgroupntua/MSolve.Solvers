@@ -3,11 +3,8 @@ namespace MGroup.Solvers.MachineLearning
 	using System;
 	using System.Collections.Generic;
 
+	using MGroup.LinearAlgebra.AlgebraicMultiGrid.PodAmg;
 	using MGroup.LinearAlgebra.Iterative;
-	using MGroup.LinearAlgebra.Iterative.AlgebraicMultiGrid;
-	using MGroup.LinearAlgebra.Iterative.AlgebraicMultiGrid.PodAmg;
-	using MGroup.LinearAlgebra.Iterative.AlgebraicMultiGrid.Smoothing;
-	using MGroup.LinearAlgebra.Iterative.GaussSeidel;
 	using MGroup.LinearAlgebra.Iterative.PreconditionedConjugateGradient;
 	using MGroup.LinearAlgebra.Iterative.Preconditioning;
 	using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
@@ -27,35 +24,39 @@ namespace MGroup.Solvers.MachineLearning
 	using MGroup.MSolve.Solution.LinearSystem;
 	using System.Diagnostics;
 	using MGroup.MachineLearning.TensorFlow;
+	using MGroup.LinearAlgebra.AlgebraicMultiGrid;
+	using MGroup.LinearAlgebra.Iterative.Stationary.CSR;
 
 	public class AmgAISolver : ISolver
 	{
 		private const string name = "POD-AMG solver"; // for error messages
 
-		private readonly IDofOrderer _dofOrderer;
-		private readonly PcgAlgorithm _pcgAlgorithm;
-		private readonly IPreconditionerFactory _initialPreconditionerFactory;
-		private readonly PodAmgPreconditioner.Factory _amgPreconditionerFactory;
-		private readonly int _numSolutionVectorsForPod;
-		private readonly int _numPrincipalComponentsInPod;
+		private readonly IDofOrderer dofOrderer;
+		private readonly PcgAlgorithm pcgAlgorithm;
+		private readonly IPreconditioner initialPreconditioner;
+		private readonly PodAmgPreconditioner amgPreconditioner;
+		private readonly bool matrixPatternWillNotBeModified;
+		private readonly int numSolutionVectorsForPod;
+		private readonly int numPrincipalComponentsInPod;
 
-		private double[] _modelParametersCurrent;
-		private CaeFffnSurrogate _surrogate;
-		private bool _useAmgPreconditioner;
+		private double[] modelParametersCurrent;
+		private CaeFffnSurrogate surrogate;
+		private bool useAmgPreconditioner;
 
-		private AmgAISolver(IDofOrderer dofOrderer, PcgAlgorithm pcgAlgorithm,
-			IPreconditionerFactory initialPreconditionerFactory, PodAmgPreconditioner.Factory amgPreconditionerFactory,
+		private AmgAISolver(IDofOrderer dofOrderer, PcgAlgorithm pcgAlgorithm, bool matrixPatternWillNotBeModified,
+			IPreconditioner initialPreconditioner, PodAmgPreconditioner amgPreconditioner,
 			int numSolutionVectorsForPod, int numPrincipalComponentsInPod, CaeFffnSurrogate surrogate)
 		{
-			_dofOrderer = dofOrderer;
-			_pcgAlgorithm = pcgAlgorithm;
-			_initialPreconditionerFactory = initialPreconditionerFactory;
-			_amgPreconditionerFactory = amgPreconditionerFactory;
-			_numSolutionVectorsForPod = numSolutionVectorsForPod;
-			_numPrincipalComponentsInPod = numPrincipalComponentsInPod;
-			_surrogate = surrogate;
+			this.dofOrderer = dofOrderer;
+			this.pcgAlgorithm = pcgAlgorithm;
+			this.matrixPatternWillNotBeModified = matrixPatternWillNotBeModified;
+			this.initialPreconditioner = initialPreconditioner;
+			this.amgPreconditioner = amgPreconditioner;
+			this.numSolutionVectorsForPod = numSolutionVectorsForPod;
+			this.numPrincipalComponentsInPod = numPrincipalComponentsInPod;
+			this.surrogate = surrogate;
 
-			_useAmgPreconditioner = false;
+			useAmgPreconditioner = false;
 			PreviousSolutionVectors = new List<Vector>();
 			PreviousModelParameters = new List<double[]>();
 			Logger = new SolverLogger(name);
@@ -88,21 +89,21 @@ namespace MGroup.Solvers.MachineLearning
 
 		public void SetModel(double[] modelParameters, IModel model)
 		{
-			_modelParametersCurrent = modelParameters.Copy();
-			AlgebraicModel = new GlobalAlgebraicModel<CsrMatrix>(model, _dofOrderer, new CsrMatrixAssembler(true));
+			modelParametersCurrent = modelParameters.Copy();
+			AlgebraicModel = new GlobalAlgebraicModel<CsrMatrix>(model, dofOrderer, new CsrMatrixAssembler(true));
 			this.LinearSystem = AlgebraicModel.LinearSystem;
 			this.LinearSystem.Observers.Add(this);
 		}
 
 		public void Solve()
 		{
-			if (_useAmgPreconditioner)
+			if (useAmgPreconditioner)
 			{
 				SolveUsingPodAmgPreconditioner();
 			}
 			else
 			{
-				if (PreviousSolutionVectors.Count < _numSolutionVectorsForPod)
+				if (PreviousSolutionVectors.Count < numSolutionVectorsForPod)
 				{
 					Vector solution = SolveUsingInitialPreconditioner();
 					if (PreviousSolutionVectors.Count > 0)
@@ -115,11 +116,11 @@ namespace MGroup.Solvers.MachineLearning
 						}
 					}
 					PreviousSolutionVectors.Add(solution);
-					PreviousModelParameters.Add(_modelParametersCurrent);
+					PreviousModelParameters.Add(modelParametersCurrent);
 				}
 				else
 				{
-					_useAmgPreconditioner = true;
+					useAmgPreconditioner = true;
 					TrainBasedOnFirstSolutions();
 					SolveUsingPodAmgPreconditioner();
 				}
@@ -141,7 +142,7 @@ namespace MGroup.Solvers.MachineLearning
 			PreviousSolutionVectors.Clear();
 
 			// AMG-POD training
-			_amgPreconditionerFactory.Initialize(solutionVectors, _numPrincipalComponentsInPod);
+			amgPreconditioner.Initialize(solutionVectors, numPrincipalComponentsInPod);
 
 			// Gather all previous model parameters
 			if (PreviousModelParameters.Count != numSamples)
@@ -150,7 +151,7 @@ namespace MGroup.Solvers.MachineLearning
 					$"but {numSamples} solution vectors, while using initial preconditioner.");
 			}
 
-			int numParameters = _modelParametersCurrent.Length;
+			int numParameters = modelParametersCurrent.Length;
 			var parametersAsArray = new double[numSamples, numParameters];
 			for (int i = 0; i < numSamples; ++i)
 			{
@@ -167,7 +168,7 @@ namespace MGroup.Solvers.MachineLearning
 
 			// CAE-FFNN training. Dimension 0 must be the number of samples.
 			double[,] solutionsAsArray = solutionVectors.Transpose().CopytoArray2D();
-			_surrogate.TrainAndEvaluate(parametersAsArray, solutionsAsArray, null);
+			surrogate.TrainAndEvaluate(parametersAsArray, solutionsAsArray, null);
 		}
 
 		private Vector SolveUsingInitialPreconditioner()
@@ -176,10 +177,10 @@ namespace MGroup.Solvers.MachineLearning
 			int systemSize = matrix.NumRows;
 
 			// Preconditioning
-			IPreconditioner preconditioner = _initialPreconditionerFactory.CreatePreconditionerFor(matrix);
+			initialPreconditioner.UpdateMatrix(matrix, !matrixPatternWillNotBeModified);
 
 			// Iterative algorithm
-			IterativeStatistics stats = _pcgAlgorithm.Solve(matrix, preconditioner,
+			IterativeStatistics stats = pcgAlgorithm.Solve(matrix, initialPreconditioner,
 				LinearSystem.RhsVector.SingleVector, LinearSystem.Solution.SingleVector,
 				true, () => Vector.CreateZero(systemSize));
 			if (!stats.HasConverged)
@@ -200,14 +201,14 @@ namespace MGroup.Solvers.MachineLearning
 			Vector rhs = LinearSystem.RhsVector.SingleVector;
 
 			// Use ML prediction as initial guess.
-			double[] parameters = _modelParametersCurrent.Copy();
-			double[] prediction = _surrogate.Predict(parameters);
+			double[] parameters = modelParametersCurrent.Copy();
+			double[] prediction = surrogate.Predict(parameters);
 			var solution = Vector.CreateFromArray(prediction);
 			LinearSystem.Solution.SingleVector = solution;
 
-			var preconditioner =  _amgPreconditionerFactory.CreatePreconditionerFor(matrix);
+			amgPreconditioner.UpdateMatrix(matrix, !matrixPatternWillNotBeModified);
 
-			IterativeStatistics stats = _pcgAlgorithm.Solve(matrix, preconditioner, rhs, solution, 
+			IterativeStatistics stats = pcgAlgorithm.Solve(matrix, amgPreconditioner, rhs, solution,
 				false, () => Vector.CreateZero(systemSize));
 			if (!stats.HasConverged)
 			{
@@ -220,20 +221,22 @@ namespace MGroup.Solvers.MachineLearning
 
 		public class Factory
 		{
-			private readonly int _numSolutionVectorsForPod;
-			private readonly int _numPrincipalComponentsInPod;
-			private readonly CaeFffnSurrogate.Builder _surrogateBuilder;
+			private readonly int numSolutionVectorsForPod;
+			private readonly int numPrincipalComponentsInPod;
+			private readonly CaeFffnSurrogate.Builder surrogateBuilder;
 
-			public Factory(int numSolutionVectorsForPod, int numPrincipalComponentsInPod, 
+			public Factory(int numSolutionVectorsForPod, int numPrincipalComponentsInPod,
 				CaeFffnSurrogate.Builder surrogateBuilder)
 			{
-				_numSolutionVectorsForPod = numSolutionVectorsForPod;
-				_numPrincipalComponentsInPod = numPrincipalComponentsInPod;
-				_surrogateBuilder = surrogateBuilder;
+				this.numSolutionVectorsForPod = numSolutionVectorsForPod;
+				this.numPrincipalComponentsInPod = numPrincipalComponentsInPod;
+				this.surrogateBuilder = surrogateBuilder;
 			}
 
 			public IDofOrderer DofOrderer { get; set; }
 				= new DofOrderer(new NodeMajorDofOrderingStrategy(), new NullReordering());
+
+			public bool MatrixPatternWillNotBeModified { get; set; } = false;
 
 			public double PcgConvergenceTolerance { get; set; } = 1E-5;
 
@@ -241,23 +244,22 @@ namespace MGroup.Solvers.MachineLearning
 
 			public AmgAISolver BuildSolver()
 			{
-				var pcgBuilder = new PcgAlgorithm.Builder();
-				pcgBuilder.ResidualTolerance = PcgConvergenceTolerance;
-				pcgBuilder.MaxIterationsProvider = PcgMaxIterationsProvider;
-				var pcgAlgorithm = pcgBuilder.Build();
+				var pcgFactory = new PcgAlgorithm.Factory();
+				pcgFactory.ResidualTolerance = PcgConvergenceTolerance;
+				pcgFactory.MaxIterationsProvider = PcgMaxIterationsProvider;
+				var pcgAlgorithm = pcgFactory.Build();
 
-				var initialPreconditionerFactory = new JacobiPreconditioner.Factory();
+				var initialPreconditioner = new JacobiPreconditioner();
 
-				var amgPrecondFactory = new PodAmgPreconditioner.Factory();
-				amgPrecondFactory.NumIterations = 1;
-				amgPrecondFactory.SmootherBuilder = new GaussSeidelSmoother.Builder(
-					new GaussSeidelIterationCsrSerial.Builder(),
-					GaussSeidelSweepDirection.Symmetric,
-					numIterations: 1);
-				amgPrecondFactory.KeepOnlyNonZeroPrincipalComponents = true;
+				var smoothing = new MultigridLevelSmoothing()
+					.AddPreSmoother(new GaussSeidelIterationCsr(forwardDirection: true), 1)
+					.AddPreSmoother(new GaussSeidelIterationCsr(forwardDirection: false), 1)
+					.SetPostSmoothersSameAsPreSmoothers();
+				var amgPreconditioner = new PodAmgPreconditioner(
+					keepOnlyNonZeroPrincipalComponents: true, smoothing, numIterations: 1);
 
-				return new AmgAISolver(DofOrderer, pcgAlgorithm, initialPreconditionerFactory, amgPrecondFactory,
-					_numSolutionVectorsForPod, _numPrincipalComponentsInPod, _surrogateBuilder.BuildSurrogate());
+				return new AmgAISolver(DofOrderer, pcgAlgorithm, MatrixPatternWillNotBeModified, initialPreconditioner,
+					amgPreconditioner, numSolutionVectorsForPod, numPrincipalComponentsInPod, surrogateBuilder.BuildSurrogate());
 			}
 		}
 	}

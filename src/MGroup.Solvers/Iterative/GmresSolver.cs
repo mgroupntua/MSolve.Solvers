@@ -17,23 +17,23 @@ namespace MGroup.Solvers.Iterative
 	public class GmresSolver : SingleSubdomainSolverBase<CsrMatrix>
 	{
 		private readonly GmresAlgorithm gmresAlgorithm;
-		private readonly IPreconditionerFactory preconditionerFactory;
+		private readonly bool matrixPatternWillNotBeModified;
+		private readonly IPreconditioner preconditioner;
 
 		private bool mustUpdatePreconditioner = true;
-		private IPreconditioner preconditioner;
 
 		private GmresSolver(GlobalAlgebraicModel<CsrMatrix> model, GmresAlgorithm gmresAlgorithm,
-			IPreconditionerFactory preconditionerFactory)
+			IPreconditioner preconditioner, bool matrixPatternWillNotBeModified)
 			: base(model, "GmresSolver")
 		{
 			this.gmresAlgorithm = gmresAlgorithm;
-			this.preconditionerFactory = preconditionerFactory;
+			this.matrixPatternWillNotBeModified = matrixPatternWillNotBeModified;
+			this.preconditioner = preconditioner;
 		}
 
 		public override void HandleMatrixWillBeSet()
 		{
 			mustUpdatePreconditioner = true;
-			preconditioner = null;
 		}
 
 		public override void Initialize() { }
@@ -64,7 +64,7 @@ namespace MGroup.Solvers.Iterative
 			if (mustUpdatePreconditioner)
 			{
 				watch.Start();
-				preconditioner = preconditionerFactory.CreatePreconditionerFor(matrix);
+				preconditioner.UpdateMatrix(matrix, !matrixPatternWillNotBeModified);
 				watch.Stop();
 				Logger.LogTaskDuration("Calculating preconditioner", watch.ElapsedMilliseconds);
 				watch.Reset();
@@ -99,7 +99,7 @@ namespace MGroup.Solvers.Iterative
 			if (mustUpdatePreconditioner)
 			{
 				watch.Start();
-				preconditioner = preconditionerFactory.CreatePreconditionerFor(matrix);
+				preconditioner.UpdateMatrix(matrix, !matrixPatternWillNotBeModified);
 				watch.Stop();
 				Logger.LogTaskDuration("Calculating preconditioner", watch.ElapsedMilliseconds);
 				watch.Reset();
@@ -143,10 +143,13 @@ namespace MGroup.Solvers.Iterative
 
 			public GmresAlgorithm GmresAlgorithm { get; set; } = new GmresAlgorithm.Builder().Build();
 
-			public IPreconditionerFactory PreconditionerFactory { get; set; } = new IdentityPreconditioner.Factory();
+			public bool MatrixPatternWillNotBeModified { get; set; } = false;
+
+			public IPreconditioner Preconditioner { get; set; } = new IdentityPreconditioner();
 
 			public GmresSolver BuildSolver(GlobalAlgebraicModel<CsrMatrix> model)
-				=> new GmresSolver(model, GmresAlgorithm, PreconditionerFactory);
+				=> new GmresSolver(model, GmresAlgorithm, Preconditioner.CopyWithInitialSettings(),
+					MatrixPatternWillNotBeModified);
 
 			public GlobalAlgebraicModel<CsrMatrix> BuildAlgebraicModel(IModel model)
 				=> new GlobalAlgebraicModel<CsrMatrix>(model, DofOrderer, new CsrMatrixAssembler(true));

@@ -104,5 +104,8 @@ namespace MGroup.Solvers.DDM.PFetiDP.Preconditioner
 		{
 			// Do nothing
 		}
+
+		public IPreconditioner CopyWithInitialSettings() => throw new NotImplementedException();
+		public void UpdateMatrix(IGlobalMatrix matrix, bool isPatternModified) => throw new NotImplementedException();
 	}
 }
