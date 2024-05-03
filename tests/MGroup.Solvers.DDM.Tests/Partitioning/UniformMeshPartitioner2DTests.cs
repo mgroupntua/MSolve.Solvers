@@ -1,5 +1,5 @@
 using MGroup.MSolve.Discretization.Entities;
-using MGroup.MSolve.Meshes.Structured;
+using MGroup.MSolve.Discretization.Meshes.Structured;
 using MGroup.Solvers.DDM.Output;
 using MGroup.Solvers.DDM.Partitioning;
 using MGroup.Solvers.DDM.Tests.ExampleModels;

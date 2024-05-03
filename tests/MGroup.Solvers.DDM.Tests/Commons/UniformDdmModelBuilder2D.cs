@@ -10,7 +10,7 @@ using MGroup.FEM.Structural.Continuum;
 using MGroup.MSolve.Discretization.BoundaryConditions;
 using MGroup.MSolve.Discretization.Dofs;
 using MGroup.MSolve.Discretization.Entities;
-using MGroup.MSolve.Meshes.Structured;
+using MGroup.MSolve.Discretization.Meshes.Structured;
 using MGroup.Solvers.DDM.DiscretizationExtensions;
 using MGroup.Solvers.DDM.FetiDP.Dofs;
 using MGroup.Solvers.DDM.Partitioning;

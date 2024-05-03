@@ -6,7 +6,7 @@ namespace MGroup.Solvers.DDM.Output
 
 	using MGroup.MSolve.Discretization;
 	using MGroup.MSolve.Discretization.Entities;
-	using MGroup.MSolve.Meshes.Output.VTK;
+	using MGroup.MSolve.Discretization.Meshes.Output.VTK;
 	using MGroup.Solvers.DDM.Partitioning;
 
 	public class PartitioningWriter

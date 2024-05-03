@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MGroup.MSolve.Meshes\MGroup.MSolve.Meshes.csproj" />
     <ProjectReference Include="..\MGroup.Solvers\MGroup.Solvers.csproj" />
   </ItemGroup>
 

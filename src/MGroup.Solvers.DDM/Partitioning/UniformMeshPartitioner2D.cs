@@ -3,7 +3,7 @@ namespace MGroup.Solvers.DDM.Partitioning
 	using System.Diagnostics;
 
 	using MGroup.MSolve.Discretization.Entities;
-	using MGroup.MSolve.Meshes.Structured;
+	using MGroup.MSolve.Discretization.Meshes.Structured;
 
 	public class UniformMeshPartitioner2D : IPartitioner
     {
