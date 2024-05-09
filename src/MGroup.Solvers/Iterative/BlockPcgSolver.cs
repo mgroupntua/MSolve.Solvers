@@ -32,7 +32,7 @@ namespace MGroup.Solvers.Iterative
 		private bool mustUpdatePreconditioner = true;
 
 		private BlockPcgSolver(GlobalAlgebraicModel<CsrMatrix> model, BlockPcgAlgorithm blockPcgAlgorithm,
-			IPreconditioner preconditioner, bool matrixPatternWillNotBeModified) 
+			IPreconditioner preconditioner, bool matrixPatternWillNotBeModified)
 			: base(model, "BlockPcgSolver")
 		{
 			this.blockPcgAlgorithm = blockPcgAlgorithm;

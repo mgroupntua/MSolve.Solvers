@@ -7,6 +7,7 @@ namespace MGroup.Solvers.MachineLearning.Tests.Examples
 	using System.Linq;
 
 	using MathNet.Numerics.Distributions;
+
 	using MGroup.Constitutive.Structural;
 	using MGroup.Constitutive.Structural.BoundaryConditions;
 	using MGroup.Constitutive.Structural.Continuum;
@@ -52,7 +53,7 @@ namespace MGroup.Solvers.MachineLearning.Tests.Examples
 				else
 				{
 					(double response, Vector solution, int numPcgIterations) =
-						RunSingleAnalysis(i, paramsE[i-1], paramsP[i-1], solver);
+						RunSingleAnalysis(i, paramsE[i - 1], paramsP[i - 1], solver);
 					responses.Add(response);
 					Debug.WriteLine($"Number of PCG iterations = {numPcgIterations}. Dofs = {solution.Length}.");
 					if (writeSolutionsToFile)
@@ -125,7 +126,7 @@ namespace MGroup.Solvers.MachineLearning.Tests.Examples
 			double maxX = cubeSide, maxY = cubeSide, maxZ = cubeSide;
 			var meshGenerator = new UniformMeshGenerator3D<Node>(minX, minY, minZ, maxX, maxY, maxZ,
 				numElementsPerSide, numElementsPerSide, numElementsPerSide);
-			(IReadOnlyList<Node> nodes, IReadOnlyList<CellConnectivity<Node>> elements) 
+			(IReadOnlyList<Node> nodes, IReadOnlyList<CellConnectivity<Node>> elements)
 				= meshGenerator.CreateMesh((id, x, y, z) => new Node(id, x, y, z));
 
 			// Create model
