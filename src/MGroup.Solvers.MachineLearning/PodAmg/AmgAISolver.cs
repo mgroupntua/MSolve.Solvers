@@ -208,7 +208,7 @@ namespace MGroup.Solvers.MachineLearning
 
 			amgPreconditioner.UpdateMatrix(matrix, !matrixPatternWillNotBeModified);
 
-			IterativeStatistics stats = pcgAlgorithm.Solve(matrix, amgPreconditioner, rhs, solution, 
+			IterativeStatistics stats = pcgAlgorithm.Solve(matrix, amgPreconditioner, rhs, solution,
 				false, () => Vector.CreateZero(systemSize));
 			if (!stats.HasConverged)
 			{
@@ -225,7 +225,7 @@ namespace MGroup.Solvers.MachineLearning
 			private readonly int numPrincipalComponentsInPod;
 			private readonly CaeFffnSurrogate.Builder surrogateBuilder;
 
-			public Factory(int numSolutionVectorsForPod, int numPrincipalComponentsInPod, 
+			public Factory(int numSolutionVectorsForPod, int numPrincipalComponentsInPod,
 				CaeFffnSurrogate.Builder surrogateBuilder)
 			{
 				this.numSolutionVectorsForPod = numSolutionVectorsForPod;
@@ -252,13 +252,13 @@ namespace MGroup.Solvers.MachineLearning
 				var initialPreconditioner = new JacobiPreconditioner();
 
 				var smoothing = new MultigridLevelSmoothing()
-					.AddPreSmoother(new GaussSeidelIterationCsr(forwardDirection:true), 1)
-					.AddPreSmoother(new GaussSeidelIterationCsr(forwardDirection:false), 1)
+					.AddPreSmoother(new GaussSeidelIterationCsr(forwardDirection: true), 1)
+					.AddPreSmoother(new GaussSeidelIterationCsr(forwardDirection: false), 1)
 					.SetPostSmoothersSameAsPreSmoothers();
 				var amgPreconditioner = new PodAmgPreconditioner(
 					keepOnlyNonZeroPrincipalComponents: true, smoothing, numIterations: 1);
 
-				return new AmgAISolver(DofOrderer, pcgAlgorithm, MatrixPatternWillNotBeModified, initialPreconditioner, 
+				return new AmgAISolver(DofOrderer, pcgAlgorithm, MatrixPatternWillNotBeModified, initialPreconditioner,
 					amgPreconditioner, numSolutionVectorsForPod, numPrincipalComponentsInPod, surrogateBuilder.BuildSurrogate());
 			}
 		}

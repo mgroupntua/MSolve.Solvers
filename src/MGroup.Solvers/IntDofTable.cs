@@ -47,8 +47,6 @@ namespace MGroup.Solvers
 			}
 		}
 
-		public int EntryCount => throw new NotImplementedException();
-
 		public int this[int row, int col]
 		{
 			get => data[row][col];
@@ -197,6 +195,37 @@ namespace MGroup.Solvers
 			return true;
 		}
 
+		/// <summary>
+		/// Finds entries with common (row, column) pair between this instance and <paramref name="other"/>. The returned list
+		/// contains entries, specified as int[4] { commonRow, commonColumn, thisValue, otherValue)
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		public List<int[]> Intersect(IntDofTable other)
+		{
+			var result = new List<int[]>();
+			foreach (KeyValuePair<int, Dictionary<int, int>> wholeRow in this.data)
+			{
+				int row = wholeRow.Key;
+				bool isRowCommon = other.data.TryGetValue(row, out Dictionary<int, int> dataOfOtherRow);
+				if (isRowCommon)
+				{
+					Dictionary<int, int> dataOfThisRow = wholeRow.Value;
+					foreach (var colValPair in dataOfThisRow)
+					{
+						int col = colValPair.Key;
+						bool isColCommon = dataOfOtherRow.TryGetValue(col, out int otherVal);
+						if (isColCommon)
+						{
+							int thisVal = colValPair.Value;
+							result.Add(new int[] { row, col, thisVal, otherVal });
+						}
+					}
+				}
+			}
+			return result;
+		}
+
 		public void ModifyValues(Func<int, int> unaryOperation)
 		{
 			//TODO: perhaps I should create a new table and replace the existing one once finished.
@@ -290,15 +319,7 @@ namespace MGroup.Solvers
 			bool containsRow = data.TryGetValue(row, out Dictionary<int, int> wholeRow);
 			if (containsRow)
 			{
-				//return wholeRow.TryAdd(col, value);
-				bool colExists = wholeRow.ContainsKey(col);
-				if (colExists)
-					return false;
-				else
-				{
-					wholeRow.Add(col, value);
-					return true;
-				}
+				return wholeRow.TryAdd(col, value);
 			}
 			else
 			{

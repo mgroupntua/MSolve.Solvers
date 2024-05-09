@@ -148,7 +148,7 @@ namespace MGroup.Solvers.Iterative
 			public IPreconditioner Preconditioner { get; set; } = new IdentityPreconditioner();
 
 			public GmresSolver BuildSolver(GlobalAlgebraicModel<CsrMatrix> model)
-				=> new GmresSolver(model, GmresAlgorithm, Preconditioner.CopyWithInitialSettings(), 
+				=> new GmresSolver(model, GmresAlgorithm, Preconditioner.CopyWithInitialSettings(),
 					MatrixPatternWillNotBeModified);
 
 			public GlobalAlgebraicModel<CsrMatrix> BuildAlgebraicModel(IModel model)

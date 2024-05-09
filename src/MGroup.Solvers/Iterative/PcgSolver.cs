@@ -29,11 +29,11 @@ namespace MGroup.Solvers.Iterative
 		private readonly bool matrixPatternWillNotBeModified;
 		private readonly IPreconditioner preconditioner;
 
-		private bool mustUpdatePreconditioner = true; 
+		private bool mustUpdatePreconditioner = true;
 
 		private PcgSolver(GlobalAlgebraicModel<CsrMatrix> model, PcgAlgorithm pcgAlgorithm,
-			IPreconditioner preconditioner, bool matrixPatternWillNotBeModified) 
-			: base(model,"PcgSolver")
+			IPreconditioner preconditioner, bool matrixPatternWillNotBeModified)
+			: base(model, "PcgSolver")
 		{
 			this.pcgAlgorithm = pcgAlgorithm;
 			this.matrixPatternWillNotBeModified = matrixPatternWillNotBeModified;
