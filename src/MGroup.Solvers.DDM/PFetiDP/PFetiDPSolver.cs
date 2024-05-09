@@ -95,9 +95,7 @@ namespace MGroup.Solvers.DDM.PFetiDP
 					//Debug.WriteLine($"Processing corner & remainder dofs of subdomain {subdomainID}");
 					#endregion
 					subdomainDofsFetiDP[subdomainID].SeparateFreeDofsIntoCornerAndRemainder(cornerDofs);
-					#region DEBUG
-					//subdomainMatricesFetiDP[subdomainID].ReorderRemainderDofs();
-					#endregion
+					subdomainMatricesFetiDP[subdomainID].ReorderRemainderDofs();
 					subdomainDofsPFetiDP[subdomainID].MapPsmFetiDPDofs();
 				}
 				else

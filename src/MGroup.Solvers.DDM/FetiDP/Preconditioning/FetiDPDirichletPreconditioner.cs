@@ -47,9 +47,7 @@ namespace MGroup.Solvers.DDM.FetiDP.Preconditioning
 		public void CalcSubdomainMatrices(int subdomainID)
 		{
 			IFetiDPSubdomainMatrixManager subdomainMatrices = getSubdomainMatrices(subdomainID);
-			#region DEBUG
-			//subdomainMatrices.ReorderInternalDofs();
-			#endregion
+			subdomainMatrices.ReorderInternalDofs();
 			subdomainMatrices.ExtractKiiKbbKib();
 			subdomainMatrices.InvertKii(false);
 		}

@@ -325,9 +325,7 @@ namespace MGroup.Solvers.DDM.Psm
 					//Debug.WriteLine($"Processing boundary & internal dofs of subdomain {subdomainID}");
 					#endregion
 					subdomainDofsPsm[subdomainID].SeparateFreeDofsIntoBoundaryAndInternal();
-					#region DEBUG
-					//subdomainMatricesPsm[subdomainID].ReorderInternalDofs();
-					#endregion
+					subdomainMatricesPsm[subdomainID].ReorderInternalDofs();
 				}
 				else
 				{

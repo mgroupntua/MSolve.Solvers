@@ -202,7 +202,7 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 
 			// Check results
 			NodalResults expectedResults = Plane2DExample.GetExpectedNodalValues(problem.ActiveDofs);
-			double tolerance = 1E-7;
+			double tolerance = 1E-6; // relaxed from 1E-7
 			environment.DoPerNode(subdomainID =>
 			{
 				NodalResults computedResults = algebraicModel.ExtractAllResults(subdomainID, solver.LinearSystem.Solution);

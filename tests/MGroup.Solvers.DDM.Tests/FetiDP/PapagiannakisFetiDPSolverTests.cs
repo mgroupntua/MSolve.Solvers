@@ -205,7 +205,7 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 		[Theory]
 		[InlineData(1.0, Preconditioner.DiagonalDirichlet, 10, 2E-5/*relaxed from 2.65E-10*/, EnvironmentChoice.SequentialShared)]
 		[InlineData(1.0, Preconditioner.Dirichlet, 6, 3E-6/*relaxed from 3.32E-10*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1.0, Preconditioner.Lumped, 12, 7E-6/*relaxed from 1.68E-10*/, EnvironmentChoice.SequentialShared)]
+		[InlineData(1.0, Preconditioner.Lumped, 12, 9E-6/*relaxed from 1.68E-10*/, EnvironmentChoice.SequentialShared)]
 		public static void RunTest_9_2(double stiffnessRatio, Preconditioner preconditioner, int numIterationsExpected, 
 			double errorExpected, EnvironmentChoice environmentChoice)
 			=> RunTest_9_2_Internal(
