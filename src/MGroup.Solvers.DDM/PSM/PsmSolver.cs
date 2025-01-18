@@ -8,6 +8,8 @@ namespace MGroup.Solvers.DDM.Psm
 	using MGroup.LinearAlgebra.Distributed.IterativeMethods;
 	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
 	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Implementations;
+	using MGroup.LinearAlgebra.Implementations.Managed;
 	using MGroup.LinearAlgebra.Iterative;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.LinearAlgebra.Vectors;
@@ -33,6 +35,7 @@ namespace MGroup.Solvers.DDM.Psm
 		private const bool cacheDistributedVectorBuffers = true;
 
 		protected readonly DistributedAlgebraicModel<TMatrix> algebraicModel;
+		private readonly IImplementationProvider provider;
 		protected readonly IComputeEnvironment environment;
 		protected readonly IInitialSolutionGuessStrategy initialSolutionGuessStrategy;
 		protected readonly IPsmInterfaceProblemMatrix interfaceProblemMatrix;
@@ -48,14 +51,14 @@ namespace MGroup.Solvers.DDM.Psm
 		protected readonly ConcurrentDictionary<int, IPsmSubdomainMatrixManager> subdomainMatricesPsm;
 		protected readonly ISubdomainTopology subdomainTopology;
 		protected readonly ConcurrentDictionary<int, PsmSubdomainVectors> subdomainVectors;
-		private readonly bool directSolverIsNative = false;
+		private readonly bool directSolverIsParallel = false;
 
 
 		protected int analysisIteration;
 		protected DistributedOverlappingIndexer boundaryDofIndexer;
 
-		protected PsmSolver(IComputeEnvironment environment, IModel model, DistributedAlgebraicModel<TMatrix> algebraicModel, 
-			IPsmSubdomainMatrixManagerFactory<TMatrix> matrixManagerFactory, 
+		protected PsmSolver(IComputeEnvironment environment, IModel model, DistributedAlgebraicModel<TMatrix> algebraicModel,
+			IImplementationProvider provider, IPsmSubdomainMatrixManagerFactory<TMatrix> matrixManagerFactory, 
 			bool explicitSubdomainMatrices, IPsmPreconditioner preconditioner,
 			IPsmInterfaceProblemSolverFactory interfaceProblemSolverFactory, bool isHomogeneous, DdmLogger logger,
 			PsmReanalysisOptions reanalysis, string name = "PSM Solver")
@@ -64,6 +67,7 @@ namespace MGroup.Solvers.DDM.Psm
 			this.environment = environment;
 			this.model = model;
 			this.algebraicModel = algebraicModel;
+			this.provider = provider;
 			this.subdomainTopology = algebraicModel.SubdomainTopology;
 			this.LinearSystem = algebraicModel.LinearSystem;
 			this.preconditioner = preconditioner;
@@ -76,7 +80,7 @@ namespace MGroup.Solvers.DDM.Psm
 			{
 				SubdomainLinearSystem<TMatrix> linearSystem = algebraicModel.SubdomainLinearSystems[subdomainID];
 				var dofs = new PsmSubdomainDofs(model.GetSubdomain(subdomainID), linearSystem, false);
-				IPsmSubdomainMatrixManager matrices = matrixManagerFactory.CreateMatrixManager(linearSystem, dofs);
+				IPsmSubdomainMatrixManager matrices = matrixManagerFactory.CreateMatrixManager(provider, linearSystem, dofs);
 				var vectors = new PsmSubdomainVectors(linearSystem, dofs, matrices);
 
 				subdomainDofsPsm[subdomainID] = dofs;
@@ -142,13 +146,13 @@ namespace MGroup.Solvers.DDM.Psm
 			Logger = new SolverLogger(name);
 			LoggerDdm = logger;
 
-			if (matrixManagerFactory is PsmSubdomainMatrixManagerSymmetricSuiteSparse.Factory)
+			if (provider is ManagedSequentialImplementationProvider)
 			{
-				directSolverIsNative = true;
+				directSolverIsParallel = false;
 			}
 			else
 			{
-				directSolverIsNative = false;
+				directSolverIsParallel = true;
 			}
 
 			analysisIteration = 0;
@@ -362,7 +366,7 @@ namespace MGroup.Solvers.DDM.Psm
 
 			//TODO: This should be done together with the extraction. However SuiteSparse already uses multiple threads and should
 			//		not be parallelized at subdomain level too. Instead environment.DoPerNode should be able to run tasks serially by reading a flag.
-			if (directSolverIsNative)
+			if (directSolverIsParallel)
 			{
 				environment.DoPerNodeSerially(subdomainID =>
 				{
@@ -433,10 +437,13 @@ namespace MGroup.Solvers.DDM.Psm
 		public class Factory
 		{
 			protected readonly IComputeEnvironment environment;
+			private readonly IImplementationProvider provider;
 
-			public Factory(IComputeEnvironment environment, IPsmSubdomainMatrixManagerFactory<TMatrix> matrixManagerFactory)
+			public Factory(IComputeEnvironment environment, IImplementationProvider provider,
+				IPsmSubdomainMatrixManagerFactory<TMatrix> matrixManagerFactory)
 			{
 				this.environment = environment;
+				this.provider = provider;
 				DofOrderer = new DofOrderer(new NodeMajorDofOrderingStrategy(), new NullReordering());
 				EnableLogging = false;
 				ExplicitSubdomainMatrices = false;
@@ -476,7 +483,7 @@ namespace MGroup.Solvers.DDM.Psm
 			public virtual PsmSolver<TMatrix> BuildSolver(IModel model, DistributedAlgebraicModel<TMatrix> algebraicModel)
 			{
 				DdmLogger logger = EnableLogging ? new DdmLogger(environment, "PSM Solver", model.NumSubdomains) : null;
-				return new PsmSolver<TMatrix>(environment, model, algebraicModel, PsmMatricesFactory,
+				return new PsmSolver<TMatrix>(environment, model, algebraicModel, provider, PsmMatricesFactory,
 					ExplicitSubdomainMatrices, Preconditioner, InterfaceProblemSolverFactory, IsHomogeneousProblem,
 					logger, ReanalysisOptions);
 			}

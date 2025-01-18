@@ -37,7 +37,7 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 
 			// Solver
 			var solverFactory = new PsmSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCSparse.Factory());
+				environment, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
 				MaxIterations = 200,
@@ -94,7 +94,7 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 
 			// Solver
 			var solverFactory = new PsmSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCSparse.Factory());
+				environment, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
 			DistributedAlgebraicModel<SymmetricCscMatrix> algebraicModel = solverFactory.BuildAlgebraicModel(model);
 			PsmSolver<SymmetricCscMatrix> solver = solverFactory.BuildSolver(model, algebraicModel);
 
@@ -146,7 +146,7 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 
 			// Solver
 			var solverFactory = new PsmSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCSparse.Factory());
+				environment, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
 				MaxIterations = 200,

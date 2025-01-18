@@ -41,7 +41,7 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 
 			// Solver
 			var solverFactory = new PsmSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCSparse.Factory());
+				environment, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
 				// Papagiannakis specified these and reported the number of iterations and the error from direct solver.
@@ -104,7 +104,7 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 
 			// Solver
 			var solverFactory = new PsmSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCSparse.Factory());
+				environment, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
 				// Papagiannakis specified these and reported the number of iterations and the error from direct solver.
@@ -167,7 +167,7 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 
 			// Solver
 			var solverFactory = new PsmSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCSparse.Factory());
+				environment, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
 				// Papagiannakis specified these and reported the number of iterations and the error from direct solver.
