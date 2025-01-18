@@ -2,6 +2,7 @@ namespace MGroup.Solvers.Direct
 {
 	using System.Diagnostics;
 
+	using MGroup.LinearAlgebra.Implementations.Managed;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.LinearAlgebra.Triangulation;
 	using MGroup.LinearAlgebra.Vectors;
@@ -109,10 +110,15 @@ namespace MGroup.Solvers.Direct
 
 		public class Factory
 		{
-			public Factory() { }
+			public Factory() 
+			{
+				DofOrderer = new DofOrderer(
+					new NodeMajorDofOrderingStrategy(), 
+					new AmdReordering(new ManagedSequentialImplementationProvider())
+				);
+			}
 
 			public IDofOrderer DofOrderer { get; set; }
-				= new DofOrderer(new NodeMajorDofOrderingStrategy(), AmdReordering.CreateWithCSparseAmd());
 
 			public double FactorizationPivotTolerance { get; set; } = 1E-15;
 
