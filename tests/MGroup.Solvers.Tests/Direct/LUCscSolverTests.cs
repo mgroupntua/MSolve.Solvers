@@ -12,17 +12,17 @@ namespace MGroup.Solvers.Tests.Direct
 	using MGroup.Solvers.Tests.Benchmarks;
 	using Xunit;
 
-	public class LdlSkylineSolverTests
+	public class LUCscSolverTests
 	{
 		[Fact]
 		public static void TestWithoutReordering()
 		{
 			CantileverBeam benchmark = new CantileverBeam.Builder().BuildWithQuad4Elements(200, 10);
 
-			var solverFactory = new LdlSkylineSolver.Factory();
+			var solverFactory = new LUCscSolver.Factory();
 			solverFactory.DofOrderer = new DofOrderer(new NodeMajorDofOrderingStrategy(), new NullReordering()); // default
 			var algebraicModel = solverFactory.BuildAlgebraicModel(benchmark.Model);
-			LdlSkylineSolver solver = solverFactory.BuildSolver(algebraicModel);
+			LUCscSolver solver = solverFactory.BuildSolver(algebraicModel);
 			solver.LinearSystem = algebraicModel.LinearSystem;
 
 			benchmark.RunAnalysisAndCheck(algebraicModel, solver);
@@ -33,11 +33,11 @@ namespace MGroup.Solvers.Tests.Direct
 		{
 			CantileverBeam benchmark = new CantileverBeam.Builder().BuildWithQuad4Elements(200, 10);
 
-			var solverFactory = new LdlSkylineSolver.Factory();
+			var solverFactory = new LUCscSolver.Factory();
 			var amd = new AmdReordering(new ManagedSequentialImplementationProvider());
 			solverFactory.DofOrderer = new DofOrderer(new NodeMajorDofOrderingStrategy(), amd);
 			var algebraicModel = solverFactory.BuildAlgebraicModel(benchmark.Model);
-			LdlSkylineSolver solver = solverFactory.BuildSolver(algebraicModel);
+			LUCscSolver solver = solverFactory.BuildSolver(algebraicModel);
 
 			benchmark.RunAnalysisAndCheck(algebraicModel, solver);
 		}

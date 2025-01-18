@@ -8,6 +8,8 @@ namespace MGroup.Solvers.Tests.Direct
 
 	using MGroup.LinearAlgebra.Implementations.NativeWin64;
 	using MGroup.Solvers.Direct;
+	using MGroup.Solvers.DofOrdering;
+	using MGroup.Solvers.DofOrdering.Reordering;
 	using MGroup.Solvers.Tests.Benchmarks;
 
 	using Xunit;
@@ -26,7 +28,7 @@ namespace MGroup.Solvers.Tests.Direct
 			var solverFactory = new DenseMatrixSolver.Factory();
 			var algebraicModel = solverFactory.BuildAlgebraicModel(benchmark.Model);
 			DenseMatrixSolver solver = solverFactory.BuildSolver(algebraicModel);
-			//solverFactory.DofOrderer = new DofOrderer(new NodeMajorDofOrderingStrategy(), new NullReordering()); // default
+			solverFactory.DofOrderer = new DofOrderer(new NodeMajorDofOrderingStrategy(), new NullReordering()); // default
 
 			benchmark.RunAnalysisAndCheck(algebraicModel, solver);
 		}
