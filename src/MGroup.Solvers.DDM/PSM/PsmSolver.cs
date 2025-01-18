@@ -35,7 +35,7 @@ namespace MGroup.Solvers.DDM.Psm
 		private const bool cacheDistributedVectorBuffers = true;
 
 		protected readonly DistributedAlgebraicModel<TMatrix> algebraicModel;
-		private readonly IImplementationProvider provider;
+		protected readonly bool directSolverIsParallel = false;
 		protected readonly IComputeEnvironment environment;
 		protected readonly IInitialSolutionGuessStrategy initialSolutionGuessStrategy;
 		protected readonly IPsmInterfaceProblemMatrix interfaceProblemMatrix;
@@ -45,20 +45,19 @@ namespace MGroup.Solvers.DDM.Psm
 		protected readonly string name;
 		private readonly ObjectiveConvergenceCriterion<TMatrix> objectiveConvergenceCriterion;
 		protected /*readonly*/ IPsmPreconditioner preconditioner; //TODO: Make this readonly as well.
+		protected readonly IImplementationProvider provider;
 		protected readonly PsmReanalysisOptions reanalysis;
 		protected readonly IBoundaryDofScaling scaling;
 		protected readonly ConcurrentDictionary<int, PsmSubdomainDofs> subdomainDofsPsm;
 		protected readonly ConcurrentDictionary<int, IPsmSubdomainMatrixManager> subdomainMatricesPsm;
 		protected readonly ISubdomainTopology subdomainTopology;
 		protected readonly ConcurrentDictionary<int, PsmSubdomainVectors> subdomainVectors;
-		private readonly bool directSolverIsParallel = false;
-
 
 		protected int analysisIteration;
 		protected DistributedOverlappingIndexer boundaryDofIndexer;
 
 		protected PsmSolver(IComputeEnvironment environment, IModel model, DistributedAlgebraicModel<TMatrix> algebraicModel,
-			IImplementationProvider provider, IPsmSubdomainMatrixManagerFactory<TMatrix> matrixManagerFactory, 
+			IImplementationProvider provider, IPsmSubdomainMatrixManagerFactory<TMatrix> matrixManagerFactory,
 			bool explicitSubdomainMatrices, IPsmPreconditioner preconditioner,
 			IPsmInterfaceProblemSolverFactory interfaceProblemSolverFactory, bool isHomogeneous, DdmLogger logger,
 			PsmReanalysisOptions reanalysis, string name = "PSM Solver")
@@ -97,7 +96,7 @@ namespace MGroup.Solvers.DDM.Psm
 				this.scaling = new HeterogeneousScaling(environment, subdomainTopology,
 					s => algebraicModel.SubdomainLinearSystems[s], s => subdomainDofsPsm[s]);
 			}
-			
+
 			if (explicitSubdomainMatrices)
 			{
 				this.interfaceProblemMatrix = new PsmInterfaceProblemMatrixExplicit(
@@ -437,13 +436,14 @@ namespace MGroup.Solvers.DDM.Psm
 		public class Factory
 		{
 			protected readonly IComputeEnvironment environment;
-			private readonly IImplementationProvider provider;
+			protected readonly IImplementationProvider provider;
 
 			public Factory(IComputeEnvironment environment, IImplementationProvider provider,
 				IPsmSubdomainMatrixManagerFactory<TMatrix> matrixManagerFactory)
 			{
 				this.environment = environment;
 				this.provider = provider;
+
 				DofOrderer = new DofOrderer(new NodeMajorDofOrderingStrategy(), new NullReordering());
 				EnableLogging = false;
 				ExplicitSubdomainMatrices = false;

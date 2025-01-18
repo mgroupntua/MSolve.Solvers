@@ -1,5 +1,6 @@
 namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 {
+	using MGroup.LinearAlgebra.Implementations;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.LinearAlgebra.Reordering;
 	using MGroup.LinearAlgebra.SchurComplements;
@@ -11,32 +12,36 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 	using MGroup.Solvers.DDM.FetiDP.Dofs;
 	using MGroup.Solvers.DDM.LinearSystem;
 
-	public class FetiDPSubdomainMatrixManagerSymmetricCSparse : IFetiDPSubdomainMatrixManager
+	public class FetiDPSubdomainMatrixManagerSymmetricCsc : IFetiDPSubdomainMatrixManager
 	{
 		/// <summary>
 		/// In FETI-DP Krr is also used for the preconditioner. In PFETI-DP only Krr is only used for the Schur complement of 
-		/// remainder dofs
+		/// remainder dofs.
 		/// </summary>
 		private readonly bool clearKrrAfterFactorization;
 		private readonly SubdomainLinearSystem<SymmetricCscMatrix> linearSystem;
+		private readonly IImplementationProvider provider;
+		private readonly AmdSymmetricOrdering reordering;
 		private readonly FetiDPSubdomainDofs subdomainDofs;
-		private readonly OrderingAmdCSparseNet reordering = new OrderingAmdCSparseNet();
 		private readonly SubmatrixExtractorPckCsrCscSym submatrixExtractorBoundaryInternal = new SubmatrixExtractorPckCsrCscSym();
 		private readonly SubmatrixExtractorPckCsrCscSym submatrixExtractorCornerRemainder = new SubmatrixExtractorPckCsrCscSym();
 
 		private SymmetricMatrix Kbb, Kcc;
 		private CsrMatrix Kbi, Kcr;
 		private SymmetricCscMatrix Kii, Krr;
-		private CholeskyCSparseNet inverseKii, inverseKrr;
+		private ICholeskySymmetricCsc inverseKii, inverseKrr;
 		private DiagonalMatrix inverseKiiDiagonal;
 		private SymmetricMatrix Scc;
 
-		public FetiDPSubdomainMatrixManagerSymmetricCSparse(SubdomainLinearSystem<SymmetricCscMatrix> linearSystem, 
+		public FetiDPSubdomainMatrixManagerSymmetricCsc(
+			IImplementationProvider provider, SubdomainLinearSystem<SymmetricCscMatrix> linearSystem, 
 			FetiDPSubdomainDofs subdomainDofs, bool clearKrrAfterFactorization)
 		{
+			this.provider = provider;
 			this.linearSystem = linearSystem;
 			this.subdomainDofs = subdomainDofs;
 			this.clearKrrAfterFactorization = clearKrrAfterFactorization;
+			this.reordering = new AmdSymmetricOrdering(provider);
 		}
 
 		public bool IsEmpty => inverseKrr == null;
@@ -45,7 +50,17 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 
 		public Matrix CalcInvKrrTimesKrc()
 		{
-			throw new NotImplementedException();
+			int numCornerDofs = Kcr.NumRows;
+			int numRemainderDofs = Kcr.NumColumns;
+			var result = Matrix.CreateZero(numRemainderDofs, numCornerDofs);
+			for (int j = 0; j < numCornerDofs; ++j)
+			{
+				Vector colKrc = Kcr.GetRow(j);
+				Vector colResult = inverseKrr.SolveLinearSystem(colKrc);
+				result.SetSubcolumn(j, colResult, 0);
+			}
+
+			return result;
 		}
 
 		public void CalcSchurComplementOfRemainderDofs()
@@ -56,11 +71,21 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 
 		public void ClearSubMatrices()
 		{
+			if (inverseKrr != null)
+			{
+				inverseKrr.Dispose();
+			}
+
 			inverseKrr = null;
 			Kcc = null;
 			Kcr = null;
 			Krr = null;
 			Scc = null;
+
+			if (inverseKii != null)
+			{
+				inverseKii.Dispose();
+			}
 
 			inverseKii = null;
 			inverseKiiDiagonal = null;
@@ -89,11 +114,9 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 			submatrixExtractorCornerRemainder.ExtractSubmatrices(Kff, cornerToFree, remainderToFree);
 			Kcc = submatrixExtractorCornerRemainder.Submatrix00;
 			Kcr = submatrixExtractorCornerRemainder.Submatrix01;
-			Krr = submatrixExtractorCornerRemainder.Submatrix11; 
+			Krr = submatrixExtractorCornerRemainder.Submatrix11;
 
 			submatrixExtractorBoundaryInternal.Clear();
-			//TODO: It would be better if these were returned by the extractor, instead of stored in its properties. 
-			//		The only state that the extractor needs is its private mapping arrays
 		}
 
 		public void HandleDofsWereModified()
@@ -111,14 +134,28 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 			}
 			else
 			{
-				inverseKii = CholeskyCSparseNet.Factorize(Kii);
+				if (inverseKii != null)
+				{
+					inverseKii.Dispose();
+				}
+
+				inverseKii = provider.CreateSymmetricCscTriangulation(true);
+				inverseKii.Factorize(Kii);
 			}
+
 			Kii = null; // It has not been mutated, but it is no longer needed
 		}
 
 		public void InvertKrr()
 		{
-			inverseKrr = CholeskyCSparseNet.Factorize(Krr);
+			if (inverseKrr != null)
+			{
+				inverseKrr.Dispose();
+			}
+
+			inverseKrr = provider.CreateSymmetricCscTriangulation(true);
+			inverseKrr.Factorize(Krr);
+
 			if (clearKrrAfterFactorization)
 			{
 				Krr = null; // It has not been mutated, but it is no longer needed
@@ -154,7 +191,8 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 		public void ReorderInternalDofs()
 		{
 			int[] internalDofs = subdomainDofs.DofsInternalToRemainder;
-			(int[] rowIndicesKii, int[] colOffsetsKii) = submatrixExtractorBoundaryInternal.ExtractSparsityPattern(Krr, internalDofs);
+			(int[] rowIndicesKii, int[] colOffsetsKii) =
+				submatrixExtractorBoundaryInternal.ExtractSparsityPattern(Krr, internalDofs);
 			(int[] permutation, bool oldToNew) = reordering.FindPermutation(
 				internalDofs.Length, rowIndicesKii, colOffsetsKii);
 
@@ -165,7 +203,8 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 		{
 			int[] remainderDofs = subdomainDofs.DofsRemainderToFree;
 			SymmetricCscMatrix Kff = linearSystem.Matrix;
-			(int[] rowIndicesKrr, int[] colOffsetsKrr) = submatrixExtractorCornerRemainder.ExtractSparsityPattern(Kff, remainderDofs);
+			(int[] rowIndicesKrr, int[] colOffsetsKrr) =
+				submatrixExtractorCornerRemainder.ExtractSparsityPattern(Kff, remainderDofs);
 			(int[] permutation, bool oldToNew) = reordering.FindPermutation(
 				remainderDofs.Length, rowIndicesKrr, colOffsetsKrr);
 
@@ -183,9 +222,12 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 
 			public ISubdomainMatrixAssembler<SymmetricCscMatrix> CreateAssembler() => new SymmetricCscMatrixAssembler(true);
 
-			public IFetiDPSubdomainMatrixManager CreateMatrixManager(
+			public IFetiDPSubdomainMatrixManager CreateMatrixManager(IImplementationProvider provider,
 				SubdomainLinearSystem<SymmetricCscMatrix> linearSystem, FetiDPSubdomainDofs subdomainDofs)
-				=> new FetiDPSubdomainMatrixManagerSymmetricCSparse(linearSystem, subdomainDofs, clearKrrAfterFactorization);
+			{
+				return new FetiDPSubdomainMatrixManagerSymmetricCsc(
+					provider, linearSystem, subdomainDofs, clearKrrAfterFactorization);
+			}
 		}
 	}
 }

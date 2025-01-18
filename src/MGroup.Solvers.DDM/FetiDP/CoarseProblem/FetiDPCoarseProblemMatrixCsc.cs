@@ -1,28 +1,50 @@
 namespace MGroup.Solvers.DDM.FetiDP.CoarseProblem
 {
+	using MGroup.LinearAlgebra.Implementations;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.LinearAlgebra.Triangulation;
 	using MGroup.LinearAlgebra.Vectors;
 	using MGroup.Solvers.DDM.Commons;
 	using MGroup.Solvers.DDM.SolversExtensions.Assemblers;
 
-	public class FetiDPCoarseProblemMatrixCSparse : IFetiDPCoarseProblemGlobalMatrix
+	public class FetiDPCoarseProblemMatrixCsc : IFetiDPCoarseProblemGlobalMatrix
 	{
 		private readonly CscMatrixAssembler assembler = new CscMatrixAssembler(false, true);
-		private LUCSparseNet inverseSccGlobal;
+		private readonly double luPivotTolerance;
+		private readonly IImplementationProvider provider;
 
-		public void Clear() 
+		private ILUCscFactorization inverseSccGlobal;
+
+		public FetiDPCoarseProblemMatrixCsc(IImplementationProvider provider, double luPivotTolerance)
 		{
+			this.provider = provider;
+			this.luPivotTolerance = luPivotTolerance;
+		}
+
+		public void Clear()
+		{
+			if (inverseSccGlobal != null)
+			{
+				inverseSccGlobal.Dispose();
+			}
+
 			inverseSccGlobal = null;
 			assembler.HandleDofOrderingWasModified();
 		}
 
-		public void InvertGlobalScc(int numGlobalCornerDofs, IDictionary<int, int[]> subdomainToGlobalCornerDofs, 
+		public void InvertGlobalScc(int numGlobalCornerDofs, IDictionary<int, int[]> subdomainToGlobalCornerDofs,
 			IDictionary<int, IMatrix>  subdomainMatricesScc)
 		{
-			CscMatrix globalScc = 
+			CscMatrix globalScc =
 				assembler.BuildGlobalMatrix(numGlobalCornerDofs, subdomainToGlobalCornerDofs, subdomainMatricesScc);
-			inverseSccGlobal = LUCSparseNet.Factorize(globalScc);
+
+			if (inverseSccGlobal != null)
+			{
+				inverseSccGlobal.Dispose();
+			}
+
+			inverseSccGlobal = provider.CreateLUCscTriangulation();
+			inverseSccGlobal.Factorize(globalScc, luPivotTolerance);
 		}
 
 		public void MultiplyInverseScc(Vector input, Vector output) => inverseSccGlobal.SolveLinearSystem(input, output);
