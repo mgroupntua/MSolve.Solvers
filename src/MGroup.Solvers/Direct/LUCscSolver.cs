@@ -2,6 +2,7 @@ namespace MGroup.Solvers.Direct
 {
 	using System.Diagnostics;
 
+	using MGroup.LinearAlgebra.Implementations;
 	using MGroup.LinearAlgebra.Implementations.Managed;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.LinearAlgebra.Triangulation;
@@ -12,17 +13,20 @@ namespace MGroup.Solvers.Direct
 	using MGroup.Solvers.DofOrdering;
 	using MGroup.Solvers.DofOrdering.Reordering;
 
-	public class CSparseLUSolver : SingleSubdomainSolverBase<CscMatrix>
+	public class LUCscSolver : SingleSubdomainSolverBase<CscMatrix>
 	{
 		private readonly double factorizationPivotTolerance;
+		private readonly IImplementationProvider provider;
 
 		private bool factorizeInPlace = true;
 		private bool mustFactorize = true;
-		private LUCSparseNet factorization;
+		private ILUCscFactorization factorization;
 
-		private CSparseLUSolver(GlobalAlgebraicModel<CscMatrix> model, double factorizationPivotTolerance)
+		private LUCscSolver(
+			IImplementationProvider provider, GlobalAlgebraicModel<CscMatrix> model, double factorizationPivotTolerance)
 			: base(model, "CSparseLUSolver")
 		{
+			this.provider = provider;
 			this.factorizationPivotTolerance = factorizationPivotTolerance;
 		}
 
@@ -54,7 +58,8 @@ namespace MGroup.Solvers.Direct
 			if (mustFactorize)
 			{
 				watch.Start();
-				factorization = LUCSparseNet.Factorize(matrix, factorizationPivotTolerance);
+				factorization = provider.CreateLUCscTriangulation();
+				factorization.Factorize(matrix, factorizationPivotTolerance);
 				watch.Stop();
 				Logger.LogTaskDuration("Matrix factorization", watch.ElapsedMilliseconds);
 				watch.Reset();
@@ -79,7 +84,8 @@ namespace MGroup.Solvers.Direct
 			if (mustFactorize)
 			{
 				watch.Start();
-				factorization = LUCSparseNet.Factorize(matrix, factorizationPivotTolerance);
+				factorization = provider.CreateLUCscTriangulation();
+				factorization.Factorize(matrix, factorizationPivotTolerance);
 				watch.Stop();
 				Logger.LogTaskDuration("Matrix factorization", watch.ElapsedMilliseconds);
 				watch.Reset();
@@ -110,21 +116,22 @@ namespace MGroup.Solvers.Direct
 
 		public class Factory
 		{
+			private readonly IImplementationProvider provider;
+
 			public Factory() 
 			{
-				DofOrderer = new DofOrderer(
-					new NodeMajorDofOrderingStrategy(), 
-					new AmdReordering(new ManagedSequentialImplementationProvider())
-				);
+				this.provider = new ManagedSequentialImplementationProvider();
+
+				DofOrderer = new DofOrderer(new NodeMajorDofOrderingStrategy(), new AmdReordering(provider));
 			}
 
 			public IDofOrderer DofOrderer { get; set; }
 
 			public double FactorizationPivotTolerance { get; set; } = 1E-15;
 
-			public CSparseLUSolver BuildSolver(GlobalAlgebraicModel<CscMatrix> model)
+			public LUCscSolver BuildSolver(GlobalAlgebraicModel<CscMatrix> model)
 			{
-				return new CSparseLUSolver(model, FactorizationPivotTolerance);
+				return new LUCscSolver(provider, model, FactorizationPivotTolerance);
 			}
 
 			public GlobalAlgebraicModel<CscMatrix> BuildAlgebraicModel(IModel model)
