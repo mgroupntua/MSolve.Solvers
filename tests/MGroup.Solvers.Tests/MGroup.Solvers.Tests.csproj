@@ -20,7 +20,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\MGroup.LinearAlgebra.Implementations.NativeWin64\MGroup.LinearAlgebra.Implementations.NativeWin64.csproj" />
     <ProjectReference Include="..\..\src\MGroup.Solvers\MGroup.Solvers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="NativeLibsToTest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

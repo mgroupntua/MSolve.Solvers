@@ -3,6 +3,7 @@ namespace MGroup.Solvers.Tests
 	using MGroup.Constitutive.Structural;
 	using MGroup.NumericalAnalyzers;
 	using MGroup.Solvers.Direct;
+	using MGroup.Solvers.Tests.Benchmarks;
 
 	public class SolverBenchmarks
 	{
@@ -15,9 +16,9 @@ namespace MGroup.Solvers.Tests
 				CantileverBeam benchmark = benchmarkBuilder.BuildWithQuad4Elements(2000, 100);
 
 				// Solver
-				var solverFactory = new SuiteSparseSolver.Factory();
+				var solverFactory = new CholeskyCscSolver.Factory();
 				var algebraicModel = solverFactory.BuildAlgebraicModel(benchmark.Model);
-				using (SuiteSparseSolver solver = solverFactory.BuildSolver(algebraicModel))
+				using (CholeskyCscSolver solver = solverFactory.BuildSolver(algebraicModel))
 				{
 					// Structural problem provider
 					var provider = new ProblemStructural(benchmark.Model, algebraicModel);

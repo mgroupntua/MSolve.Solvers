@@ -11,85 +11,12 @@ namespace MGroup.Solvers.Tests
 	using MGroup.Solvers.DofOrdering;
 	using MGroup.Solvers.DofOrdering.Reordering;
 	using MGroup.Solvers.Iterative;
+	using MGroup.Solvers.Tests.Benchmarks;
+
 	using Xunit;
 
 	public static class SingleSubdomainTests
 	{
-		[SkippableFact]
-		internal static void TestDenseSolver()
-		{
-			Skip.IfNot(TestSettings.TestMkl, TestSettings.MessageWhenSkippingMKL);
-
-			// Dense solver is too slow for a ~17.000 dof linear system, without MKL
-			TestSettings.RunMultiproviderTest(LinearAlgebraProviderChoice.MKL, delegate ()
-			{
-				CantileverBeam benchmark = BuildCantileverBenchmark();
-
-				var solverFactory = new DenseMatrixSolver.Factory();
-				var algebraicModel = solverFactory.BuildAlgebraicModel(benchmark.Model);
-				DenseMatrixSolver solver = solverFactory.BuildSolver(algebraicModel);
-				//solverFactory.DofOrderer = new DofOrderer(new NodeMajorDofOrderingStrategy(), new NullReordering()); // default
-
-				RunAnalysisAndCheck(benchmark, algebraicModel, solver);
-			});
-		}
-
-		[Fact]
-		internal static void TestPcgJacobiSolver()
-		{
-			CantileverBeam benchmark = BuildCantileverBenchmark();
-
-			//LibrarySettings.LinearAlgebraProviders = LinearAlgebraProviderChoice.MKL;
-			var solverFactory = new PcgSolver.Factory();
-			//solverFactory.DofOrderer = new DofOrderer(new NodeMajorDofOrderingStrategy(), new NullReordering()); // default
-			var algebraicModel = solverFactory.BuildAlgebraicModel(benchmark.Model);
-			PcgSolver solver = solverFactory.BuildSolver(algebraicModel);
-
-			RunAnalysisAndCheck(benchmark, algebraicModel, solver);
-		}
-
-		[Fact]
-		internal static void TestPcgJacobiSolverWithAmdReordering()
-		{
-			CantileverBeam benchmark = BuildCantileverBenchmark();
-
-			var solverFactory = new PcgSolver.Factory();
-			solverFactory.DofOrderer = new DofOrderer(
-				new NodeMajorDofOrderingStrategy(), AmdReordering.CreateWithCSparseAmd());
-			var algebraicModel = solverFactory.BuildAlgebraicModel(benchmark.Model);
-			PcgSolver solver = solverFactory.BuildSolver(algebraicModel);
-
-			RunAnalysisAndCheck(benchmark, algebraicModel, solver);
-		}
-
-		[Fact]
-		internal static void TestSkylineSolver()
-		{
-			CantileverBeam benchmark = BuildCantileverBenchmark();
-
-			var solverFactory = new SkylineSolver.Factory();
-			//solverFactory.DofOrderer = new DofOrderer(new NodeMajorDofOrderingStrategy(), new NullReordering()); // default
-			var algebraicModel = solverFactory.BuildAlgebraicModel(benchmark.Model);
-			SkylineSolver solver = solverFactory.BuildSolver(algebraicModel);
-			solver.LinearSystem = algebraicModel.LinearSystem;
-
-			RunAnalysisAndCheck(benchmark, algebraicModel, solver);
-		}
-
-		[Fact]
-		internal static void TestSkylineSolverWithAmdReordering()
-		{
-			CantileverBeam benchmark = BuildCantileverBenchmark();
-
-			var solverFactory = new SkylineSolver.Factory();
-			solverFactory.DofOrderer = new DofOrderer(
-				new NodeMajorDofOrderingStrategy(), AmdReordering.CreateWithCSparseAmd());
-			var algebraicModel = solverFactory.BuildAlgebraicModel(benchmark.Model);
-			SkylineSolver solver = solverFactory.BuildSolver(algebraicModel);
-			RunAnalysisAndCheck(benchmark, algebraicModel, solver);
-
-		}
-
 		[SkippableFact]
 		internal static void TestSuiteSparseSolver()
 		{
@@ -97,10 +24,10 @@ namespace MGroup.Solvers.Tests
 
 			CantileverBeam benchmark = BuildCantileverBenchmark();
 
-			var solverFactory = new SuiteSparseSolver.Factory();
+			var solverFactory = new CholeskyCscSolver.Factory();
 			solverFactory.DofOrderer = new DofOrderer(new NodeMajorDofOrderingStrategy(), new NullReordering());
 			var algebraicModel = solverFactory.BuildAlgebraicModel(benchmark.Model);
-			using (SuiteSparseSolver solver = solverFactory.BuildSolver(algebraicModel))
+			using (CholeskyCscSolver solver = solverFactory.BuildSolver(algebraicModel))
 			{
 				RunAnalysisAndCheck(benchmark, algebraicModel, solver);
 			}
@@ -113,11 +40,11 @@ namespace MGroup.Solvers.Tests
 
 			CantileverBeam benchmark = BuildCantileverBenchmark();
 
-			var solverFactory = new SuiteSparseSolver.Factory();
+			var solverFactory = new CholeskyCscSolver.Factory();
 			//solverFactory.DofOrderer = new DofOrderer(
 			//    new NodeMajorDofOrderingStrategy(), AmdReordering.CreateWithSuiteSparseAmd()); // default
 			var algebraicModel = solverFactory.BuildAlgebraicModel(benchmark.Model);
-			using (SuiteSparseSolver solver = solverFactory.BuildSolver(algebraicModel))
+			using (CholeskyCscSolver solver = solverFactory.BuildSolver(algebraicModel))
 			{
 				RunAnalysisAndCheck(benchmark, algebraicModel, solver);
 			}

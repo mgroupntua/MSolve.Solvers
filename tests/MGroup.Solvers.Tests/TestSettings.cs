@@ -1,59 +1,58 @@
 namespace MGroup.Solvers.Tests
 {
+	using System;
+	using System.IO;
+	using System.Reflection;
+	using System.Text.Json;
 
 	using MGroup.LinearAlgebra;
+	using MGroup.LinearAlgebra.Implementations;
+	using MGroup.LinearAlgebra.Implementations.Managed;
+	using MGroup.LinearAlgebra.Implementations.NativeWin64;
+	using MGroup.LinearAlgebra.Implementations.NativeWin64.MKL;
+	using MGroup.LinearAlgebra.Triangulation;
 
 	using Xunit;
 
-	// Currently SuiteSparse dlls call MKL dll
-	public enum TestSuiteSparseAndMklLibs
+	public static class TestSettings
 	{
-		Neither, MklOnly, Both
-	}
-
-	public class TestSettings
-	{
-		// Set the appropriate enums and flags here, in order to choose which native library tests will be run.
-		private static readonly TestSuiteSparseAndMklLibs librariesToTest = TestSuiteSparseAndMklLibs.Neither;
-
-		public const string MessageWhenSkippingMKL = "MKL is not set to be tested. See TestSettings.cs for more.";
-
-		public const string MessageWhenSkippingSuiteSparse
-			= "SuiteSparse is not set to be tested. See TestSettings.cs for more.";
-
-		public static TheoryData<LinearAlgebraProviderChoice> ProvidersToTest
+		// Explicit static constructor to tell C# compiler not to mark type as beforefieldinit. Only required for laziness.
+		static TestSettings()
 		{
-			get
-			{
-				var theoryData = new TheoryData<LinearAlgebraProviderChoice>();
-				theoryData.Add(LinearAlgebraProviderChoice.Managed);
-				if ((librariesToTest == TestSuiteSparseAndMklLibs.MklOnly) 
-					|| (librariesToTest == TestSuiteSparseAndMklLibs.Both))
-				{
-					theoryData.Add(LinearAlgebraProviderChoice.MKL);
-				}
-				return theoryData;
-			}
-		}
-
-		public static bool TestMkl => (librariesToTest == TestSuiteSparseAndMklLibs.MklOnly) 
-			|| (librariesToTest == TestSuiteSparseAndMklLibs.Both);
-
-		public static bool TestSuiteSparse => (librariesToTest == TestSuiteSparseAndMklLibs.Both);
-
-		public static void RunMultiproviderTest(LinearAlgebraProviderChoice providers, Action test)
-		{
-			LinearAlgebraProviderChoice defaultProviders = LibrarySettings.LinearAlgebraProviders; // Store it for later
-			LibrarySettings.LinearAlgebraProviders = providers;
+			LibsToTest = NativeLibsToTest.CreateWithNone();
+			ProvidersToTest = new TheoryData<IImplementationProvider>();
+			ProvidersToTest.Add(new ManagedSequentialImplementationProvider());
 
 			try
 			{
-				test();
+				// Read from JSON
+				string execDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+				string jsonFile = Path.Combine(execDirectory, "NativeLibsToTest.json");
+				string jsonText = File.ReadAllText(jsonFile);
+
+				// Currently there is no reason to test MKL without SuiteSparse. SuiteSparse dlls depend on MKL dlls.
+				var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+				NativeLibsToTest? deserialized = JsonSerializer.Deserialize<NativeLibsToTest>(jsonText, options);
+				if (deserialized != null)
+				{
+					LibsToTest = deserialized;
+					if (LibsToTest.Win64IntelMkl && LibsToTest.Win64SuiteSparse)
+					{
+						ProvidersToTest.Add(new NativeWin64ImplementationProvider());
+					}
+				}
 			}
-			finally
+			catch (Exception ex)
 			{
-				LibrarySettings.LinearAlgebraProviders = defaultProviders; // Once finished, reset the default providers
+				// If reading native lib options fails for any reason, do nothing (use only managed providers).
 			}
 		}
+
+		public static NativeLibsToTest LibsToTest { get; }
+
+		public static TheoryData<IImplementationProvider> ProvidersToTest { get; }
+
+		public const string SkipMessage =
+			"This native library is not set to be tested. You can set it in NativeLibsToTest.json. See TestSettings.cs for more.";
 	}
 }
