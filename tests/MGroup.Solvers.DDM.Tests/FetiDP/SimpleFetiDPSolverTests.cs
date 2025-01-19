@@ -4,6 +4,7 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 	using MGroup.Environments;
 	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
 	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG.Reorthogonalization;
+	using MGroup.LinearAlgebra.Implementations.Managed;
 	using MGroup.LinearAlgebra.Iterative;
 	using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
 	using MGroup.LinearAlgebra.Matrices;
@@ -33,6 +34,8 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 		internal static void TestForBrick3DInternal(IComputeEnvironment environment, bool isCoarseProblemDistributed,
 			bool useCoarseJacobiPreconditioner, bool useReorthogonalizedPcg)
 		{
+			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+
 			// Environment
 			ComputeNodeTopology nodeTopology = Brick3DExample.CreateNodeTopology();
 			environment.Initialize(nodeTopology);
@@ -44,13 +47,13 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 
 			// Solver
 			var solverFactory = new FetiDPSolver<SymmetricCscMatrix>.Factory(
-				environment, cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCSparse.Factory());
+				environment, laProviderForSolver, cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCsc.Factory());
 
 			solverFactory.Preconditioner = new FetiDPDirichletPreconditioner();
 			solverFactory.InterfaceProblemSolverFactory = new FetiDPInterfaceProblemSolverFactoryPcg()
 			{
 				MaxIterations = 200,
-				ResidualTolerance = 1E-10
+				ResidualTolerance = 1E-10,
 			};
 
 			if (isCoarseProblemDistributed)
@@ -75,9 +78,9 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 				coarseProblemFactory.UseJacobiPreconditioner = useCoarseJacobiPreconditioner;
 				solverFactory.CoarseProblemFactory = coarseProblemFactory;
 			}
-			else 
+			else
 			{
-				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCSparse();
+				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCsc(laProviderForSolver);
 				solverFactory.CoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
 			}
 
@@ -130,6 +133,8 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 		internal static void TestForPlane2DInternal(IComputeEnvironment environment, bool isCoarseProblemDistributed,
 			bool useCoarseJacobiPreconditioner, bool useReorthogonalizedPcg)
 		{
+			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+
 			// Environment
 			ComputeNodeTopology nodeTopology = Plane2DExample.CreateNodeTopology();
 			environment.Initialize(nodeTopology);
@@ -141,13 +146,13 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 
 			// Solver
 			var solverFactory = new FetiDPSolver<SymmetricCscMatrix>.Factory(
-				environment, cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCSparse.Factory());
+				environment, laProviderForSolver, cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCsc.Factory());
 
 			solverFactory.Preconditioner = new FetiDPDirichletPreconditioner();
 			solverFactory.InterfaceProblemSolverFactory = new FetiDPInterfaceProblemSolverFactoryPcg()
 			{
 				MaxIterations = 200,
-				ResidualTolerance = 1E-10
+				ResidualTolerance = 1E-10,
 			};
 
 			if (isCoarseProblemDistributed)
@@ -168,13 +173,13 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 					coarseProblemPcgBuilder.ResidualTolerance = 2E-12;
 					coarseProblemFactory.CoarseProblemSolver = coarseProblemPcgBuilder.Build();
 				}
-				
+
 				coarseProblemFactory.UseJacobiPreconditioner = useCoarseJacobiPreconditioner;
 				solverFactory.CoarseProblemFactory = coarseProblemFactory;
 			}
-			else 
+			else
 			{
-				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCSparse();
+				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCsc(laProviderForSolver);
 				solverFactory.CoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
 			}
 

@@ -3,6 +3,7 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 	using MGroup.Constitutive.Structural;
 	using MGroup.Environments;
 	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
+	using MGroup.LinearAlgebra.Implementations.Managed;
 	using MGroup.LinearAlgebra.Iterative;
 	using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
 	using MGroup.LinearAlgebra.Matrices;
@@ -42,6 +43,8 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 		internal static void RunTest_8_Internal(double stiffnessRatio, bool ignoreHeterogenity, int numIterationsExpected,
 			double errorExpected, IComputeEnvironment environment, bool isCoarseProblemDistributed = false)
 		{
+			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+
 			// Model
 			(Model model, ComputeNodeTopology nodeTopology) = PapagiannakisExample_8.CreateMultiSubdomainModel(stiffnessRatio);
 			model.ConnectDataStructures(); //TODOMPI: this is also done in the analyzer
@@ -52,8 +55,8 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 
 			// Solver
 			var solverFactory = new PFetiDPSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCSparse.Factory(),
-				cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCSparse.Factory(true));
+				environment, laProviderForSolver, new PsmSubdomainMatrixManagerSymmetricCsc.Factory(),
+				cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCsc.Factory(true));
 
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
@@ -80,7 +83,7 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 			}
 			else
 			{
-				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCSparse();
+				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCsc(laProviderForSolver);
 				solverFactory.CoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
 			}
 
@@ -125,6 +128,8 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 		internal static void RunTest_9_1_Internal(double stiffnessRatio, int numIterationsExpected, double errorExpected, 
 			IComputeEnvironment environment, bool isCoarseProblemDistributed = false)
 		{
+			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+
 			// Model
 			(Model model, ComputeNodeTopology nodeTopology) = PapagiannakisExample_9_1.CreateMultiSubdomainModel(stiffnessRatio);
 			model.ConnectDataStructures(); //TODOMPI: this is also done in the analyzer
@@ -135,8 +140,8 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 
 			// Solver
 			var solverFactory = new PFetiDPSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCSparse.Factory(),
-				cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCSparse.Factory(true));
+				environment, laProviderForSolver, new PsmSubdomainMatrixManagerSymmetricCsc.Factory(),
+				cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCsc.Factory(true));
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
 				// Papagiannakis specified these and reported the number of iterations and the error from direct solver.
@@ -162,7 +167,7 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 			}
 			else
 			{
-				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCSparse();
+				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCsc(laProviderForSolver);
 				solverFactory.CoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
 			}
 			solverFactory.IsHomogeneousProblem = stiffnessRatio == 1.0;
@@ -206,6 +211,8 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 		internal static void RunTest_9_2_Internal(double stiffnessRatio, int numIterationsExpected, double errorExpected,
 			IComputeEnvironment environment, bool isCoarseProblemDistributed = false)
 		{
+			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+
 			// Model
 			(Model model, ComputeNodeTopology nodeTopology) = PapagiannakisExample_9_2.CreateMultiSubdomainModel(stiffnessRatio);
 			model.ConnectDataStructures(); //TODOMPI: this is also done in the analyzer
@@ -216,8 +223,8 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 
 			// Solver
 			var solverFactory = new PFetiDPSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCSparse.Factory(),
-				cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCSparse.Factory(true));
+				environment, laProviderForSolver, new PsmSubdomainMatrixManagerSymmetricCsc.Factory(),
+				cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCsc.Factory(true));
 
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
@@ -244,7 +251,7 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 			}
 			else
 			{
-				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCSparse();
+				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCsc(laProviderForSolver);
 				solverFactory.CoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
 			}
 

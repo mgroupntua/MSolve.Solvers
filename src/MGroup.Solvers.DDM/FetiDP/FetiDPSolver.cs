@@ -493,7 +493,7 @@ namespace MGroup.Solvers.DDM.FetiDP
 			private readonly IComputeEnvironment environment;
 			private readonly IImplementationProvider provider;
 
-			public Factory(IComputeEnvironment environment, ICornerDofSelection cornerDofs, IImplementationProvider provider,
+			public Factory(IComputeEnvironment environment, IImplementationProvider provider, ICornerDofSelection cornerDofs,
 				IFetiDPSubdomainMatrixManagerFactory<TMatrix> matrixManagerFactory)
 			{
 				this.environment = environment;

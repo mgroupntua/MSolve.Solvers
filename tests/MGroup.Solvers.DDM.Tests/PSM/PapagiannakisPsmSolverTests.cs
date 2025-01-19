@@ -2,6 +2,7 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 {
 	using MGroup.Constitutive.Structural;
 	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Implementations.Managed;
 	using MGroup.LinearAlgebra.Iterative;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.MSolve.Discretization.Entities;
@@ -32,6 +33,8 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 		internal static void RunTest_8_Internal(
 			double stiffnessRatio, int numIterationsExpected, double errorExpected, IComputeEnvironment environment)
 		{
+			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+
 			// Model
 			(Model model, ComputeNodeTopology nodeTopology) = PapagiannakisExample_8.CreateMultiSubdomainModel(stiffnessRatio);
 			model.ConnectDataStructures(); //TODOMPI: this is also done in the analyzer
@@ -41,7 +44,7 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 
 			// Solver
 			var solverFactory = new PsmSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
+				environment, laProviderForSolver, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
 				// Papagiannakis specified these and reported the number of iterations and the error from direct solver.
@@ -95,6 +98,8 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 		internal static void RunTest_9_1_Internal(
 			double stiffnessRatio, int numIterationsExpected, double errorExpected,IComputeEnvironment environment)
 		{
+			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+
 			// Model
 			(Model model, ComputeNodeTopology nodeTopology) = PapagiannakisExample_9_1.CreateMultiSubdomainModel(stiffnessRatio);
 			model.ConnectDataStructures(); //TODOMPI: this is also done in the analyzer
@@ -104,7 +109,7 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 
 			// Solver
 			var solverFactory = new PsmSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
+				environment, laProviderForSolver, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
 				// Papagiannakis specified these and reported the number of iterations and the error from direct solver.
@@ -158,6 +163,8 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 		internal static void RunTest_9_2_Internal(
 			double stiffnessRatio, int numIterationsExpected, double errorExpected, IComputeEnvironment environment)
 		{
+			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+
 			// Model
 			(Model model, ComputeNodeTopology nodeTopology) = PapagiannakisExample_9_2.CreateMultiSubdomainModel(stiffnessRatio);
 			model.ConnectDataStructures(); //TODOMPI: this is also done in the analyzer
@@ -167,7 +174,7 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 
 			// Solver
 			var solverFactory = new PsmSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
+				environment, laProviderForSolver, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
 				// Papagiannakis specified these and reported the number of iterations and the error from direct solver.

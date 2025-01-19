@@ -5,6 +5,7 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 	using MGroup.Constitutive.Structural;
 	using MGroup.Environments;
 	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
+	using MGroup.LinearAlgebra.Implementations.Managed;
 	using MGroup.LinearAlgebra.Iterative;
 	using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
 	using MGroup.LinearAlgebra.Matrices;
@@ -27,21 +28,23 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 	{
 		public enum Preconditioner
 		{
-			Dirichlet, Lumped, DiagonalDirichlet
+			Dirichlet, Lumped, DiagonalDirichlet,
 		}
 
 		[Theory]
 		[InlineData(1.0, Preconditioner.DiagonalDirichlet, true, 10, 2E-9/*relaxed from 6.47E-10*/, EnvironmentChoice.SequentialShared)]
 		[InlineData(1.0, Preconditioner.Dirichlet, true, 9, 2.44E-9, EnvironmentChoice.SequentialShared)]
 		[InlineData(1.0, Preconditioner.Lumped, true, 11, 6.61E-10, EnvironmentChoice.SequentialShared)]
-		public static void RunTest_8(double stiffnessRatio, Preconditioner preconditioner, bool ignoreHeterogenity, 
+		public static void RunTest_8(double stiffnessRatio, Preconditioner preconditioner, bool ignoreHeterogenity,
 			int numIterationsExpected, double errorExpected, EnvironmentChoice environmentChoice)
-			=> RunTest_8_Internal(stiffnessRatio, preconditioner, ignoreHeterogenity, numIterationsExpected, errorExpected, 
+			=> RunTest_8_Internal(stiffnessRatio, preconditioner, ignoreHeterogenity, numIterationsExpected, errorExpected,
 				environmentChoice.CreateEnvironment());
 
-		internal static void RunTest_8_Internal(double stiffnessRatio, Preconditioner preconditioner, bool ignoreHeterogenity, 
+		internal static void RunTest_8_Internal(double stiffnessRatio, Preconditioner preconditioner, bool ignoreHeterogenity,
 			int numIterationsExpected, double errorExpected, IComputeEnvironment environment, bool isCoarseProblemDistributed = false)
 		{
+			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+
 			// Model
 			(Model model, ComputeNodeTopology nodeTopology) = PapagiannakisExample_8.CreateMultiSubdomainModel(stiffnessRatio);
 			model.ConnectDataStructures(); //TODOMPI: this is also done in the analyzer
@@ -52,7 +55,7 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 
 			// Solver
 			var solverFactory = new FetiDPSolver<SymmetricCscMatrix>.Factory(
-				environment, cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCSparse.Factory());
+				environment, laProviderForSolver, cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCsc.Factory());
 
 			if (preconditioner == Preconditioner.Dirichlet)
 			{
@@ -73,9 +76,9 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 				UseObjectiveConvergenceCriterion = true,
 				MaxIterations = numIterationsExpected,
 				ResidualTolerance = 1E-20,
-				ThrowExceptionIfNotConvergence = false
+				ThrowExceptionIfNotConvergence = false,
 			};
-			
+
 			if (isCoarseProblemDistributed)
 			{
 				var pcgBuilder = new PcgAlgorithm.Builder();
@@ -87,7 +90,7 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 			}
 			else
 			{
-				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCSparse();
+				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCsc(laProviderForSolver);
 				solverFactory.CoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
 			}
 
@@ -121,14 +124,16 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 		[InlineData(1.0, Preconditioner.DiagonalDirichlet, 14, 2E-6/*relaxed from 1.28E-9*/, EnvironmentChoice.SequentialShared)]
 		[InlineData(1.0, Preconditioner.Dirichlet, 11, 4E-9/*relaxed from 1.39E-9*/, EnvironmentChoice.SequentialShared)]
 		[InlineData(1.0, Preconditioner.Lumped, 18, 3E-9/*relaxed from 3.46E-10*/, EnvironmentChoice.SequentialShared)]
-		public static void RunTest_9_1(double stiffnessRatio, Preconditioner preconditioner, int numIterationsExpected, 
+		public static void RunTest_9_1(double stiffnessRatio, Preconditioner preconditioner, int numIterationsExpected,
 			double errorExpected, EnvironmentChoice environmentChoice)
 			=> RunTest_9_1_Internal(
 				stiffnessRatio, preconditioner, numIterationsExpected, errorExpected, environmentChoice.CreateEnvironment());
 
-		internal static void RunTest_9_1_Internal(double stiffnessRatio, Preconditioner preconditioner, int numIterationsExpected, 
+		internal static void RunTest_9_1_Internal(double stiffnessRatio, Preconditioner preconditioner, int numIterationsExpected,
 			double errorExpected, IComputeEnvironment environment, bool isCoarseProblemDistributed = false)
 		{
+			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+
 			// Model
 			(Model model, ComputeNodeTopology nodeTopology) = PapagiannakisExample_9_1.CreateMultiSubdomainModel(stiffnessRatio);
 			model.ConnectDataStructures(); //TODOMPI: this is also done in the analyzer
@@ -139,13 +144,13 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 
 			// Solver
 			var solverFactory = new FetiDPSolver<SymmetricCscMatrix>.Factory(
-				environment, cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCSparse.Factory());
+				environment, laProviderForSolver, cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCsc.Factory());
 			solverFactory.InterfaceProblemSolverFactory = new FetiDPInterfaceProblemSolverFactoryPcg()
 			{
 				UseObjectiveConvergenceCriterion = true,
 				MaxIterations = numIterationsExpected,
 				ResidualTolerance = 1E-20,
-				ThrowExceptionIfNotConvergence = false
+				ThrowExceptionIfNotConvergence = false,
 			};
 
 			if (preconditioner == Preconditioner.Dirichlet)
@@ -173,9 +178,10 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 			}
 			else
 			{
-				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCSparse();
+				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCsc(laProviderForSolver);
 				solverFactory.CoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
 			}
+
 			solverFactory.IsHomogeneousProblem = stiffnessRatio == 1.0;
 			DistributedAlgebraicModel<SymmetricCscMatrix> algebraicModel = solverFactory.BuildAlgebraicModel(model);
 			FetiDPSolver<SymmetricCscMatrix> solver = solverFactory.BuildSolver(model, algebraicModel);
@@ -206,14 +212,16 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 		[InlineData(1.0, Preconditioner.DiagonalDirichlet, 10, 2E-5/*relaxed from 2.65E-10*/, EnvironmentChoice.SequentialShared)]
 		[InlineData(1.0, Preconditioner.Dirichlet, 6, 3E-6/*relaxed from 3.32E-10*/, EnvironmentChoice.SequentialShared)]
 		[InlineData(1.0, Preconditioner.Lumped, 12, 9E-6/*relaxed from 1.68E-10*/, EnvironmentChoice.SequentialShared)]
-		public static void RunTest_9_2(double stiffnessRatio, Preconditioner preconditioner, int numIterationsExpected, 
+		public static void RunTest_9_2(double stiffnessRatio, Preconditioner preconditioner, int numIterationsExpected,
 			double errorExpected, EnvironmentChoice environmentChoice)
 			=> RunTest_9_2_Internal(
 				stiffnessRatio, preconditioner, numIterationsExpected, errorExpected, environmentChoice.CreateEnvironment());
 
-		internal static void RunTest_9_2_Internal(double stiffnessRatio, Preconditioner preconditioner, int numIterationsExpected, 
+		internal static void RunTest_9_2_Internal(double stiffnessRatio, Preconditioner preconditioner, int numIterationsExpected,
 			double errorExpected, IComputeEnvironment environment, bool isCoarseProblemDistributed = false)
 		{
+			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+
 			// Model
 			(Model model, ComputeNodeTopology nodeTopology) = PapagiannakisExample_9_2.CreateMultiSubdomainModel(stiffnessRatio);
 			model.ConnectDataStructures(); //TODOMPI: this is also done in the analyzer
@@ -224,7 +232,7 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 
 			// Solver
 			var solverFactory = new FetiDPSolver<SymmetricCscMatrix>.Factory(
-				environment, cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCSparse.Factory());
+				environment, laProviderForSolver, cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCsc.Factory());
 
 			if (preconditioner == Preconditioner.Dirichlet)
 			{
@@ -247,7 +255,7 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 				#endregion
 				MaxIterations = numIterationsExpected,
 				ResidualTolerance = 1E-20,
-				ThrowExceptionIfNotConvergence = false
+				ThrowExceptionIfNotConvergence = false,
 			};
 
 			if (isCoarseProblemDistributed)
@@ -261,7 +269,7 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 			}
 			else
 			{
-				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCSparse();
+				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCsc(laProviderForSolver);
 				solverFactory.CoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
 			}
 

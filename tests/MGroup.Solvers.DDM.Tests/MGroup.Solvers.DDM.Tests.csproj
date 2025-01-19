@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\MGroup.LinearAlgebra.Implementations.NativeWin64\MGroup.LinearAlgebra.Implementations.NativeWin64.csproj" />
     <ProjectReference Include="..\..\src\MGroup.Solvers.DDM\MGroup.Solvers.DDM.csproj" />
   </ItemGroup>
 

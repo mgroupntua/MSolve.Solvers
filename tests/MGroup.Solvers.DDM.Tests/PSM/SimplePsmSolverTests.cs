@@ -3,6 +3,8 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 	using MGroup.Constitutive.Structural;
 	using MGroup.Constitutive.Thermal;
 	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Implementations;
+	using MGroup.LinearAlgebra.Implementations.Managed;
 	using MGroup.LinearAlgebra.Iterative;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.MSolve.Discretization.Entities;
@@ -27,6 +29,8 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 
 		internal static void TestForBrick3DInternal(IComputeEnvironment environment)
 		{
+			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+
 			// Environment
 			ComputeNodeTopology nodeTopology = Brick3DExample.CreateNodeTopology();
 			environment.Initialize(nodeTopology);
@@ -37,7 +41,7 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 
 			// Solver
 			var solverFactory = new PsmSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
+				environment, laProviderForSolver, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
 				MaxIterations = 200,
@@ -84,6 +88,8 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 
 		internal static void TestForLine1DInternal(IComputeEnvironment environment)
 		{
+			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+
 			// Environment
 			ComputeNodeTopology nodeTopology = Line1DExample.CreateNodeTopology();
 			environment.Initialize(nodeTopology);
@@ -94,7 +100,7 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 
 			// Solver
 			var solverFactory = new PsmSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
+				environment, laProviderForSolver, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
 			DistributedAlgebraicModel<SymmetricCscMatrix> algebraicModel = solverFactory.BuildAlgebraicModel(model);
 			PsmSolver<SymmetricCscMatrix> solver = solverFactory.BuildSolver(model, algebraicModel);
 
@@ -136,6 +142,8 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 
 		internal static void TestForPlane2DInternal(IComputeEnvironment environment)
 		{
+			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+
 			// Environment
 			ComputeNodeTopology nodeTopology = Plane2DExample.CreateNodeTopology();
 			environment.Initialize(nodeTopology);
@@ -146,7 +154,7 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 
 			// Solver
 			var solverFactory = new PsmSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
+				environment, laProviderForSolver, new PsmSubdomainMatrixManagerSymmetricCsc.Factory());
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
 				MaxIterations = 200,
