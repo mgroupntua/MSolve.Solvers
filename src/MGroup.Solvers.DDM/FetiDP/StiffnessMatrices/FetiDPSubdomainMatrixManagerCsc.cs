@@ -15,7 +15,6 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 	{
 		private readonly bool clearKrrAfterFactorization;
 		private readonly SubdomainLinearSystem<CsrMatrix> linearSystem;
-		private readonly double luPivotTolerance;
 		private readonly IImplementationProvider provider;
 		private readonly FetiDPSubdomainDofs subdomainDofs;
 		private readonly SubmatrixExtractorPckCsrCscSym submatrixExtractorBoundaryInternal = new SubmatrixExtractorPckCsrCscSym();
@@ -29,11 +28,10 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 		private DiagonalMatrix inverseKiiDiagonal;
 		private Matrix Scc;
 
-		public FetiDPSubdomainMatrixManagerCsc(IImplementationProvider provider, double luPivotTolerance,
+		public FetiDPSubdomainMatrixManagerCsc(IImplementationProvider provider,
 			SubdomainLinearSystem<CsrMatrix> linearSystem, FetiDPSubdomainDofs subdomainDofs, bool clearKrrAfterFactorization)
 		{
 			this.provider = provider;
-			this.luPivotTolerance = luPivotTolerance;
 			this.linearSystem = linearSystem;
 			this.subdomainDofs = subdomainDofs;
 			this.clearKrrAfterFactorization = clearKrrAfterFactorization;
@@ -139,8 +137,8 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 					inverseKii.Dispose();
 				}
 
-				inverseKii = provider.CreateLUCscTriangulation();
-				inverseKii.Factorize(Kii, luPivotTolerance);
+				inverseKii = provider.CreateLUTriangulation();
+				inverseKii.Factorize(Kii);
 			}
 
 			Kii = null; // It has not been mutated, but it is no longer needed
@@ -153,8 +151,8 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 				inverseKrr.Dispose();
 			}
 
-			inverseKrr = provider.CreateLUCscTriangulation();
-			inverseKrr.Factorize(Krr, luPivotTolerance);
+			inverseKrr = provider.CreateLUTriangulation();
+			inverseKrr.Factorize(Krr);
 
 			if (clearKrrAfterFactorization)
 			{
@@ -195,11 +193,9 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 		public class Factory : IFetiDPSubdomainMatrixManagerFactory<CsrMatrix>
 		{
 			private readonly bool clearKrrAfterFactorization;
-			private readonly double luPivotTolerance;
 
-			public Factory(double luPivotTolerance, bool clearKrrAfterFactorization = false)
+			public Factory(bool clearKrrAfterFactorization = false)
 			{
-				this.luPivotTolerance = luPivotTolerance;
 				this.clearKrrAfterFactorization = clearKrrAfterFactorization;
 			}
 
@@ -209,7 +205,7 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 				SubdomainLinearSystem<CsrMatrix> linearSystem, FetiDPSubdomainDofs subdomainDofs)
 			{
 				return new FetiDPSubdomainMatrixManagerCsc(
-					provider, luPivotTolerance, linearSystem, subdomainDofs, clearKrrAfterFactorization);
+					provider, linearSystem, subdomainDofs, clearKrrAfterFactorization);
 			}
 		}
 	}

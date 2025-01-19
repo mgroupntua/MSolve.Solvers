@@ -83,7 +83,7 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 				inverseKii.Dispose();
 			}
 
-			inverseKii = provider.CreateSymmetricCscTriangulation(true);
+			inverseKii = provider.CreateCholeskyTriangulation();
 			inverseKii.Factorize(Kii);
 			Kii = null; // This memory is not overwritten, but it is not needed anymore either.
 		}

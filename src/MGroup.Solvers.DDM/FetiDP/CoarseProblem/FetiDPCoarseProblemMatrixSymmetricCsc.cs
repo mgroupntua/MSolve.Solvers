@@ -44,7 +44,7 @@ namespace MGroup.Solvers.DDM.FetiDP.CoarseProblem
 				inverseSccGlobal.Dispose();
 			}
 
-			inverseSccGlobal = provider.CreateSymmetricCscTriangulation(true);
+			inverseSccGlobal = provider.CreateCholeskyTriangulation();
 			inverseSccGlobal.Factorize(globalScc);
 		}
 

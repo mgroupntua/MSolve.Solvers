@@ -10,15 +10,13 @@ namespace MGroup.Solvers.DDM.FetiDP.CoarseProblem
 	public class FetiDPCoarseProblemMatrixCsc : IFetiDPCoarseProblemGlobalMatrix
 	{
 		private readonly CscMatrixAssembler assembler = new CscMatrixAssembler(false, true);
-		private readonly double luPivotTolerance;
 		private readonly IImplementationProvider provider;
 
 		private ILUCscFactorization inverseSccGlobal;
 
-		public FetiDPCoarseProblemMatrixCsc(IImplementationProvider provider, double luPivotTolerance)
+		public FetiDPCoarseProblemMatrixCsc(IImplementationProvider provider)
 		{
 			this.provider = provider;
-			this.luPivotTolerance = luPivotTolerance;
 		}
 
 		public void Clear()
@@ -43,13 +41,14 @@ namespace MGroup.Solvers.DDM.FetiDP.CoarseProblem
 				inverseSccGlobal.Dispose();
 			}
 
-			inverseSccGlobal = provider.CreateLUCscTriangulation();
-			inverseSccGlobal.Factorize(globalScc, luPivotTolerance);
+			inverseSccGlobal = provider.CreateLUTriangulation();
+			inverseSccGlobal.Factorize(globalScc);
 		}
 
 		public void MultiplyInverseScc(Vector input, Vector output) => inverseSccGlobal.SolveLinearSystem(input, output);
 
-		public DofPermutation ReorderGlobalCornerDofs(int numGlobalCornerDofs, IDictionary<int, int[]> subdomainToGlobalCornerDofs)
+		public DofPermutation ReorderGlobalCornerDofs(
+			int numGlobalCornerDofs, IDictionary<int, int[]> subdomainToGlobalCornerDofs)
 			=> DofPermutation.CreateNoPermutation();
 	}
 }

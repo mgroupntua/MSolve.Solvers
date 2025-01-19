@@ -25,7 +25,6 @@ namespace MGroup.Solvers.Direct
 	/// </summary>
 	public class CholeskyCscSolver : SingleSubdomainSolverBase<SymmetricCscMatrix>, IDisposable
 	{
-		private const bool useSuperNodalFactorization = true; // For faster back/forward substitutions.
 		private readonly IImplementationProvider provider;
 
 		private bool mustFactorize = true;
@@ -84,7 +83,7 @@ namespace MGroup.Solvers.Direct
 			if (mustFactorize)
 			{
 				watch.Start();
-				factorization = provider.CreateSymmetricCscTriangulation(useSuperNodalFactorization);
+				factorization = provider.CreateCholeskyTriangulation();
 				factorization.Factorize(matrix);
 				watch.Stop();
 				Logger.LogTaskDuration("Matrix factorization", watch.ElapsedMilliseconds);
@@ -110,7 +109,7 @@ namespace MGroup.Solvers.Direct
 			if (mustFactorize)
 			{
 				watch.Start();
-				factorization = provider.CreateSymmetricCscTriangulation(useSuperNodalFactorization);
+				factorization = provider.CreateCholeskyTriangulation();
 				factorization.Factorize(matrix);
 				watch.Stop();
 				Logger.LogTaskDuration("Matrix factorization", watch.ElapsedMilliseconds);

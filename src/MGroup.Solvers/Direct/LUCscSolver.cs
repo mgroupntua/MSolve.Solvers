@@ -15,7 +15,6 @@ namespace MGroup.Solvers.Direct
 
 	public class LUCscSolver : SingleSubdomainSolverBase<CscMatrix>
 	{
-		private readonly double factorizationPivotTolerance;
 		private readonly IImplementationProvider provider;
 
 		private bool factorizeInPlace = true;
@@ -23,11 +22,10 @@ namespace MGroup.Solvers.Direct
 		private ILUCscFactorization factorization;
 
 		private LUCscSolver(
-			IImplementationProvider provider, GlobalAlgebraicModel<CscMatrix> model, double factorizationPivotTolerance)
+			IImplementationProvider provider, GlobalAlgebraicModel<CscMatrix> model)
 			: base(model, "CSparseLUSolver")
 		{
 			this.provider = provider;
-			this.factorizationPivotTolerance = factorizationPivotTolerance;
 		}
 
 		public override void HandleMatrixWillBeSet()
@@ -58,8 +56,8 @@ namespace MGroup.Solvers.Direct
 			if (mustFactorize)
 			{
 				watch.Start();
-				factorization = provider.CreateLUCscTriangulation();
-				factorization.Factorize(matrix, factorizationPivotTolerance);
+				factorization = provider.CreateLUTriangulation();
+				factorization.Factorize(matrix);
 				watch.Stop();
 				Logger.LogTaskDuration("Matrix factorization", watch.ElapsedMilliseconds);
 				watch.Reset();
@@ -84,8 +82,8 @@ namespace MGroup.Solvers.Direct
 			if (mustFactorize)
 			{
 				watch.Start();
-				factorization = provider.CreateLUCscTriangulation();
-				factorization.Factorize(matrix, factorizationPivotTolerance);
+				factorization = provider.CreateLUTriangulation();
+				factorization.Factorize(matrix);
 				watch.Stop();
 				Logger.LogTaskDuration("Matrix factorization", watch.ElapsedMilliseconds);
 				watch.Reset();
@@ -127,11 +125,9 @@ namespace MGroup.Solvers.Direct
 
 			public IDofOrderer DofOrderer { get; set; }
 
-			public double FactorizationPivotTolerance { get; set; } = 1E-15;
-
 			public LUCscSolver BuildSolver(GlobalAlgebraicModel<CscMatrix> model)
 			{
-				return new LUCscSolver(provider, model, FactorizationPivotTolerance);
+				return new LUCscSolver(provider, model);
 			}
 
 			public GlobalAlgebraicModel<CscMatrix> BuildAlgebraicModel(IModel model)

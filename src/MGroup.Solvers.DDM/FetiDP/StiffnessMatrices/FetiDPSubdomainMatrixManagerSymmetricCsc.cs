@@ -139,7 +139,7 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 					inverseKii.Dispose();
 				}
 
-				inverseKii = provider.CreateSymmetricCscTriangulation(true);
+				inverseKii = provider.CreateCholeskyTriangulation();
 				inverseKii.Factorize(Kii);
 			}
 
@@ -153,7 +153,7 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 				inverseKrr.Dispose();
 			}
 
-			inverseKrr = provider.CreateSymmetricCscTriangulation(true);
+			inverseKrr = provider.CreateCholeskyTriangulation();
 			inverseKrr.Factorize(Krr);
 
 			if (clearKrrAfterFactorization)

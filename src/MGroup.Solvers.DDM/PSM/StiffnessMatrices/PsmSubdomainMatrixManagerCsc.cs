@@ -14,7 +14,6 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 	public class PsmSubdomainMatrixManagerCsc : IPsmSubdomainMatrixManager
 	{
 		private readonly SubdomainLinearSystem<CsrMatrix> linearSystem;
-		private readonly double luPivotTolerance;
 		private readonly IImplementationProvider provider;
 		private readonly PsmSubdomainDofs subdomainDofs;
 		private readonly SubmatrixExtractorCsrCsc submatrixExtractor = new SubmatrixExtractorCsrCsc();
@@ -25,11 +24,10 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 		private CscMatrix Kii;
 		private ILUCscFactorization inverseKii;
 
-		public PsmSubdomainMatrixManagerCsc(IImplementationProvider provider, double luPivotTolerance,
-			SubdomainLinearSystem<CsrMatrix> linearSystem, PsmSubdomainDofs subdomainDofs)
+		public PsmSubdomainMatrixManagerCsc(
+			IImplementationProvider provider, SubdomainLinearSystem<CsrMatrix> linearSystem, PsmSubdomainDofs subdomainDofs)
 		{
 			this.provider = provider;
-			this.luPivotTolerance = luPivotTolerance;
 			this.linearSystem = linearSystem;
 			this.subdomainDofs = subdomainDofs;
 		}
@@ -84,8 +82,8 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 				inverseKii.Dispose();
 			}
 
-			inverseKii = provider.CreateLUCscTriangulation();
-			inverseKii.Factorize(Kii, luPivotTolerance);
+			inverseKii = provider.CreateLUTriangulation();
+			inverseKii.Factorize(Kii);
 			Kii = null; // This memory is not overwritten, but it is not needed anymore either.
 		}
 
@@ -101,18 +99,15 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 
 		public class Factory : IPsmSubdomainMatrixManagerFactory<CsrMatrix>
 		{
-			private readonly double luPivotTolerance;
-
 			public Factory(double luPivotTolerance)
 			{
-				this.luPivotTolerance = luPivotTolerance;
 			}
 
 			public ISubdomainMatrixAssembler<CsrMatrix> CreateAssembler() => new CsrMatrixAssembler(false);
 
 			public IPsmSubdomainMatrixManager CreateMatrixManager(IImplementationProvider provider,
 				SubdomainLinearSystem<CsrMatrix> linearSystem, PsmSubdomainDofs subdomainDofs)
-				=> new PsmSubdomainMatrixManagerCsc(provider, luPivotTolerance, linearSystem, subdomainDofs);
+				=> new PsmSubdomainMatrixManagerCsc(provider, linearSystem, subdomainDofs);
 		}
 	}
 }
