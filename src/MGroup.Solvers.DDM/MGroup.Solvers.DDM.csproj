@@ -7,11 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MGroup.LinearAlgebra.Distributed" Version="0.1.0-unstable.195" />
+    <PackageReference Include="MGroup.LinearAlgebra.Distributed" Version="0.1.0-unstable.222" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MGroup.LinearAlgebra.Distributed\MGroup.LinearAlgebra.Distributed.csproj" />
     <ProjectReference Include="..\MGroup.Solvers\MGroup.Solvers.csproj" />
   </ItemGroup>
 
