@@ -19,7 +19,7 @@ namespace MGroup.Solvers.Tests.Direct
 	public class CholeskyCscSolverTests
 	{
 		[Theory]
-		[MemberData(nameof(TestSettings.ProvidersToTest), MemberType = typeof(TestSettings))]
+		[MemberData(nameof(TestSettings.ProvidersToTestAsTheoryData), MemberType = typeof(TestSettings))]
 		public static void TestWithoutReordering(IImplementationProvider provider)
 		{
 			CantileverBeam benchmark = new CantileverBeam.Builder().BuildWithQuad4Elements(200, 10);
@@ -34,7 +34,7 @@ namespace MGroup.Solvers.Tests.Direct
 		}
 
 		[Theory]
-		[MemberData(nameof(TestSettings.ProvidersToTest), MemberType = typeof(TestSettings))]
+		[MemberData(nameof(TestSettings.ProvidersToTestAsTheoryData), MemberType = typeof(TestSettings))]
 		public static void TestWithAmdReordering(IImplementationProvider provider)
 		{
 			CantileverBeam benchmark = new CantileverBeam.Builder().BuildWithQuad4Elements(200, 10);

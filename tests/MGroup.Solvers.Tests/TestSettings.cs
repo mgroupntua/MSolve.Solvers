@@ -20,8 +20,13 @@ namespace MGroup.Solvers.Tests
 		static TestSettings()
 		{
 			LibsToTest = NativeLibsToTest.CreateWithNone();
-			ProvidersToTest = new TheoryData<IImplementationProvider>();
-			ProvidersToTest.Add(new ManagedSequentialImplementationProvider());
+			ProvidersToTestAsTheoryData = new TheoryData<IImplementationProvider>();
+			var providersToTest = new List<IImplementationProvider>();
+			ProvidersToTest = providersToTest;
+
+			// Always test the managed sequential implementation
+			ProvidersToTestAsTheoryData.Add(new ManagedSequentialImplementationProvider());
+			providersToTest.Add(new ManagedSequentialImplementationProvider());
 
 			try
 			{
@@ -38,7 +43,8 @@ namespace MGroup.Solvers.Tests
 					LibsToTest = deserialized;
 					if (LibsToTest.Win64IntelMkl && LibsToTest.Win64SuiteSparse)
 					{
-						ProvidersToTest.Add(new NativeWin64ImplementationProvider());
+						ProvidersToTestAsTheoryData.Add(new NativeWin64ImplementationProvider());
+						providersToTest.Add(new NativeWin64ImplementationProvider());
 					}
 				}
 			}
@@ -50,7 +56,9 @@ namespace MGroup.Solvers.Tests
 
 		public static NativeLibsToTest LibsToTest { get; }
 
-		public static TheoryData<IImplementationProvider> ProvidersToTest { get; }
+		public static IReadOnlyList<IImplementationProvider> ProvidersToTest { get; }
+
+		public static TheoryData<IImplementationProvider> ProvidersToTestAsTheoryData { get; }
 
 		public const string SkipMessage =
 			"This native library is not set to be tested. You can set it in NativeLibsToTest.json. See TestSettings.cs for more.";
