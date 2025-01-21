@@ -100,7 +100,7 @@ namespace MGroup.Solvers.Tests.Benchmarks
 		}
 
 		public void RunAnalysisAndCheck<TMatrix>(IAlgebraicModel algebraicModel,
-			SingleSubdomainSolverBase<TMatrix> solver)
+			SingleSubdomainSolverBase<TMatrix> solver, double tolerance = 1E-2)
 			where TMatrix : class, IMatrix
 		{
 			// Structural problem provider
@@ -118,7 +118,7 @@ namespace MGroup.Solvers.Tests.Benchmarks
 			var endDeflectionExpected = CalculateEndDeflectionWithEulerBeamTheory();
 			var endDeflectionComputed =
 				CalculateAverageEndDeflectionFromSolution(solver.LinearSystem.Solution, algebraicModel);
-			var comparer = new ValueComparer(1E-2);
+			var comparer = new ValueComparer(tolerance);
 			Assert.True(comparer.AreEqual(endDeflectionExpected, endDeflectionComputed));
 		}
 

@@ -14,10 +14,26 @@ namespace MGroup.Solvers.Tests.Direct
 
 	using Xunit;
 
-	public class DenseSolverTests
+	public class DenseMatrixSolverTests
 	{
+		[Theory]
+		[InlineData(true)]
+		[InlineData(false)]
+		public static void TestForSmallerSystem(bool isMatrixPositiveDefinite)
+		{
+			CantileverBeam benchmark = new CantileverBeam.Builder().BuildWithQuad4Elements(160, 8);
+
+			var solverFactory = new DenseMatrixSolver.Factory();
+			solverFactory.IsMatrixPositiveDefinite = isMatrixPositiveDefinite;
+			var algebraicModel = solverFactory.BuildAlgebraicModel(benchmark.Model);
+			DenseMatrixSolver solver = solverFactory.BuildSolver(algebraicModel);
+			solverFactory.DofOrderer = new DofOrderer(new NodeMajorDofOrderingStrategy(), new NullReordering()); // default
+
+			benchmark.RunAnalysisAndCheck(algebraicModel, solver, 1E-2);
+		}
+
 		[SkippableFact]
-		internal static void TestDenseSolver()
+		public static void TestWithNativeLibsForLargeSystem()
 		{
 			// Dense solver is too slow for a ~17.000 dof linear system, without MKL
 			Skip.IfNot(TestSettings.LibsToTest.Win64IntelMkl, TestSettings.SkipMessage);
