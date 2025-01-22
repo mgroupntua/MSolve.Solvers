@@ -5,9 +5,16 @@
 //      Handle the case of multiple machines running tests. Facilite user with command line parameters to MPI exec
 namespace MGroup.Solvers.DDM.Tests
 {
+	using MGroup.Environments;
 	using MGroup.Environments.Mpi;
+	using MGroup.LinearAlgebra.Implementations;
+	using MGroup.LinearAlgebra.Implementations.Managed;
 	using MGroup.Solvers.DDM.Tests.PFetiDP;
 	using MGroup.Solvers.DDM.Tests.PSM;
+	using MGroup.Solvers.Tests;
+	using MGroup.Solvers.Tests.TempUtilityClasses;
+
+	using Microsoft.VisualStudio.TestPlatform.PlatformAbstractions.Interfaces;
 
 	public static class MpiTestSuite
 	{
@@ -23,64 +30,107 @@ namespace MGroup.Solvers.DDM.Tests
 			{
 				MpiDebugUtilities.AssistDebuggerAttachment();
 
-				MpiDebugUtilities.DoSerially(MPI.Communicator.world,
-					() => Console.WriteLine(
-						$"Process {MPI.Communicator.world.Rank} on processor {MPI.Environment.ProcessorName}: " +
-						$"Now running PsmInterfaceProblemDofsTests.TestForLine1DInternal"));
-				PsmInterfaceProblemDofsTests.TestForLine1DInternal(mpiEnvironment);
+				RunTestInMpiEnvironment(mpiEnvironment, "PsmInterfaceProblemDofsTests.TestForLine1DInternal",
+					PsmInterfaceProblemDofsTests.TestForLine1DInternal);
 
-				MpiDebugUtilities.DoSerially(MPI.Communicator.world,
-					() => Console.WriteLine(
-						$"Process {MPI.Communicator.world.Rank} on processor {MPI.Environment.ProcessorName}: " +
-						$"Now running PsmInterfaceProblemDofsTests.TestForPlane2DInternal"));
-				PsmInterfaceProblemDofsTests.TestForPlane2DInternal(mpiEnvironment);
+				RunTestInMpiEnvironment(mpiEnvironment, "PsmInterfaceProblemDofsTests.TestForPlane2DInternal",
+					PsmInterfaceProblemDofsTests.TestForPlane2DInternal);
 
-				MpiDebugUtilities.DoSerially(MPI.Communicator.world,
-					() => Console.WriteLine(
-						$"Process {MPI.Communicator.world.Rank} on processor {MPI.Environment.ProcessorName}: " +
-						$"Now running SimplePsmSolverTests.TestForLine1DInternal"));
-				SimplePsmSolverTests.TestForLine1DInternal(mpiEnvironment);
+				RunTestInMpiEnvironmentWithAllProviders(mpiEnvironment, "SimplePsmSolverTests.TestForLine1DInternal",
+					SimplePsmSolverTests.TestForLine1DInternal);
 
-				MpiDebugUtilities.DoSerially(MPI.Communicator.world,
-					() => Console.WriteLine(
-						$"Process {MPI.Communicator.world.Rank} on processor {MPI.Environment.ProcessorName}: " +
-						$"Now running SimplePsmSolverTests.TestForPlane2DInternal"));
-				SimplePsmSolverTests.TestForPlane2DInternal(mpiEnvironment);
+				RunTestInMpiEnvironmentWithAllProviders(mpiEnvironment, "SimplePsmSolverTests.TestForPlane2DInternal",
+					SimplePsmSolverTests.TestForPlane2DInternal);
 
-				MpiDebugUtilities.DoSerially(MPI.Communicator.world,
-					() => Console.WriteLine(
-						$"Process {MPI.Communicator.world.Rank} on processor {MPI.Environment.ProcessorName}: " +
-						$"Now running SimplePsmSolverTests.TestForBrick3DInternal"));
-				SimplePsmSolverTests.TestForBrick3DInternal(mpiEnvironment);
+				RunTestInMpiEnvironmentWithAllProviders(mpiEnvironment, "SimplePsmSolverTests.TestForBrick3DInternal",
+					SimplePsmSolverTests.TestForBrick3DInternal);
 
-				MpiDebugUtilities.DoSerially(MPI.Communicator.world,
-					() => Console.WriteLine(
-						$"Process {MPI.Communicator.world.Rank} on processor {MPI.Environment.ProcessorName}: " +
-						$"Now running SimplePFetiDPSolverTests.TestForPlane2DInternal with distributed coarse problem."));
-				SimplePFetiDPSolverTests.TestForPlane2DInternal(mpiEnvironment, true, false, false);
+				RunTestInMpiEnvironmentWithAllProviders(mpiEnvironment, 
+					"SimplePFetiDPSolverTests.TestForPlane2DInternal with distributed coarse problem",
+					SimplePFetiDPSolverTests.TestForPlane2DInternal, true, false, false);
 
-				MpiDebugUtilities.DoSerially(MPI.Communicator.world,
-					() => Console.WriteLine(
-						$"Process {MPI.Communicator.world.Rank} on processor {MPI.Environment.ProcessorName}: " +
-						$"Now running SimplePFetiDPSolverTests.TestForBrick3DInternal with distributed coarse problem."));
-				SimplePFetiDPSolverTests.TestForBrick3DInternal(mpiEnvironment, true, false, false);
+				RunTestInMpiEnvironmentWithAllProviders(mpiEnvironment,
+					"SimplePFetiDPSolverTests.TestForBrick3DInternal with distributed coarse problem",
+					SimplePFetiDPSolverTests.TestForBrick3DInternal, true, false, false);
 
-				MpiDebugUtilities.DoSerially(MPI.Communicator.world,
-					() => Console.WriteLine(
-						$"Process {MPI.Communicator.world.Rank} on processor {MPI.Environment.ProcessorName}: " +
-						$"Now running SimplePFetiDPSolverTests.TestForPlane2DInternal with global coarse problem."));
-				SimplePFetiDPSolverTests.TestForPlane2DInternal(mpiEnvironment, false, false, false);
+				RunTestInMpiEnvironmentWithAllProviders(mpiEnvironment,
+					"SimplePFetiDPSolverTests.TestForPlane2DInternal with global coarse problem",
+					SimplePFetiDPSolverTests.TestForPlane2DInternal, false, false, false);
 
-				MpiDebugUtilities.DoSerially(MPI.Communicator.world,
-					() => Console.WriteLine(
-						$"Process {MPI.Communicator.world.Rank} on processor {MPI.Environment.ProcessorName}: " +
-						$"Now running SimplePFetiDPSolverTests.TestForBrick3DInternal with global coarse problem."));
-				SimplePFetiDPSolverTests.TestForBrick3DInternal(mpiEnvironment, false, false, false);
+				RunTestInMpiEnvironmentWithAllProviders(mpiEnvironment,
+					"SimplePFetiDPSolverTests.TestForBrick3DInternal with global coarse problem",
+					SimplePFetiDPSolverTests.TestForBrick3DInternal, false, false, false);
 
 				MpiDebugUtilities.DoSerially(MPI.Communicator.world,
 					() => Console.WriteLine(
 						$"Process {MPI.Communicator.world.Rank} on processor {MPI.Environment.ProcessorName}: " +
 						$"All tests passed"));
+			}
+		}
+
+		private static void RunTestInMpiEnvironment(MpiEnvironment mpiEnvironment, string testName,
+			Action<IComputeEnvironment> test)
+		{
+			MpiDebugUtilities.DoSerially(MPI.Communicator.world,
+					() => Console.WriteLine(
+						$"Process {MPI.Communicator.world.Rank} on processor {MPI.Environment.ProcessorName}: " +
+						$"Now running test {testName}."));
+			test(mpiEnvironment);
+		}
+
+		private static void RunTestInMpiEnvironmentWithAllProviders(MpiEnvironment mpiEnvironment, string testName,
+			Action<IComputeEnvironment, IImplementationProvider> test)
+		{
+			//TODO: get the name of the test by the delegate (probably using Reflection) instead of having it as an extra param
+			foreach (IImplementationProviderChoice provider in TestSettings.ProviderChoicesToTest)
+			{
+				MpiDebugUtilities.DoSerially(MPI.Communicator.world,
+					() => Console.WriteLine(
+						$"Process {MPI.Communicator.world.Rank} on processor {MPI.Environment.ProcessorName}: " +
+						$"Now running test {testName}, with provider {provider.ToString()}."));
+				test(mpiEnvironment, provider.Activate());
+			}
+		}
+
+		private static void RunTestInMpiEnvironmentWithAllProviders<T1>(MpiEnvironment mpiEnvironment, string testName,
+			Action<T1, IComputeEnvironment, IImplementationProvider> test, T1 param1)
+		{
+			//TODO: get the name of the test by the delegate (probably using Reflection) instead of having it as an extra param
+			foreach (IImplementationProviderChoice provider in TestSettings.ProviderChoicesToTest)
+			{
+				MpiDebugUtilities.DoSerially(MPI.Communicator.world,
+					() => Console.WriteLine(
+						$"Process {MPI.Communicator.world.Rank} on processor {MPI.Environment.ProcessorName}: " +
+						$"Now running test {testName}, with provider {provider.ToString()}."));
+				test(param1, mpiEnvironment, provider.Activate());
+			}
+		}
+
+		private static void RunTestInMpiEnvironmentWithAllProviders<T1, T2>(MpiEnvironment mpiEnvironment, string testName,
+			Action<T1, T2, IComputeEnvironment, IImplementationProvider> test, T1 param1, T2 param2)
+		{
+			//TODO: get the name of the test by the delegate (probably using Reflection) instead of having it as an extra param
+			foreach (IImplementationProviderChoice provider in TestSettings.ProviderChoicesToTest)
+			{
+				MpiDebugUtilities.DoSerially(MPI.Communicator.world,
+					() => Console.WriteLine(
+						$"Process {MPI.Communicator.world.Rank} on processor {MPI.Environment.ProcessorName}: " +
+						$"Now running test {testName}, with provider {provider.ToString()}."));
+				test(param1, param2, mpiEnvironment, provider.Activate());
+			}
+		}
+
+		private static void RunTestInMpiEnvironmentWithAllProviders<T1, T2, T3>(MpiEnvironment mpiEnvironment, string testName,
+			Action<T1, T2, T3, IComputeEnvironment, IImplementationProvider> test, T1 param1, T2 param2, T3 param3)
+		{
+			//TODO: get the name of the test by the delegate (probably using Reflection) instead of having it as an extra param
+			foreach (IImplementationProviderChoice provider in TestSettings.ProviderChoicesToTest)
+			{
+				MpiDebugUtilities.DoSerially(MPI.Communicator.world,
+					() => Console.WriteLine(
+						$"Process {MPI.Communicator.world.Rank} on processor {MPI.Environment.ProcessorName}: " +
+						$"Now running test {testName}, with provider {provider.ToString()}."));
+				test(param1, param2, param3, mpiEnvironment, provider.Activate());
 			}
 		}
 	}

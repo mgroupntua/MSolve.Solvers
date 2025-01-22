@@ -65,9 +65,9 @@ namespace MGroup.Solvers.DDM.Tests.ExampleModels
 			model.ConnectDataStructures();
 
 			// Solver
-			var solverFactory = new SkylineSolver.Factory();
+			var solverFactory = new LdlSkylineSolver.Factory();
 			GlobalAlgebraicModel<SkylineMatrix> algebraicModel = solverFactory.BuildAlgebraicModel(model);
-			SkylineSolver solver = solverFactory.BuildSolver(algebraicModel);
+			LdlSkylineSolver solver = solverFactory.BuildSolver(algebraicModel);
 
 			// Linear static analysis
 			var problem = new ProblemStructural(model, algebraicModel);

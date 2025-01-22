@@ -1,5 +1,6 @@
 namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 {
+	using MGroup.LinearAlgebra.Implementations;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.LinearAlgebra.Reordering;
 	using MGroup.LinearAlgebra.SchurComplements;
@@ -11,23 +12,26 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 	using MGroup.Solvers.DDM.LinearSystem;
 	using MGroup.Solvers.DDM.PSM.Dofs;
 
-	public class PsmSubdomainMatrixManagerSymmetricSuiteSparse : IPsmSubdomainMatrixManager
+	public class PsmSubdomainMatrixManagerSymmetricCsc : IPsmSubdomainMatrixManager
 	{
 		private readonly SubdomainLinearSystem<SymmetricCscMatrix> linearSystem;
+		private readonly IImplementationProvider provider;
+		private readonly AmdSymmetricOrdering reordering;
 		private readonly PsmSubdomainDofs subdomainDofs;
-		private readonly OrderingAmdSuiteSparse reordering = new OrderingAmdSuiteSparse();
 		private readonly SubmatrixExtractorCsrCscSym submatrixExtractor = new SubmatrixExtractorCsrCscSym();
 
 		private CsrMatrix Kbb;
 		private CsrMatrix Kbi;
 		private SymmetricCscMatrix Kii;
-		private CholeskySuiteSparse inverseKii;
+		private ICholeskySymmetricCsc inverseKii;
 
-		public PsmSubdomainMatrixManagerSymmetricSuiteSparse(
+		public PsmSubdomainMatrixManagerSymmetricCsc(IImplementationProvider provider,
 			SubdomainLinearSystem<SymmetricCscMatrix> linearSystem, PsmSubdomainDofs subdomainDofs)
 		{
+			this.provider = provider;
 			this.linearSystem = linearSystem;
 			this.subdomainDofs = subdomainDofs;
+			this.reordering = new AmdSymmetricOrdering(provider);
 		}
 
 		public bool IsEmpty => inverseKii == null;
@@ -42,14 +46,15 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 
 		public void ClearSubMatrices()
 		{
-			Kbb = null;
-			Kbi = null;
-			Kii = null;
 			if (inverseKii != null)
 			{
 				inverseKii.Dispose();
 			}
+
 			inverseKii = null;
+			Kii = null;
+			Kbb = null;
+			Kbi = null;
 		}
 
 		//TODO: Optimize this method. It is too slow.
@@ -77,7 +82,9 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 			{
 				inverseKii.Dispose();
 			}
-			inverseKii = CholeskySuiteSparse.Factorize(Kii, true);
+
+			inverseKii = provider.CreateCholeskyTriangulation();
+			inverseKii.Factorize(Kii);
 			Kii = null; // This memory is not overwritten, but it is not needed anymore either.
 		}
 
@@ -94,9 +101,8 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 			int[] internalDofs = subdomainDofs.DofsInternalToFree;
 			SymmetricCscMatrix Kff = linearSystem.Matrix;
 			(int[] rowIndicesKii, int[] colOffsetsKii) = submatrixExtractor.ExtractSparsityPattern(Kff, internalDofs);
-			bool oldToNew = false; //TODO: This should be provided by the reordering algorithm
-			(int[] permutation, _) = reordering.FindPermutation(
-				internalDofs.Length, rowIndicesKii.Length, rowIndicesKii, colOffsetsKii);
+			(int[] permutation, bool oldToNew) = reordering.FindPermutation(
+				internalDofs.Length, rowIndicesKii, colOffsetsKii);
 
 			subdomainDofs.ReorderInternalDofs(DofPermutation.Create(permutation, oldToNew));
 		}
@@ -105,9 +111,9 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 		{
 			public ISubdomainMatrixAssembler<SymmetricCscMatrix> CreateAssembler() => new SymmetricCscMatrixAssembler(true);
 
-			public IPsmSubdomainMatrixManager CreateMatrixManager(
+			public IPsmSubdomainMatrixManager CreateMatrixManager(IImplementationProvider provider,
 				SubdomainLinearSystem<SymmetricCscMatrix> linearSystem, PsmSubdomainDofs subdomainDofs)
-				=> new PsmSubdomainMatrixManagerSymmetricSuiteSparse(linearSystem, subdomainDofs);
+				=> new PsmSubdomainMatrixManagerSymmetricCsc(provider, linearSystem, subdomainDofs);
 		}
 	}
 }

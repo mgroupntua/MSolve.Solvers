@@ -1,41 +1,42 @@
-using System;
-using System.Diagnostics;
-using MGroup.LinearAlgebra.Matrices;
-using MGroup.LinearAlgebra.Triangulation;
-using MGroup.LinearAlgebra.Vectors;
-using MGroup.MSolve.Discretization;
-using MGroup.MSolve.Discretization.Entities;
-using MGroup.MSolve.Solution.LinearSystem;
-using MGroup.Solvers.AlgebraicModel;
-using MGroup.Solvers.Assemblers;
-using MGroup.Solvers.DofOrdering;
-using MGroup.Solvers.DofOrdering.Reordering;
-using MGroup.Solvers.LinearSystem;
-
 namespace MGroup.Solvers.Direct
 {
+	using System;
+	using System.Diagnostics;
+
+	using MGroup.LinearAlgebra.Implementations;
+	using MGroup.LinearAlgebra.Implementations.Managed;
+	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Triangulation;
+	using MGroup.LinearAlgebra.Vectors;
+	using MGroup.MSolve.Discretization;
+	using MGroup.MSolve.Discretization.Entities;
+	using MGroup.MSolve.Solution.LinearSystem;
+	using MGroup.Solvers.AlgebraicModel;
+	using MGroup.Solvers.Assemblers;
+	using MGroup.Solvers.DofOrdering;
+	using MGroup.Solvers.DofOrdering.Reordering;
+	using MGroup.Solvers.LinearSystem;
+
 	/// <summary>
 	/// Direct solver for models with only 1 subdomain. Uses Cholesky factorization on sparse symmetric positive definite 
-	/// matrices stored in symmetric (only the upper triangle) format. Uses native dlls from the SuiteSparse library. 
-	/// The factorized matrix and other data are stored in unmanaged memory and properly disposed by this class.
-	/// The default behaviour is to apply AMD reordering before Cholesky factorization.
-	/// Authors: Serafeim Bakalakos
+	/// matrices stored in symmetric (only the upper triangle) format. The default behaviour is to apply AMD reordering for the 
+	/// model's freedom degrees. The factorization algorithm and AMD reordering may be implemented in native dlls. In that case,  
+	/// the factorized matrix and other data stored in unmanaged memory will be properly disposed by this class.
 	/// </summary>
-	public class SuiteSparseSolver : SingleSubdomainSolverBase<SymmetricCscMatrix>, IDisposable
+	public class CholeskyCscSolver : SingleSubdomainSolverBase<SymmetricCscMatrix>, IDisposable
 	{
-		private const bool useSuperNodalFactorization = true; // For faster back/forward substitutions.
-		private readonly double factorizationPivotTolerance;
+		private readonly IImplementationProvider provider;
 
 		private bool mustFactorize = true;
-		private CholeskySuiteSparse factorization;
+		private ICholeskySymmetricCsc factorization;
 
-		private SuiteSparseSolver(GlobalAlgebraicModel<SymmetricCscMatrix> model, double factorizationPivotTolerance) 
+		private CholeskyCscSolver(IImplementationProvider provider, GlobalAlgebraicModel<SymmetricCscMatrix> model) 
 			: base(model, "SkylineSolver")
 		{
-			this.factorizationPivotTolerance = factorizationPivotTolerance;
+			this.provider = provider;
 		}
 
-		~SuiteSparseSolver()
+		~CholeskyCscSolver()
 		{
 			ReleaseResources();
 		}
@@ -82,7 +83,8 @@ namespace MGroup.Solvers.Direct
 			if (mustFactorize)
 			{
 				watch.Start();
-				factorization = CholeskySuiteSparse.Factorize(matrix, useSuperNodalFactorization);
+				factorization = provider.CreateCholeskyTriangulation();
+				factorization.Factorize(matrix);
 				watch.Stop();
 				Logger.LogTaskDuration("Matrix factorization", watch.ElapsedMilliseconds);
 				watch.Reset();
@@ -107,7 +109,8 @@ namespace MGroup.Solvers.Direct
 			if (mustFactorize)
 			{
 				watch.Start();
-				factorization = CholeskySuiteSparse.Factorize(matrix, useSuperNodalFactorization);
+				factorization = provider.CreateCholeskyTriangulation();
+				factorization.Factorize(matrix);
 				watch.Stop();
 				Logger.LogTaskDuration("Matrix factorization", watch.ElapsedMilliseconds);
 				watch.Reset();
@@ -161,15 +164,20 @@ namespace MGroup.Solvers.Direct
 
 		public class Factory
 		{
-			public Factory() { }
+			private readonly IImplementationProvider provider;
+
+			public Factory(IImplementationProvider provider) 
+			{
+				this.provider = provider;
+				DofOrderer = new DofOrderer(new NodeMajorDofOrderingStrategy(), new AmdReordering(provider));
+			}
 
 			public IDofOrderer DofOrderer { get; set; }
-				= new DofOrderer(new NodeMajorDofOrderingStrategy(), AmdReordering.CreateWithSuiteSparseAmd());
 
-			public double FactorizationPivotTolerance { get; set; } = 1E-15;
+			//public double FactorizationPivotTolerance { get; set; } = 1E-15; // Not used by the libraries undfortunately
 
-			public SuiteSparseSolver BuildSolver(GlobalAlgebraicModel<SymmetricCscMatrix> model)
-				=> new SuiteSparseSolver(model, FactorizationPivotTolerance);
+			public CholeskyCscSolver BuildSolver(GlobalAlgebraicModel<SymmetricCscMatrix> model)
+				=> new CholeskyCscSolver(provider, model);
 
 			public GlobalAlgebraicModel<SymmetricCscMatrix> BuildAlgebraicModel(IModel model)
 				=> new GlobalAlgebraicModel<SymmetricCscMatrix>(model, DofOrderer, new SymmetricCscMatrixAssembler());

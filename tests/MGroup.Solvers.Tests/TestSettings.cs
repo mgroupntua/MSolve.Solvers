@@ -1,58 +1,213 @@
 namespace MGroup.Solvers.Tests
 {
+	using System;
+	using System.IO;
+	using System.Reflection;
+	using System.Text.Json;
 
-	using MGroup.LinearAlgebra;
+	using MGroup.LinearAlgebra.Implementations;
+	using MGroup.LinearAlgebra.Implementations.Managed;
+	using MGroup.LinearAlgebra.Implementations.NativeWin64;
+	using MGroup.Solvers.Tests.TempUtilityClasses;
 
 	using Xunit;
 
-	// Currently SuiteSparse dlls call MKL dll
-	public enum TestSuiteSparseAndMklLibs
+	public static class TestSettings
 	{
-		Neither, MklOnly, Both
-	}
+		private static readonly IReadOnlyList<IEnvironmentChoice> environmentChoicesToTest;
 
-	public class TestSettings
-	{
-		// Set the appropriate enums and flags here, in order to choose which native library tests will be run.
-		private static readonly TestSuiteSparseAndMklLibs librariesToTest = TestSuiteSparseAndMklLibs.Neither;
-
-		public const string MessageWhenSkippingMKL = "MKL is not set to be tested. See TestSettings.cs for more.";
-
-		public const string MessageWhenSkippingSuiteSparse
-			= "SuiteSparse is not set to be tested. See TestSettings.cs for more.";
-
-		public static TheoryData<LinearAlgebraProviderChoice> ProvidersToTest
+		// Explicit static constructor to tell C# compiler not to mark type as beforefieldinit. Only required for laziness.
+		static TestSettings()
 		{
-			get
+			environmentChoicesToTest = new IEnvironmentChoice[]
 			{
-				var theoryData = new TheoryData<LinearAlgebraProviderChoice>();
-				theoryData.Add(LinearAlgebraProviderChoice.Managed);
-				if ((librariesToTest == TestSuiteSparseAndMklLibs.MklOnly) 
-					|| (librariesToTest == TestSuiteSparseAndMklLibs.Both))
-				{
-					theoryData.Add(LinearAlgebraProviderChoice.MKL);
-				}
-				return theoryData;
-			}
-		}
+				new SequentialEnvironmentChoice(), new TplEnvironmentChoice(),
+			};
 
-		public static bool TestMkl => (librariesToTest == TestSuiteSparseAndMklLibs.MklOnly) 
-			|| (librariesToTest == TestSuiteSparseAndMklLibs.Both);
+			EnvironmentsToTestAsTheoryData = new TheoryData<IEnvironmentChoice>();
+			EnvironmentsToTestAsTheoryData.Add(new SequentialEnvironmentChoice());
+			EnvironmentsToTestAsTheoryData.Add(new TplEnvironmentChoice());
 
-		public static bool TestSuiteSparse => (librariesToTest == TestSuiteSparseAndMklLibs.Both);
+			LibsToTest = NativeLibsToTest.CreateWithNone();
+			ProvidersToTestAsTheoryData = new TheoryData<IImplementationProvider>();
+			var providersToTest = new List<IImplementationProvider>();
+			ProvidersToTest = providersToTest;
+			var providerChoicesToTest = new List<IImplementationProviderChoice>();
+			ProviderChoicesToTest = providerChoicesToTest;
 
-		public static void RunMultiproviderTest(LinearAlgebraProviderChoice providers, Action test)
-		{
-			LinearAlgebraProviderChoice defaultProviders = LibrarySettings.LinearAlgebraProviders; // Store it for later
-			LibrarySettings.LinearAlgebraProviders = providers;
+			// Always test the managed sequential implementation
+			ProvidersToTestAsTheoryData.Add(new ManagedSequentialImplementationProvider());
+			providersToTest.Add(new ManagedSequentialImplementationProvider());
+			providerChoicesToTest.Add(new ManagedSequentialProviderChoice());
 
 			try
 			{
-				test();
+				// Read from JSON
+				string execDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+				string jsonFile = Path.Combine(execDirectory, "NativeLibsToTest.json");
+				string jsonText = File.ReadAllText(jsonFile);
+
+				// Currently there is no reason to test MKL without SuiteSparse. SuiteSparse dlls depend on MKL dlls.
+				var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+				NativeLibsToTest? deserialized = JsonSerializer.Deserialize<NativeLibsToTest>(jsonText, options);
+				if (deserialized != null)
+				{
+					LibsToTest = deserialized;
+					if (LibsToTest.Win64IntelMkl && LibsToTest.Win64SuiteSparse)
+					{
+						ProvidersToTestAsTheoryData.Add(new NativeWin64ImplementationProvider());
+						providersToTest.Add(new NativeWin64ImplementationProvider());
+						providerChoicesToTest.Add(new NativeWin64ProviderChoice());
+					}
+				}
 			}
-			finally
+			catch (Exception ex)
 			{
-				LibrarySettings.LinearAlgebraProviders = defaultProviders; // Once finished, reset the default providers
+				// If reading native lib options fails for any reason, do nothing (use only managed providers).
+			}
+		}
+
+		public static NativeLibsToTest LibsToTest { get; }
+
+		public static TheoryData<IEnvironmentChoice> EnvironmentsToTestAsTheoryData { get; }
+
+		public static IReadOnlyList<IImplementationProvider> ProvidersToTest { get; }
+
+		public static IReadOnlyList<IImplementationProviderChoice> ProviderChoicesToTest { get; }
+
+		public static TheoryData<IImplementationProvider> ProvidersToTestAsTheoryData { get; }
+
+		public const string SkipMessage =
+			"This native library is not set to be tested. You can set it in NativeLibsToTest.json. See TestSettings.cs for more.";
+
+		public static void CombineTheoryDataWithAllProviders<T1>(
+			TheoryData<T1, IImplementationProviderChoice> theoryData, T1 param1)
+		{
+			foreach (IImplementationProviderChoice provider in ProviderChoicesToTest)
+			{
+				theoryData.Add(param1, provider);
+			}
+		}
+
+		public static void CombineTheoryDataWithAllProviders<T1, T2>(
+			TheoryData<T1, T2, IImplementationProviderChoice> theoryData, T1 param1, T2 param2)
+		{
+			foreach (IImplementationProviderChoice provider in ProviderChoicesToTest)
+			{
+				theoryData.Add(param1, param2, provider);
+			}
+		}
+
+		public static void CombineTheoryDataWithAllProviders<T1, T2, T3>(
+			TheoryData<T1, T2, T3, IImplementationProviderChoice> theoryData, T1 param1, T2 param2, T3 param3)
+		{
+			foreach (IImplementationProviderChoice provider in ProviderChoicesToTest)
+			{
+				theoryData.Add(param1, param2, param3, provider);
+			}
+		}
+
+		public static void CombineTheoryDataWithAllProviders<T1, T2, T3, T4>(
+			TheoryData<T1, T2, T3, T4, IImplementationProviderChoice> theoryData, T1 param1, T2 param2, T3 param3, T4 param4)
+		{
+			foreach (IImplementationProviderChoice provider in ProviderChoicesToTest)
+			{
+				theoryData.Add(param1, param2, param3, param4, provider);
+			}
+		}
+
+		public static void CombineTheoryDataWithAllProviders<T1, T2, T3, T4, T5>(
+			TheoryData<T1, T2, T3, T4, T5, IImplementationProviderChoice> theoryData,
+			T1 param1, T2 param2, T3 param3, T4 param4, T5 param5)
+		{
+			foreach (IImplementationProviderChoice provider in ProviderChoicesToTest)
+			{
+				theoryData.Add(param1, param2, param3, param4, param5, provider);
+			}
+		}
+
+		public static void CombineTheoryDataWithAllProviders<T1, T2, T3, T4, T5, T6>(
+			TheoryData<T1, T2, T3, T4, T5, T6, IImplementationProviderChoice> theoryData,
+			T1 param1, T2 param2, T3 param3, T4 param4, T5 param5, T6 param6)
+		{
+			foreach (IImplementationProviderChoice provider in ProviderChoicesToTest)
+			{
+				theoryData.Add(param1, param2, param3, param4, param5, param6, provider);
+			}
+		}
+
+		public static void CombineTheoryDataWithAllProvidersAndEnvironments(
+			TheoryData<IEnvironmentChoice, IImplementationProviderChoice> theoryData)
+		{
+			foreach (IEnvironmentChoice environment in environmentChoicesToTest)
+			{
+				foreach (IImplementationProviderChoice provider in ProviderChoicesToTest)
+				{
+					theoryData.Add(environment, provider);
+				}
+			}
+		}
+
+		public static void CombineTheoryDataWithAllProvidersAndEnvironments<T1>(
+			TheoryData<T1, IEnvironmentChoice, IImplementationProviderChoice> theoryData, T1 param1)
+		{
+			foreach (IEnvironmentChoice environment in environmentChoicesToTest)
+			{
+				foreach (IImplementationProviderChoice provider in ProviderChoicesToTest)
+				{
+					theoryData.Add(param1, environment, provider);
+				}
+			}
+		}
+
+		public static void CombineTheoryDataWithAllProvidersAndEnvironments<T1, T2>(
+			TheoryData<T1, T2, IEnvironmentChoice, IImplementationProviderChoice> theoryData, T1 param1, T2 param2)
+		{
+			foreach (IEnvironmentChoice environment in environmentChoicesToTest)
+			{
+				foreach (IImplementationProviderChoice provider in ProviderChoicesToTest)
+				{
+					theoryData.Add(param1, param2, environment, provider);
+				}
+			}
+		}
+
+		public static void CombineTheoryDataWithAllProvidersAndEnvironments<T1, T2, T3>(
+			TheoryData<T1, T2, T3, IEnvironmentChoice, IImplementationProviderChoice> theoryData,
+			T1 param1, T2 param2, T3 param3)
+		{
+			foreach (IEnvironmentChoice environment in environmentChoicesToTest)
+			{
+				foreach (IImplementationProviderChoice provider in ProviderChoicesToTest)
+				{
+					theoryData.Add(param1, param2, param3, environment, provider);
+				}
+			}
+		}
+
+		public static void CombineTheoryDataWithAllProvidersAndEnvironments<T1, T2, T3, T4>(
+			TheoryData<T1, T2, T3, T4, IEnvironmentChoice, IImplementationProviderChoice> theoryData,
+			T1 param1, T2 param2, T3 param3, T4 param4)
+		{
+			foreach (IEnvironmentChoice environment in environmentChoicesToTest)
+			{
+				foreach (IImplementationProviderChoice provider in ProviderChoicesToTest)
+				{
+					theoryData.Add(param1, param2, param3, param4, environment, provider);
+				}
+			}
+		}
+
+		public static void CombineTheoryDataWithAllProvidersAndEnvironments<T1, T2, T3, T4, T5>(
+			TheoryData<T1, T2, T3, T4, T5, IEnvironmentChoice, IImplementationProviderChoice> theoryData,
+			T1 param1, T2 param2, T3 param3, T4 param4, T5 param5)
+		{
+			foreach (IEnvironmentChoice environment in environmentChoicesToTest)
+			{
+				foreach (IImplementationProviderChoice provider in ProviderChoicesToTest)
+				{
+					theoryData.Add(param1, param2, param3, param4, param5, environment, provider);
+				}
 			}
 		}
 	}

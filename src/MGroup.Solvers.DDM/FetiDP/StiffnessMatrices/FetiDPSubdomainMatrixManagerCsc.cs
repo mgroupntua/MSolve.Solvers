@@ -1,5 +1,6 @@
 namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 {
+	using MGroup.LinearAlgebra.Implementations;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.LinearAlgebra.SchurComplements;
 	using MGroup.LinearAlgebra.SchurComplements.SubmatrixExtractors;
@@ -10,10 +11,11 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 	using MGroup.Solvers.DDM.FetiDP.Dofs;
 	using MGroup.Solvers.DDM.LinearSystem;
 
-	public class FetiDPSubdomainMatrixManagerCSparse : IFetiDPSubdomainMatrixManager
+	public class FetiDPSubdomainMatrixManagerCsc : IFetiDPSubdomainMatrixManager
 	{
 		private readonly bool clearKrrAfterFactorization;
 		private readonly SubdomainLinearSystem<CsrMatrix> linearSystem;
+		private readonly IImplementationProvider provider;
 		private readonly FetiDPSubdomainDofs subdomainDofs;
 		private readonly SubmatrixExtractorPckCsrCscSym submatrixExtractorBoundaryInternal = new SubmatrixExtractorPckCsrCscSym();
 		private readonly SubmatrixExtractorFullCsrCsc submatrixExtractorCornerRemainder = new SubmatrixExtractorFullCsrCsc();
@@ -22,13 +24,14 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 		private CsrMatrix Kbi, Kcr;
 		private CsrMatrix Kib, Krc;
 		private CscMatrix Kii, Krr;
-		private LUCSparseNet inverseKii, inverseKrr;
+		private ILUCscFactorization inverseKii, inverseKrr;
 		private DiagonalMatrix inverseKiiDiagonal;
 		private Matrix Scc;
 
-		public FetiDPSubdomainMatrixManagerCSparse(SubdomainLinearSystem<CsrMatrix> linearSystem, 
-			FetiDPSubdomainDofs subdomainDofs, bool clearKrrAfterFactorization)
+		public FetiDPSubdomainMatrixManagerCsc(IImplementationProvider provider,
+			SubdomainLinearSystem<CsrMatrix> linearSystem, FetiDPSubdomainDofs subdomainDofs, bool clearKrrAfterFactorization)
 		{
+			this.provider = provider;
 			this.linearSystem = linearSystem;
 			this.subdomainDofs = subdomainDofs;
 			this.clearKrrAfterFactorization = clearKrrAfterFactorization;
@@ -40,7 +43,17 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 
 		public Matrix CalcInvKrrTimesKrc()
 		{
-			throw new NotImplementedException();
+			int numRemainderDofs = Krc.NumRows;
+			int numCornerDofs = Krc.NumColumns;
+			var result = Matrix.CreateZero(numRemainderDofs, numCornerDofs);
+			for (int j = 0; j < numCornerDofs; ++j)
+			{
+				Vector colKrc = Krc.GetColumn(j);
+				Vector colResult = inverseKrr.SolveLinearSystem(colKrc);
+				result.SetSubcolumn(j, colResult, 0);
+			}
+
+			return result;
 		}
 
 		public void CalcSchurComplementOfRemainderDofs()
@@ -51,12 +64,22 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 
 		public void ClearSubMatrices()
 		{
+			if (inverseKrr != null)
+			{
+				inverseKrr.Dispose();
+			}
+
 			inverseKrr = null;
 			Kcc = null;
 			Kcr = null;
 			Krc = null;
 			Krr = null;
 			Scc = null;
+
+			if (inverseKii != null)
+			{
+				inverseKii.Dispose();
+			}
 
 			inverseKii = null;
 			inverseKiiDiagonal = null;
@@ -109,14 +132,28 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 			}
 			else
 			{
-				inverseKii = LUCSparseNet.Factorize(Kii);
+				if (inverseKii != null)
+				{
+					inverseKii.Dispose();
+				}
+
+				inverseKii = provider.CreateLUTriangulation();
+				inverseKii.Factorize(Kii);
 			}
+
 			Kii = null; // It has not been mutated, but it is no longer needed
 		}
 
 		public void InvertKrr()
 		{
-			inverseKrr = LUCSparseNet.Factorize(Krr);
+			if (inverseKrr != null)
+			{
+				inverseKrr.Dispose();
+			}
+
+			inverseKrr = provider.CreateLUTriangulation();
+			inverseKrr.Factorize(Krr);
+
 			if (clearKrrAfterFactorization)
 			{
 				Krr = null; // It has not been mutated, but it is no longer needed
@@ -164,10 +201,12 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 
 			public ISubdomainMatrixAssembler<CsrMatrix> CreateAssembler() => new CsrMatrixAssembler(false);
 
-
-			public IFetiDPSubdomainMatrixManager CreateMatrixManager(
+			public IFetiDPSubdomainMatrixManager CreateMatrixManager(IImplementationProvider provider,
 				SubdomainLinearSystem<CsrMatrix> linearSystem, FetiDPSubdomainDofs subdomainDofs)
-				=> new FetiDPSubdomainMatrixManagerCSparse(linearSystem, subdomainDofs, clearKrrAfterFactorization);
+			{
+				return new FetiDPSubdomainMatrixManagerCsc(
+					provider, linearSystem, subdomainDofs, clearKrrAfterFactorization);
+			}
 		}
 	}
 }

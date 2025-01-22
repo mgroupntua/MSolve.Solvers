@@ -3,6 +3,7 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 	using MGroup.Constitutive.Structural;
 	using MGroup.Environments;
 	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
+	using MGroup.LinearAlgebra.Implementations;
 	using MGroup.LinearAlgebra.Iterative;
 	using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
 	using MGroup.LinearAlgebra.Matrices;
@@ -18,30 +19,45 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 	using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
 	using MGroup.Solvers.DDM.Tests.ExampleModels;
 	using MGroup.Solvers.Results;
-
+	using MGroup.Solvers.Tests;
+	using MGroup.Solvers.Tests.TempUtilityClasses;
 	using Xunit;
 
 	[Collection("Sequential")]
 	public static class PapagiannakisPFetiDPSolverTests
 	{
+		public static TheoryData<double, bool, int, double, IEnvironmentChoice, IImplementationProviderChoice> DataForTest_8
+		{
+			get
+			{
+				var data = new TheoryData<double, bool, int, double, IEnvironmentChoice, IImplementationProviderChoice>();
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1.0, true, 10, 1.53E-9);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E3, false, 11, 2.32E-10);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E3, true, 25, 2.86E-10);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E4, false, 11, 3.47E-10 /*relaxed from 1.73E-10*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E4, true, 33, 1.46E-9);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E5, false, 11, 4E-9 /*relaxed from  1.05E-9*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E5, true, 38, 3E-9 /*relaxed from 5.9E-10*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E6, false, 11, 2.00E-7);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E6, true, 53, 2.24E-7);
+				return data;
+			}
+		}
+
 		[Theory]
-		[InlineData(1.0, true, 10, 1.53E-9, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E3, false, 11, 2.32E-10, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E3, true, 25, 2.86E-10, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E4, false, 11, 3.47E-10 /*relaxed from 1.73E-10*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E4, true, 33, 1.46E-9, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E5, false, 11, 4E-9 /*relaxed from  1.05E-9*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E5, true, 38, 3E-9 /*relaxed from 5.9E-10*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E6, false, 11, 2.00E-7, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E6, true, 53, 2.24E-7, EnvironmentChoice.SequentialShared)]
+		[MemberData(nameof(DataForTest_8))]
 		public static void RunTest_8(double stiffnessRatio, bool ignoreHeterogenity, int numIterationsExpected, 
-			double errorExpected, EnvironmentChoice environmentChoice)
-			=> RunTest_8_Internal(stiffnessRatio, ignoreHeterogenity, numIterationsExpected, errorExpected, 
-				environmentChoice.CreateEnvironment());
+			double errorExpected, IEnvironmentChoice environment, IImplementationProviderChoice provider)
+		{
+			RunTest_8_Internal(stiffnessRatio, ignoreHeterogenity, numIterationsExpected, errorExpected,
+				environment.Activate(), provider.Activate());
+		}
 
 		internal static void RunTest_8_Internal(double stiffnessRatio, bool ignoreHeterogenity, int numIterationsExpected,
-			double errorExpected, IComputeEnvironment environment, bool isCoarseProblemDistributed = false)
+			double errorExpected, IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
 		{
+			bool isCoarseProblemDistributed = false;
+
 			// Model
 			(Model model, ComputeNodeTopology nodeTopology) = PapagiannakisExample_8.CreateMultiSubdomainModel(stiffnessRatio);
 			model.ConnectDataStructures(); //TODOMPI: this is also done in the analyzer
@@ -52,8 +68,8 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 
 			// Solver
 			var solverFactory = new PFetiDPSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCSparse.Factory(),
-				cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCSparse.Factory(true));
+				environment, laProviderForSolver, new PsmSubdomainMatrixManagerSymmetricCsc.Factory(),
+				cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCsc.Factory(true));
 
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
@@ -80,7 +96,7 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 			}
 			else
 			{
-				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCSparse();
+				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCsc(laProviderForSolver);
 				solverFactory.CoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
 			}
 
@@ -110,21 +126,35 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 			Assert.InRange(error, 0, errorExpected);
 		}
 
+		public static TheoryData<double, int, double, IEnvironmentChoice, IImplementationProviderChoice> DataForTest_9_1
+		{
+			get
+			{
+				var data = new TheoryData<double, int, double, IEnvironmentChoice, IImplementationProviderChoice>();
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1.0, 11, 2E-8 /*relaxed from 4.94E-9*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E2, 11, 7E-10 /*relaxed from 3.06E-10*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E3, 12, 6.27E-11 /*relaxed from 1.14E-11*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E4, 12, 9.92E-10);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E5, 12, 7.76E-9);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E6, 13, 1E-7 /*relaxed from 2.97E-8*/);
+				return data;
+			}
+		}
+
 		[Theory]
-		[InlineData(1.0, 11, 2E-8 /*relaxed from 4.94E-9*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E2, 11, 7E-10 /*relaxed from 3.06E-10*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E3, 12, 5.22E-11 /*relaxed from 1.14E-11*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E4, 12, 9.92E-10, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E5, 12, 7.76E-9, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E6, 13, 1E-7 /*relaxed from 2.97E-8*/, EnvironmentChoice.SequentialShared)]
-		public static void RunTest_9_1(
-			double stiffnessRatio, int numIterationsExpected, double errorExpected, EnvironmentChoice environmentChoice)
-			=> RunTest_9_1_Internal(
-				stiffnessRatio, numIterationsExpected, errorExpected, environmentChoice.CreateEnvironment());
+		[MemberData(nameof(DataForTest_9_1))]
+		public static void RunTest_9_1(double stiffnessRatio, int numIterationsExpected, double errorExpected,
+			IEnvironmentChoice environment, IImplementationProviderChoice provider)
+		{
+			RunTest_9_1_Internal(stiffnessRatio, numIterationsExpected, errorExpected,
+				environment.Activate(), provider.Activate());
+		}
 
 		internal static void RunTest_9_1_Internal(double stiffnessRatio, int numIterationsExpected, double errorExpected, 
-			IComputeEnvironment environment, bool isCoarseProblemDistributed = false)
+			IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
 		{
+			bool isCoarseProblemDistributed = false;
+
 			// Model
 			(Model model, ComputeNodeTopology nodeTopology) = PapagiannakisExample_9_1.CreateMultiSubdomainModel(stiffnessRatio);
 			model.ConnectDataStructures(); //TODOMPI: this is also done in the analyzer
@@ -135,8 +165,8 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 
 			// Solver
 			var solverFactory = new PFetiDPSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCSparse.Factory(),
-				cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCSparse.Factory(true));
+				environment, laProviderForSolver, new PsmSubdomainMatrixManagerSymmetricCsc.Factory(),
+				cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCsc.Factory(true));
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
 				// Papagiannakis specified these and reported the number of iterations and the error from direct solver.
@@ -162,7 +192,7 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 			}
 			else
 			{
-				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCSparse();
+				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCsc(laProviderForSolver);
 				solverFactory.CoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
 			}
 			solverFactory.IsHomogeneousProblem = stiffnessRatio == 1.0;
@@ -191,21 +221,35 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 			Assert.InRange(error, 0, errorExpected);
 		}
 
+		public static TheoryData<double, int, double, IEnvironmentChoice, IImplementationProviderChoice> DataForTest_9_2
+		{
+			get
+			{
+				var data = new TheoryData<double, int, double, IEnvironmentChoice, IImplementationProviderChoice>();
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1.0, 7, 1E-7 /*relaxed from 1.09E-10*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E2, 8, 2E-7 /*relaxed from 8.43E-10*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E3, 7, 6E-7 /*relaxed from 4.74E-8*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E4, 7, 5E-7 /*relaxed from 4.96E-8*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E5, 7, 5E-7 /*relaxed from 5.14E-8*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, 1E6, 7, 5E-7 /*relaxed from 5.20E-8*/);
+				return data;
+			}
+		}
+
 		[Theory]
-		[InlineData(1.0, 7, 1E-7 /*relaxed from 1.09E-10*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E2, 8, 2E-7 /*relaxed from 8.43E-10*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E3, 7, 6E-7 /*relaxed from 4.74E-8*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E4, 7, 5E-7 /*relaxed from 4.96E-8*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E5, 7, 5E-7 /*relaxed from 5.14E-8*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1E6, 7, 5E-7 /*relaxed from 5.20E-8*/, EnvironmentChoice.SequentialShared)]
-		public static void RunTest_9_2(
-			double stiffnessRatio, int numIterationsExpected, double errorExpected, EnvironmentChoice environmentChoice)
-			=> RunTest_9_2_Internal(
-				stiffnessRatio, numIterationsExpected, errorExpected, environmentChoice.CreateEnvironment());
+		[MemberData(nameof(DataForTest_9_2))]
+		public static void RunTest_9_2(double stiffnessRatio, int numIterationsExpected, double errorExpected,
+			IEnvironmentChoice environment, IImplementationProviderChoice provider)
+		{
+			RunTest_9_2_Internal(stiffnessRatio, numIterationsExpected, errorExpected,
+				environment.Activate(), provider.Activate());
+		}
 
 		internal static void RunTest_9_2_Internal(double stiffnessRatio, int numIterationsExpected, double errorExpected,
-			IComputeEnvironment environment, bool isCoarseProblemDistributed = false)
+			IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
 		{
+			bool isCoarseProblemDistributed = false;
+
 			// Model
 			(Model model, ComputeNodeTopology nodeTopology) = PapagiannakisExample_9_2.CreateMultiSubdomainModel(stiffnessRatio);
 			model.ConnectDataStructures(); //TODOMPI: this is also done in the analyzer
@@ -216,8 +260,8 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 
 			// Solver
 			var solverFactory = new PFetiDPSolver<SymmetricCscMatrix>.Factory(
-				environment, new PsmSubdomainMatrixManagerSymmetricCSparse.Factory(),
-				cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCSparse.Factory(true));
+				environment, laProviderForSolver, new PsmSubdomainMatrixManagerSymmetricCsc.Factory(),
+				cornerDofs, new FetiDPSubdomainMatrixManagerSymmetricCsc.Factory(true));
 
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
@@ -244,7 +288,7 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 			}
 			else
 			{
-				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCSparse();
+				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCsc(laProviderForSolver);
 				solverFactory.CoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
 			}
 

@@ -7,6 +7,8 @@ namespace MGroup.Solvers.DDM.FetiDP
 	using MGroup.LinearAlgebra.Distributed.IterativeMethods;
 	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
 	using MGroup.LinearAlgebra.Distributed.Overlapping;
+	using MGroup.LinearAlgebra.Implementations;
+	using MGroup.LinearAlgebra.Implementations.Managed;
 	using MGroup.LinearAlgebra.Iterative;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.MSolve.Discretization.Entities;
@@ -44,6 +46,7 @@ namespace MGroup.Solvers.DDM.FetiDP
 		private readonly string name;
 		private readonly ObjectiveConvergenceCriterion<TMatrix> objectiveConvergenceCriterion;
 		private readonly IFetiDPPreconditioner preconditioner;
+		private readonly IImplementationProvider provider;
 		private readonly FetiDPReanalysisOptions reanalysis;
 		private readonly IFetiDPScaling scaling;
 		private readonly FetiDPSolutionRecovery solutionRecovery;
@@ -52,13 +55,13 @@ namespace MGroup.Solvers.DDM.FetiDP
 		private readonly ConcurrentDictionary<int, IFetiDPSubdomainMatrixManager> subdomainMatrices;
 		private readonly ISubdomainTopology subdomainTopology;
 		private readonly ConcurrentDictionary<int, FetiDPSubdomainRhsVectors> subdomainVectors;
-		private readonly bool directSolverIsNative = false;
+		private readonly bool directSolverIsParallel = false;
 
 		private int analysisIteration;
 		private DistributedOverlappingIndexer lagrangeVectorIndexer;
 
 		private FetiDPSolver(IComputeEnvironment environment, IModel model, DistributedAlgebraicModel<TMatrix> algebraicModel,
-			IFetiDPSubdomainMatrixManagerFactory<TMatrix> matrixManagerFactory,
+			IImplementationProvider provider, IFetiDPSubdomainMatrixManagerFactory<TMatrix> matrixManagerFactory,
 			bool explicitSubdomainMatrices, IFetiDPPreconditioner preconditioner,
 			IFetiDPInterfaceProblemSolverFactory interfaceProblemSolverFactory, ICornerDofSelection cornerDofs,
 			IFetiDPCoarseProblemFactory coarseProblemFactory, ICrossPointStrategy crossPointStrategy,
@@ -69,6 +72,7 @@ namespace MGroup.Solvers.DDM.FetiDP
 			this.environment = environment;
 			this.model = model;
 			this.algebraicModel = algebraicModel;
+			this.provider = provider;
 			this.cornerDofs = cornerDofs;
 			this.crossPointStrategy = crossPointStrategy;
 			this.subdomainTopology = algebraicModel.SubdomainTopology;
@@ -85,7 +89,7 @@ namespace MGroup.Solvers.DDM.FetiDP
 				SubdomainLinearSystem<TMatrix> linearSystem = algebraicModel.SubdomainLinearSystems[subdomainID];
 				var dofs = new FetiDPSubdomainDofs(model.GetSubdomain(subdomainID), linearSystem);
 				var lagranges = new SubdomainLagranges(model, subdomainID, subdomainTopology, dofs, crossPointStrategy);
-				IFetiDPSubdomainMatrixManager matrices = matrixManagerFactory.CreateMatrixManager(linearSystem, dofs);
+				IFetiDPSubdomainMatrixManager matrices = matrixManagerFactory.CreateMatrixManager(provider, linearSystem, dofs);
 				var vectors = new FetiDPSubdomainRhsVectors(linearSystem, dofs, lagranges, matrices);
 
 				subdomainDofs[subdomainID] = dofs;
@@ -166,13 +170,13 @@ namespace MGroup.Solvers.DDM.FetiDP
 			Logger = new SolverLogger(name);
 			LoggerDdm = logger;
 
-			if (matrixManagerFactory is FetiDPSubdomainMatrixManagerSymmetricSuiteSparse.Factory)
+			if (provider is ManagedSequentialImplementationProvider)
 			{
-				directSolverIsNative = true;
+				directSolverIsParallel = false;
 			}
 			else
 			{
-				directSolverIsNative = false;
+				directSolverIsParallel = true;
 			}
 
 			analysisIteration = 0;
@@ -187,7 +191,6 @@ namespace MGroup.Solvers.DDM.FetiDP
 		public DdmLogger LoggerDdm { get; }
 
 		public string Name => name;
-
 
 		public virtual void HandleMatrixWillBeSet()
 		{
@@ -365,7 +368,7 @@ namespace MGroup.Solvers.DDM.FetiDP
 
 			//TODO: This should be done together with the extraction. However SuiteSparse already uses multiple threads and should
 			//		not be parallelized at subdomain level too. Instead environment.DoPerNode should be able to run tasks serially by reading a flag.
-			if (directSolverIsNative)
+			if (directSolverIsParallel)
 			{
 				environment.DoPerNodeSerially(subdomainID =>
 				{
@@ -488,12 +491,14 @@ namespace MGroup.Solvers.DDM.FetiDP
 		{
 			private readonly ICornerDofSelection cornerDofs;
 			private readonly IComputeEnvironment environment;
+			private readonly IImplementationProvider provider;
 
-			public Factory(IComputeEnvironment environment, ICornerDofSelection cornerDofs,
+			public Factory(IComputeEnvironment environment, IImplementationProvider provider, ICornerDofSelection cornerDofs,
 				IFetiDPSubdomainMatrixManagerFactory<TMatrix> matrixManagerFactory)
 			{
 				this.environment = environment;
 				this.cornerDofs = cornerDofs;
+				this.provider = provider;
 
 				CrossPointStrategy = new FullyRedundantLagranges();
 				DofOrderer = new DofOrderer(new NodeMajorDofOrderingStrategy(), new NullReordering());
@@ -503,7 +508,7 @@ namespace MGroup.Solvers.DDM.FetiDP
 				IsHomogeneousProblem = true;
 				FetiDPMatricesFactory = matrixManagerFactory;
 				Preconditioner = new FetiDPDirichletPreconditioner();
-				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCSparse();
+				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCsc(provider);
 				this.CoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
 				ReanalysisOptions = FetiDPReanalysisOptions.CreateWithAllDisabled();
 				SubdomainTopology = new SubdomainTopologyGeneral();
@@ -541,7 +546,7 @@ namespace MGroup.Solvers.DDM.FetiDP
 			public virtual FetiDPSolver<TMatrix> BuildSolver(IModel model, DistributedAlgebraicModel<TMatrix> algebraicModel)
 			{
 				DdmLogger logger = EnableLogging ? new DdmLogger(environment, "FETI-DP Solver", model.NumSubdomains) : null;
-				return new FetiDPSolver<TMatrix>(environment, model, algebraicModel, FetiDPMatricesFactory,
+				return new FetiDPSolver<TMatrix>(environment, model, algebraicModel, provider, FetiDPMatricesFactory,
 					ExplicitSubdomainMatrices, Preconditioner, InterfaceProblemSolverFactory, cornerDofs, CoarseProblemFactory,
 					CrossPointStrategy, IsHomogeneousProblem, logger, ReanalysisOptions);
 			}

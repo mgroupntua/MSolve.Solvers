@@ -19,7 +19,7 @@ namespace MGroup.Solvers.Direct
 	/// matrices stored in Skyline format.
 	/// Authors: Serafeim Bakalakos
 	/// </summary>
-	public class SkylineSolver : SingleSubdomainSolverBase<SkylineMatrix>
+	public class LdlSkylineSolver : SingleSubdomainSolverBase<SkylineMatrix>
 	{
 		private readonly double factorizationPivotTolerance;
 
@@ -27,7 +27,7 @@ namespace MGroup.Solvers.Direct
 		private bool mustFactorize = true;
 		private LdlSkyline factorizedMatrix;
 
-		private SkylineSolver(GlobalAlgebraicModel<SkylineMatrix> model, double factorizationPivotTolerance) 
+		private LdlSkylineSolver(GlobalAlgebraicModel<SkylineMatrix> model, double factorizationPivotTolerance) 
 			: base(model, "SkylineSolver")
 		{
 			this.factorizationPivotTolerance = factorizationPivotTolerance;
@@ -138,9 +138,9 @@ namespace MGroup.Solvers.Direct
 
 			public double FactorizationPivotTolerance { get; set; } = 1E-15;
 
-			public SkylineSolver BuildSolver(GlobalAlgebraicModel<SkylineMatrix> model)
+			public LdlSkylineSolver BuildSolver(GlobalAlgebraicModel<SkylineMatrix> model)
 			{
-				return new SkylineSolver(model, FactorizationPivotTolerance);
+				return new LdlSkylineSolver(model, FactorizationPivotTolerance);
 			}
 
 			public GlobalAlgebraicModel<SkylineMatrix> BuildAlgebraicModel(IModel model)
