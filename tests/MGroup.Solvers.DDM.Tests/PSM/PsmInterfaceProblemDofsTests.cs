@@ -10,6 +10,8 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 	using MGroup.Solvers.DDM.Tests.Commons;
 	using MGroup.Solvers.DDM.Tests.ExampleModels;
 	using MGroup.Solvers.DofOrdering;
+	using MGroup.Solvers.Tests;
+	using MGroup.Solvers.Tests.TempUtilityClasses;
 
 	using Xunit;
 
@@ -17,10 +19,9 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 	public class PsmInterfaceProblemDofsTests
 	{
 		[Theory]
-		[InlineData(EnvironmentChoice.SequentialShared)]
-		[InlineData(EnvironmentChoice.TplShared)]
-		public static void TestForLine1D(EnvironmentChoice environmentChoice) 
-			=> TestForLine1DInternal(environmentChoice.CreateEnvironment());
+		[MemberData(nameof(TestSettings.EnvironmentsToTestAsTheoryData), MemberType = typeof(TestSettings))]
+		public static void TestForLine1D(IEnvironmentChoice environment) 
+			=> TestForLine1DInternal(environment.Activate());
 
 		internal static void TestForLine1DInternal(IComputeEnvironment environment)
 		{
@@ -35,10 +36,9 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 		}
 
 		[Theory]
-		[InlineData(EnvironmentChoice.SequentialShared)]
-		[InlineData(EnvironmentChoice.TplShared)]
-		public static void TestForPlane2D(EnvironmentChoice environmentChoice)
-			=> TestForPlane2DInternal(environmentChoice.CreateEnvironment());
+		[MemberData(nameof(TestSettings.EnvironmentsToTestAsTheoryData), MemberType = typeof(TestSettings))]
+		public static void TestForPlane2D(IEnvironmentChoice environment)
+			=> TestForPlane2DInternal(environment.Activate());
 
 		internal static void TestForPlane2DInternal(IComputeEnvironment environment)
 		{

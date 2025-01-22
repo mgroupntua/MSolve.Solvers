@@ -4,7 +4,7 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 	using MGroup.Environments;
 	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
 	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG.Reorthogonalization;
-	using MGroup.LinearAlgebra.Implementations.Managed;
+	using MGroup.LinearAlgebra.Implementations;
 	using MGroup.LinearAlgebra.Iterative;
 	using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
 	using MGroup.LinearAlgebra.Matrices;
@@ -19,23 +19,34 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 	using MGroup.Solvers.DDM.LinearSystem;
 	using MGroup.Solvers.DDM.Tests.ExampleModels;
 	using MGroup.Solvers.Results;
-
+	using MGroup.Solvers.Tests;
+	using MGroup.Solvers.Tests.TempUtilityClasses;
 	using Xunit;
 
 	[Collection("Sequential")]
 	public static class SimpleFetiDPSolverTests
 	{
-		[Theory]
-		[InlineData(EnvironmentChoice.SequentialShared, false, false, false)]
-		[InlineData(EnvironmentChoice.TplShared, false, false, false)]
-		public static void TestForBrick3D(EnvironmentChoice env, bool coarseDistributed, bool coarseJacobi, bool coarseReortho)
-			=> TestForBrick3DInternal(env.CreateEnvironment(), coarseDistributed, coarseJacobi, coarseReortho);
-
-		internal static void TestForBrick3DInternal(IComputeEnvironment environment, bool isCoarseProblemDistributed,
-			bool useCoarseJacobiPreconditioner, bool useReorthogonalizedPcg)
+		public static TheoryData<bool, bool, bool, IEnvironmentChoice, IImplementationProviderChoice> DataForBrick3DTest
 		{
-			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+			get
+			{
+				var data = new TheoryData<bool, bool, bool, IEnvironmentChoice, IImplementationProviderChoice>();
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, false, false, false);
+				return data;
+			}
+		}
 
+		[Theory]
+		[MemberData(nameof(DataForBrick3DTest))]
+		public static void TestForBrick3D(bool coarseDistributed, bool coarseJacobi, bool coarseReortho,
+			IEnvironmentChoice environment, IImplementationProviderChoice provider)
+		{
+			TestForBrick3DInternal(coarseDistributed, coarseJacobi, coarseReortho, environment.Activate(), provider.Activate());
+		}
+
+		internal static void TestForBrick3DInternal(bool isCoarseProblemDistributed, bool useCoarseJacobiPreconditioner,
+			bool useReorthogonalizedPcg, IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
+		{
 			// Environment
 			ComputeNodeTopology nodeTopology = Brick3DExample.CreateNodeTopology();
 			environment.Initialize(nodeTopology);
@@ -116,25 +127,32 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 			Assert.InRange(stats.ResidualNormRatioEstimation, 0, pcgResidualNormRatioExpected);
 		}
 
-		[Theory]
-		[InlineData(EnvironmentChoice.SequentialShared, false, false, false)]
-		//[InlineData(EnvironmentChoice.SequentialShared, true, false, false)]
-		//[InlineData(EnvironmentChoice.SequentialShared, true, true, false)]
-		//[InlineData(EnvironmentChoice.SequentialShared, true, false, true)]
-		//[InlineData(EnvironmentChoice.SequentialShared, true, true, true)]
-		[InlineData(EnvironmentChoice.TplShared, false, false, false)]
-		//[InlineData(EnvironmentChoice.TplShared, true, false, false)]
-		//[InlineData(EnvironmentChoice.TplShared, true, true, false)]
-		//[InlineData(EnvironmentChoice.TplShared, true, false, true)]
-		//[InlineData(EnvironmentChoice.TplShared, true, true, true)]
-		public static void TestForPlane2D(EnvironmentChoice env, bool coarseDistributed, bool coarseJacobi, bool coarseReortho)
-			=> TestForPlane2DInternal(env.CreateEnvironment(), coarseDistributed, coarseJacobi, coarseReortho);
-
-		internal static void TestForPlane2DInternal(IComputeEnvironment environment, bool isCoarseProblemDistributed,
-			bool useCoarseJacobiPreconditioner, bool useReorthogonalizedPcg)
+		public static TheoryData<bool, bool, bool, IEnvironmentChoice, IImplementationProviderChoice> DataForPlane2DTest
 		{
-			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+			get
+			{
+				var data = new TheoryData<bool, bool, bool, IEnvironmentChoice, IImplementationProviderChoice>();
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, false, false, false);
+				//TODO: The following fail. Fix them.
+				//TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, true, false, false);
+				//TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, true, true, false);
+				//TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, true, false, true);
+				//TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data, true, true, true);
+				return data;
+			}
+		}
 
+		[Theory]
+		[MemberData(nameof(DataForPlane2DTest))]
+		public static void TestForPlane2D(bool coarseDistributed, bool coarseJacobi, bool coarseReortho,
+			IEnvironmentChoice environment, IImplementationProviderChoice provider)
+		{
+			TestForPlane2DInternal(coarseDistributed, coarseJacobi, coarseReortho, environment.Activate(), provider.Activate());
+		}
+
+		internal static void TestForPlane2DInternal(bool isCoarseProblemDistributed, bool useCoarseJacobiPreconditioner,
+			bool useReorthogonalizedPcg, IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
+		{
 			// Environment
 			ComputeNodeTopology nodeTopology = Plane2DExample.CreateNodeTopology();
 			environment.Initialize(nodeTopology);

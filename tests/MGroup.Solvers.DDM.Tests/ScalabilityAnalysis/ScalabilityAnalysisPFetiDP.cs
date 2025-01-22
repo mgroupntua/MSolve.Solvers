@@ -4,7 +4,6 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 	using MGroup.Environments.Mpi;
 	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
 	using MGroup.LinearAlgebra.Implementations;
-	using MGroup.LinearAlgebra.Implementations.NativeWin64;
 	using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.MSolve.Discretization.Entities;
@@ -18,20 +17,36 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 	using MGroup.Solvers.DDM.Psm;
 	using MGroup.Solvers.DDM.PSM.InterfaceProblem;
 	using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
+	using MGroup.Solvers.Tests;
+	using MGroup.Solvers.Tests.TempUtilityClasses;
+
+	using Xunit;
 
 	public class ScalabilityAnalysisPFetiDP : ScalabilityAnalysisBase
 	{
 		private const string workingDirectory = @"C:\Users\Serafeim\Desktop\PFETIDP\scalability\";
 
-		//[Theory]
-		//[InlineData(EnvironmentChoice.SequentialSharedEnvironment)]
-		//[InlineData(EnvironmentChoice.TplSharedEnvironment)]
-		public static void RunFullScalabilityAnalysisCantilever2D(EnvironmentChoice environmentChoice)
-			=> RunFullScalabilityAnalysisCantilever2DInternal(environmentChoice.CreateEnvironment());
-
-		internal static void RunFullScalabilityAnalysisCantilever2DInternal(IComputeEnvironment environment)
+		public static TheoryData<IEnvironmentChoice, IImplementationProviderChoice> TestData
 		{
-			var laProviderForSolver = new NativeWin64ImplementationProvider();
+			get
+			{
+				var data = new TheoryData<IEnvironmentChoice, IImplementationProviderChoice>();
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data);
+				return data;
+			}
+		}
+
+		//[Theory]
+		//[MemberData(nameof(TestData))]
+		public static void RunFullScalabilityAnalysisCantilever2D(
+			IEnvironmentChoice environment, IImplementationProviderChoice provider)
+		{
+			RunFullScalabilityAnalysisCantilever2DInternal(environment.Activate(), provider.Activate());
+		}
+
+		internal static void RunFullScalabilityAnalysisCantilever2DInternal(
+			IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
+		{
 
 			string outputDirectory = workingDirectory + @"\cantilever2D\";
 			var scalabilityAnalysis = new ScalabilityAnalysisPFetiDP();
@@ -45,15 +60,16 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 		}
 
 		//[Theory]
-		//[InlineData(EnvironmentChoice.SequentialSharedEnvironment)]
-		//[InlineData(EnvironmentChoice.TplSharedEnvironment)]
-		public static void RunFullScalabilityAnalysisCantilever3D(EnvironmentChoice environmentChoice)
-			=> RunFullScalabilityAnalysisCantilever3DInternal(environmentChoice.CreateEnvironment());
-
-		internal static void RunFullScalabilityAnalysisCantilever3DInternal(IComputeEnvironment environment)
+		//[MemberData(nameof(TestData))]
+		public static void RunFullScalabilityAnalysisCantilever3D(
+			IEnvironmentChoice environment, IImplementationProviderChoice provider)
 		{
-			var laProviderForSolver = new NativeWin64ImplementationProvider();
+			RunFullScalabilityAnalysisCantilever3DInternal(environment.Activate(), provider.Activate());
+		}
 
+		internal static void RunFullScalabilityAnalysisCantilever3DInternal(
+			IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
+		{
 			string outputDirectory = workingDirectory + @"\cantilever3D\";
 			var scalabilityAnalysis = new ScalabilityAnalysisPFetiDP();
 			scalabilityAnalysis.ModelBuilder = new CantilevelBeam3D();
@@ -66,15 +82,16 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 		}
 
 		//[Theory]
-		//[InlineData(EnvironmentChoice.SequentialSharedEnvironment)]
-		//[InlineData(EnvironmentChoice.TplSharedEnvironment)]
-		public static void RunFullScalabilityAnalysisRve2D(EnvironmentChoice environmentChoice)
-			=> RunFullScalabilityAnalysisRve2DInternal(environmentChoice.CreateEnvironment());
-
-		internal static void RunFullScalabilityAnalysisRve2DInternal(IComputeEnvironment environment)
+		//[MemberData(nameof(TestData))]
+		public static void RunFullScalabilityAnalysisRve2D(
+			IEnvironmentChoice environment, IImplementationProviderChoice provider)
 		{
-			var laProviderForSolver = new NativeWin64ImplementationProvider();
+			RunFullScalabilityAnalysisRve2DInternal(environment.Activate(), provider.Activate());
+		}
 
+		internal static void RunFullScalabilityAnalysisRve2DInternal(
+			IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
+		{
 			string outputDirectory = workingDirectory + @"\rve2D\";
 			var scalabilityAnalysis = new ScalabilityAnalysisPFetiDP();
 			scalabilityAnalysis.ModelBuilder = new Rve2D();
@@ -87,15 +104,16 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 		}
 
 		//[Theory]
-		//[InlineData(EnvironmentChoice.SequentialSharedEnvironment)]
-		//[InlineData(EnvironmentChoice.TplSharedEnvironment)]
-		public static void RunFullScalabilityAnalysisRve3D(EnvironmentChoice environmentChoice)
-			=> RunFullScalabilityAnalysisRve3DInternal(environmentChoice.CreateEnvironment());
-
-		internal static void RunFullScalabilityAnalysisRve3DInternal(IComputeEnvironment environment)
+		//[MemberData(nameof(TestData))]
+		public static void RunFullScalabilityAnalysisRve3D(
+			IEnvironmentChoice environment, IImplementationProviderChoice provider)
 		{
-			var laProviderForSolver = new NativeWin64ImplementationProvider();
+			RunFullScalabilityAnalysisRve3DInternal(environment.Activate(),provider.Activate());
+		}
 
+		internal static void RunFullScalabilityAnalysisRve3DInternal(
+			IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
+		{
 			string outputDirectory = workingDirectory + @"\rve3D\";
 			var scalabilityAnalysis = new ScalabilityAnalysisPFetiDP();
 			scalabilityAnalysis.ModelBuilder = new Rve3D();

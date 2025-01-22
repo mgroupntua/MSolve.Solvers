@@ -20,8 +20,11 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 	using MGroup.Solvers.DDM.LinearSystem;
 	using MGroup.Solvers.DDM.Tests.ExampleModels;
 	using MGroup.Solvers.Results;
+	using MGroup.Solvers.Tests.TempUtilityClasses;
+	using MGroup.Solvers.Tests;
 
 	using Xunit;
+	using MGroup.LinearAlgebra.Implementations;
 
 	[Collection("Sequential")]
 	public static class PapagiannakisFetiDPSolverTests
@@ -31,19 +34,38 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 			Dirichlet, Lumped, DiagonalDirichlet,
 		}
 
-		[Theory]
-		[InlineData(1.0, Preconditioner.DiagonalDirichlet, true, 10, 2E-9/*relaxed from 6.47E-10*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1.0, Preconditioner.Dirichlet, true, 9, 2.44E-9, EnvironmentChoice.SequentialShared)]
-		[InlineData(1.0, Preconditioner.Lumped, true, 11, 6.61E-10, EnvironmentChoice.SequentialShared)]
-		public static void RunTest_8(double stiffnessRatio, Preconditioner preconditioner, bool ignoreHeterogenity,
-			int numIterationsExpected, double errorExpected, EnvironmentChoice environmentChoice)
-			=> RunTest_8_Internal(stiffnessRatio, preconditioner, ignoreHeterogenity, numIterationsExpected, errorExpected,
-				environmentChoice.CreateEnvironment());
-
-		internal static void RunTest_8_Internal(double stiffnessRatio, Preconditioner preconditioner, bool ignoreHeterogenity,
-			int numIterationsExpected, double errorExpected, IComputeEnvironment environment, bool isCoarseProblemDistributed = false)
+		public static TheoryData<
+			double, Preconditioner, bool, int, double, IEnvironmentChoice, IImplementationProviderChoice> DataForTest_8
 		{
-			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+			get
+			{
+				var data = new TheoryData<
+					double, Preconditioner, bool, int, double, IEnvironmentChoice, IImplementationProviderChoice>();
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(
+					data, 1.0, Preconditioner.DiagonalDirichlet, true, 10, 2E-9/*relaxed from 6.47E-10*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(
+					data, 1.0, Preconditioner.Dirichlet, true, 9, 2.44E-9);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(
+					data, 1.0, Preconditioner.Lumped, true, 11, 6.61E-10);
+				return data;
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(DataForTest_8))]
+		public static void RunTest_8(
+			double stiffnessRatio, Preconditioner preconditioner, bool ignoreHeterogenity, int numIterationsExpected,
+			double errorExpected, IEnvironmentChoice environment, IImplementationProviderChoice provider)
+		{
+			RunTest_8_Internal(stiffnessRatio, preconditioner, ignoreHeterogenity, numIterationsExpected, errorExpected,
+				environment.Activate(), provider.Activate());
+		}
+
+		internal static void RunTest_8_Internal(
+			double stiffnessRatio, Preconditioner preconditioner, bool ignoreHeterogenity, int numIterationsExpected,
+			double errorExpected, IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
+		{
+			bool isCoarseProblemDistributed = false;
 
 			// Model
 			(Model model, ComputeNodeTopology nodeTopology) = PapagiannakisExample_8.CreateMultiSubdomainModel(stiffnessRatio);
@@ -120,19 +142,36 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 			Assert.InRange(error, 0, errorExpected);
 		}
 
+		public static TheoryData<
+			double, Preconditioner, int, double, IEnvironmentChoice, IImplementationProviderChoice> DataForTest_9_1
+		{
+			get
+			{
+				var data = new TheoryData<
+					double, Preconditioner, int, double, IEnvironmentChoice, IImplementationProviderChoice>();
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(
+					data, 1.0, Preconditioner.DiagonalDirichlet, 14, 2.07E-6/*relaxed from 1.28E-9*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(
+					data, 1.0, Preconditioner.Dirichlet, 11, 4E-9/*relaxed from 1.39E-9*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(
+					data, 1.0, Preconditioner.Lumped, 18, 3E-9/*relaxed from 3.46E-10*/);
+				return data;
+			}
+		}
+
 		[Theory]
-		[InlineData(1.0, Preconditioner.DiagonalDirichlet, 14, 2E-6/*relaxed from 1.28E-9*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1.0, Preconditioner.Dirichlet, 11, 4E-9/*relaxed from 1.39E-9*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1.0, Preconditioner.Lumped, 18, 3E-9/*relaxed from 3.46E-10*/, EnvironmentChoice.SequentialShared)]
+		[MemberData(nameof(DataForTest_9_1))]
 		public static void RunTest_9_1(double stiffnessRatio, Preconditioner preconditioner, int numIterationsExpected,
-			double errorExpected, EnvironmentChoice environmentChoice)
-			=> RunTest_9_1_Internal(
-				stiffnessRatio, preconditioner, numIterationsExpected, errorExpected, environmentChoice.CreateEnvironment());
+			double errorExpected, IEnvironmentChoice environment, IImplementationProviderChoice provider)
+		{
+			RunTest_9_1_Internal(stiffnessRatio, preconditioner, numIterationsExpected, errorExpected,
+				environment.Activate(), provider.Activate());
+		}
 
 		internal static void RunTest_9_1_Internal(double stiffnessRatio, Preconditioner preconditioner, int numIterationsExpected,
-			double errorExpected, IComputeEnvironment environment, bool isCoarseProblemDistributed = false)
+			double errorExpected, IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
 		{
-			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+			bool isCoarseProblemDistributed = false;
 
 			// Model
 			(Model model, ComputeNodeTopology nodeTopology) = PapagiannakisExample_9_1.CreateMultiSubdomainModel(stiffnessRatio);
@@ -208,19 +247,36 @@ namespace MGroup.Solvers.DDM.Tests.FetiDP
 			Assert.InRange(error, 0, errorExpected);
 		}
 
+		public static TheoryData<
+			double, Preconditioner, int, double, IEnvironmentChoice, IImplementationProviderChoice> DataForTest_9_2
+		{
+			get
+			{
+				var data = new TheoryData<
+					double, Preconditioner, int, double, IEnvironmentChoice, IImplementationProviderChoice>();
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(
+					data, 1.0, Preconditioner.DiagonalDirichlet, 10, 2E-5/*relaxed from 2.65E-10*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(
+					data, 1.0, Preconditioner.Dirichlet, 6, 3E-6/*relaxed from 3.32E-10*/);
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(
+					data, 1.0, Preconditioner.Lumped, 12, 9E-6/*relaxed from 1.68E-10*/);
+				return data;
+			}
+		}
+
 		[Theory]
-		[InlineData(1.0, Preconditioner.DiagonalDirichlet, 10, 2E-5/*relaxed from 2.65E-10*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1.0, Preconditioner.Dirichlet, 6, 3E-6/*relaxed from 3.32E-10*/, EnvironmentChoice.SequentialShared)]
-		[InlineData(1.0, Preconditioner.Lumped, 12, 9E-6/*relaxed from 1.68E-10*/, EnvironmentChoice.SequentialShared)]
+		[MemberData(nameof(DataForTest_9_2))]
 		public static void RunTest_9_2(double stiffnessRatio, Preconditioner preconditioner, int numIterationsExpected,
-			double errorExpected, EnvironmentChoice environmentChoice)
-			=> RunTest_9_2_Internal(
-				stiffnessRatio, preconditioner, numIterationsExpected, errorExpected, environmentChoice.CreateEnvironment());
+			double errorExpected, IEnvironmentChoice environment, IImplementationProviderChoice provider)
+		{
+			RunTest_9_2_Internal(stiffnessRatio, preconditioner, numIterationsExpected, errorExpected,
+				environment.Activate(), provider.Activate());
+		}
 
 		internal static void RunTest_9_2_Internal(double stiffnessRatio, Preconditioner preconditioner, int numIterationsExpected,
-			double errorExpected, IComputeEnvironment environment, bool isCoarseProblemDistributed = false)
+			double errorExpected, IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
 		{
-			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+			bool isCoarseProblemDistributed = false;
 
 			// Model
 			(Model model, ComputeNodeTopology nodeTopology) = PapagiannakisExample_9_2.CreateMultiSubdomainModel(stiffnessRatio);

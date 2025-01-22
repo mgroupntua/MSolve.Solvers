@@ -4,7 +4,6 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 	using MGroup.Constitutive.Thermal;
 	using MGroup.Environments;
 	using MGroup.LinearAlgebra.Implementations;
-	using MGroup.LinearAlgebra.Implementations.Managed;
 	using MGroup.LinearAlgebra.Iterative;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.MSolve.Discretization.Entities;
@@ -15,22 +14,30 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 	using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
 	using MGroup.Solvers.DDM.Tests.ExampleModels;
 	using MGroup.Solvers.Results;
-
+	using MGroup.Solvers.Tests;
+	using MGroup.Solvers.Tests.TempUtilityClasses;
 	using Xunit;
 
 	[Collection("Sequential")]
 	public static class SimplePsmSolverTests
 	{
-		[Theory]
-		[InlineData(EnvironmentChoice.SequentialShared)]
-		[InlineData(EnvironmentChoice.TplShared)]
-		public static void TestForBrick3D(EnvironmentChoice environmentChoice)
-			=> TestForBrick3DInternal(environmentChoice.CreateEnvironment());
-
-		internal static void TestForBrick3DInternal(IComputeEnvironment environment)
+		public static TheoryData<IEnvironmentChoice, IImplementationProviderChoice> TestData
 		{
-			var laProviderForSolver = new ManagedSequentialImplementationProvider();
+			get
+			{
+				var data = new TheoryData<IEnvironmentChoice, IImplementationProviderChoice>();
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data);
+				return data;
+			}
+		}
 
+		[Theory]
+		[MemberData(nameof(TestData))]
+		public static void TestForBrick3D(IEnvironmentChoice environment, IImplementationProviderChoice laProviderForSolver)
+			=> TestForBrick3DInternal(environment.Activate(), laProviderForSolver.Activate());
+
+		internal static void TestForBrick3DInternal(IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
+		{
 			// Environment
 			ComputeNodeTopology nodeTopology = Brick3DExample.CreateNodeTopology();
 			environment.Initialize(nodeTopology);
@@ -81,15 +88,12 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 		}
 
 		[Theory]
-		[InlineData(EnvironmentChoice.SequentialShared)]
-		[InlineData(EnvironmentChoice.TplShared)]
-		public static void TestForLine1D(EnvironmentChoice environmentChoice)
-			=> TestForLine1DInternal(environmentChoice.CreateEnvironment());
+		[MemberData(nameof(TestData))]
+		public static void TestForLine1D(IEnvironmentChoice environment, IImplementationProviderChoice laProviderForSolver)
+			=> TestForLine1DInternal(environment.Activate(), laProviderForSolver.Activate());
 
-		internal static void TestForLine1DInternal(IComputeEnvironment environment)
+		internal static void TestForLine1DInternal(IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
 		{
-			var laProviderForSolver = new ManagedSequentialImplementationProvider();
-
 			// Environment
 			ComputeNodeTopology nodeTopology = Line1DExample.CreateNodeTopology();
 			environment.Initialize(nodeTopology);
@@ -135,15 +139,12 @@ namespace MGroup.Solvers.DDM.Tests.PSM
 		}
 
 		[Theory]
-		[InlineData(EnvironmentChoice.SequentialShared)]
-		[InlineData(EnvironmentChoice.TplShared)]
-		public static void TestForPlane2D(EnvironmentChoice environmentChoice)
-			=> TestForPlane2DInternal(environmentChoice.CreateEnvironment());
+		[MemberData(nameof(TestData))]
+		public static void TestForPlane2D(IEnvironmentChoice environment, IImplementationProviderChoice laProviderForSolver)
+			=> TestForPlane2DInternal(environment.Activate(), laProviderForSolver.Activate());
 
-		internal static void TestForPlane2DInternal(IComputeEnvironment environment)
+		internal static void TestForPlane2DInternal(IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
 		{
-			var laProviderForSolver = new ManagedSequentialImplementationProvider();
-
 			// Environment
 			ComputeNodeTopology nodeTopology = Plane2DExample.CreateNodeTopology();
 			environment.Initialize(nodeTopology);
