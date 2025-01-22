@@ -1,5 +1,6 @@
 namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 {
+	using MGroup.LinearAlgebra.Implementations;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.Solvers.Assemblers;
 	using MGroup.Solvers.DDM.FetiDP.Dofs;
@@ -11,6 +12,6 @@ namespace MGroup.Solvers.DDM.FetiDP.StiffnessMatrices
 		ISubdomainMatrixAssembler<TMatrix> CreateAssembler();
 
 		IFetiDPSubdomainMatrixManager CreateMatrixManager(
-			SubdomainLinearSystem<TMatrix> linearSystem, FetiDPSubdomainDofs subdomainDofs);
+			IImplementationProvider provider, SubdomainLinearSystem<TMatrix> linearSystem, FetiDPSubdomainDofs subdomainDofs);
 	}
 }

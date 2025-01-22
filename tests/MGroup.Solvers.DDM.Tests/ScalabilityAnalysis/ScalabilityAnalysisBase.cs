@@ -2,6 +2,7 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 {
 	using MGroup.Constitutive.Structural;
 	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Implementations;
 	using MGroup.MSolve.Discretization.Entities;
 	using MGroup.MSolve.Solution;
 	using MGroup.MSolve.Solution.AlgebraicModel;
@@ -28,7 +29,8 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 			//CoarseProblemSize = -1;
 		}
 
-		public void RunParametricConstNumSubdomains(IComputeEnvironment environment, string outputDirectory)
+		public void RunParametricConstNumSubdomains(
+			IComputeEnvironment environment, IImplementationProvider laProviderForSolver, string outputDirectory)
 		{
 			string path = outputDirectory + "results_const_subdomains.txt";
 			environment.DoGlobalOperation(() => RenewFile(path));
@@ -39,12 +41,13 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 				Clear();
 				ModelBuilder.NumElementsPerAxis = numElements[i];
 				ModelBuilder.NumSubdomainsPerAxis = numSubdomains;
-				RunSingleAnalysis(environment);
+				RunSingleAnalysis(environment, laProviderForSolver);
 				environment.DoGlobalOperation(() => PrintAnalysisData(path));
 			}
 		}
 
-		public void RunParametricConstNumElements(IComputeEnvironment environment, string outputDirectory)
+		public void RunParametricConstNumElements(
+			IComputeEnvironment environment, IImplementationProvider laProviderForSolver, string outputDirectory)
 		{
 			string path = outputDirectory + "results_const_elements.txt";
 			environment.DoGlobalOperation(() => RenewFile(path));
@@ -55,12 +58,13 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 				Clear();
 				ModelBuilder.NumElementsPerAxis = numElements;
 				ModelBuilder.NumSubdomainsPerAxis = numSubdomains[i];
-				RunSingleAnalysis(environment);
+				RunSingleAnalysis(environment, laProviderForSolver);
 				environment.DoGlobalOperation(() => PrintAnalysisData(path));
 			}
 		}
 
-		public void RunParametricConstSubdomainPerElementSize(IComputeEnvironment environment, string outputDirectory)
+		public void RunParametricConstSubdomainPerElementSize(
+			IComputeEnvironment environment, IImplementationProvider laProviderForSolver, string outputDirectory)
 		{
 
 			string path = outputDirectory + "results_const_subdomain_per_element_size.txt";
@@ -72,16 +76,17 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 				Clear();
 				ModelBuilder.NumElementsPerAxis = numElements[i];
 				ModelBuilder.NumSubdomainsPerAxis = numSubdomains[i];
-				RunSingleAnalysis(environment);
+				RunSingleAnalysis(environment, laProviderForSolver);
 				environment.DoGlobalOperation(() => PrintAnalysisData(path));
 			}
 		}
 
-		public void RunSingleAnalysis(IComputeEnvironment environment)
+		public void RunSingleAnalysis(IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
 		{
 			(IModel model, ComputeNodeTopology nodeTopology) = ModelBuilder.CreateMultiSubdomainModel();
 			model.ConnectDataStructures();
-			(ISolver solver, IAlgebraicModel algebraicModel) = CreateSolver(environment, model, nodeTopology);
+			(ISolver solver, IAlgebraicModel algebraicModel)
+				= CreateSolver(environment, laProviderForSolver, model, nodeTopology);
 
 			// Structural problem provider
 			var provider = new ProblemStructural(model, algebraicModel);
@@ -99,8 +104,8 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 			//this.CoarseProblemSize = solver.Logger.GetNumDofs(0, "Global corner dofs");
 		}
 
-		public abstract (ISolver solver, IAlgebraicModel algebraicModel) CreateSolver(
-			IComputeEnvironment environment, IModel model, ComputeNodeTopology nodeTopology);
+		public abstract (ISolver solver, IAlgebraicModel algebraicModel) CreateSolver(IComputeEnvironment environment,
+			IImplementationProvider laProviderForSolver, IModel model, ComputeNodeTopology nodeTopology);
 
 		private void PrintAnalysisData(string path)
 		{

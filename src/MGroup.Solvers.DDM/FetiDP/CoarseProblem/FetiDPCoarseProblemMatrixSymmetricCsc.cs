@@ -1,5 +1,6 @@
 namespace MGroup.Solvers.DDM.FetiDP.CoarseProblem
 {
+	using MGroup.LinearAlgebra.Implementations;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.LinearAlgebra.Reordering;
 	using MGroup.LinearAlgebra.Triangulation;
@@ -7,15 +8,27 @@ namespace MGroup.Solvers.DDM.FetiDP.CoarseProblem
 	using MGroup.Solvers.DDM.Commons;
 	using MGroup.Solvers.DDM.SolversExtensions.Assemblers;
 
-	public class FetiDPCoarseProblemMatrixSymmetricCSparse : IFetiDPCoarseProblemGlobalMatrix
+	public class FetiDPCoarseProblemMatrixSymmetricCsc : IFetiDPCoarseProblemGlobalMatrix
 	{
 		private readonly SymmetricCscMatrixAssembler assembler = new SymmetricCscMatrixAssembler(true);
-		private readonly OrderingAmdCSparseNet reordering = new OrderingAmdCSparseNet();
+		private readonly IImplementationProvider provider;
+		private readonly AmdSymmetricOrdering reordering;
 
-		private CholeskyCSparseNet inverseSccGlobal;
+		private ICholeskySymmetricCsc inverseSccGlobal;
+
+		public FetiDPCoarseProblemMatrixSymmetricCsc(IImplementationProvider provider)
+		{
+			this.provider = provider;
+			this.reordering = new AmdSymmetricOrdering(provider);
+		}
 
 		public void Clear()
 		{
+			if (inverseSccGlobal != null)
+			{
+				inverseSccGlobal.Dispose();
+			}
+
 			inverseSccGlobal = null;
 			assembler.HandleDofOrderingWasModified();
 		}
@@ -23,9 +36,16 @@ namespace MGroup.Solvers.DDM.FetiDP.CoarseProblem
 		public void InvertGlobalScc(int numGlobalCornerDofs, IDictionary<int, int[]> subdomainToGlobalCornerDofs, 
 			IDictionary<int, IMatrix>  subdomainMatricesScc)
 		{
-			SymmetricCscMatrix globalScc = 
+			SymmetricCscMatrix globalScc =
 				assembler.BuildGlobalMatrix(numGlobalCornerDofs, subdomainToGlobalCornerDofs, subdomainMatricesScc);
-			inverseSccGlobal = CholeskyCSparseNet.Factorize(globalScc);
+
+			if (inverseSccGlobal != null)
+			{
+				inverseSccGlobal.Dispose();
+			}
+
+			inverseSccGlobal = provider.CreateCholeskyTriangulation();
+			inverseSccGlobal.Factorize(globalScc);
 		}
 
 		public void MultiplyInverseScc(Vector input, Vector output) => inverseSccGlobal.SolveLinearSystem(input, output);
@@ -38,6 +58,7 @@ namespace MGroup.Solvers.DDM.FetiDP.CoarseProblem
 				int[] globalDofs = subdomainToGlobalCornerDofs[s];
 				pattern.ConnectIndices(globalDofs, false);
 			}
+
 			(int[] permutation, bool oldToNew) = reordering.FindPermutation(pattern);
 			return DofPermutation.Create(permutation, oldToNew);
 		}

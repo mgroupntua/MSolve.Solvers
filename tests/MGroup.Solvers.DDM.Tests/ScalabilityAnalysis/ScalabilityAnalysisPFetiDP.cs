@@ -3,6 +3,7 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 	using MGroup.Environments;
 	using MGroup.Environments.Mpi;
 	using MGroup.LinearAlgebra.Distributed.IterativeMethods.PCG;
+	using MGroup.LinearAlgebra.Implementations;
 	using MGroup.LinearAlgebra.Iterative.Termination.Iterations;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.MSolve.Discretization.Entities;
@@ -16,37 +17,58 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 	using MGroup.Solvers.DDM.Psm;
 	using MGroup.Solvers.DDM.PSM.InterfaceProblem;
 	using MGroup.Solvers.DDM.PSM.StiffnessMatrices;
+	using MGroup.Solvers.Tests;
+	using MGroup.Solvers.Tests.TempUtilityClasses;
+
+	using Xunit;
 
 	public class ScalabilityAnalysisPFetiDP : ScalabilityAnalysisBase
 	{
 		private const string workingDirectory = @"C:\Users\Serafeim\Desktop\PFETIDP\scalability\";
 
-		//[Theory]
-		//[InlineData(EnvironmentChoice.SequentialSharedEnvironment)]
-		//[InlineData(EnvironmentChoice.TplSharedEnvironment)]
-		public static void RunFullScalabilityAnalysisCantilever2D(EnvironmentChoice environmentChoice)
-			=> RunFullScalabilityAnalysisCantilever2DInternal(environmentChoice.CreateEnvironment());
-
-		internal static void RunFullScalabilityAnalysisCantilever2DInternal(IComputeEnvironment environment)
+		public static TheoryData<IEnvironmentChoice, IImplementationProviderChoice> TestData
 		{
+			get
+			{
+				var data = new TheoryData<IEnvironmentChoice, IImplementationProviderChoice>();
+				TestSettings.CombineTheoryDataWithAllProvidersAndEnvironments(data);
+				return data;
+			}
+		}
+
+		//[Theory]
+		//[MemberData(nameof(TestData))]
+		public static void RunFullScalabilityAnalysisCantilever2D(
+			IEnvironmentChoice environment, IImplementationProviderChoice provider)
+		{
+			RunFullScalabilityAnalysisCantilever2DInternal(environment.Activate(), provider.Activate());
+		}
+
+		internal static void RunFullScalabilityAnalysisCantilever2DInternal(
+			IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
+		{
+
 			string outputDirectory = workingDirectory + @"\cantilever2D\";
 			var scalabilityAnalysis = new ScalabilityAnalysisPFetiDP();
 			scalabilityAnalysis.ModelBuilder = new CantilevelBeam2D();
 			scalabilityAnalysis.EnableNativeDlls = true;
 			scalabilityAnalysis.IterativeResidualTolerance = 1E-6;
 
-			scalabilityAnalysis.RunParametricConstNumSubdomains(environment, outputDirectory);
-			//scalabilityAnalysis.RunParametricConstNumElements(environment, outputDirectory);
-			//scalabilityAnalysis.RunParametricConstSubdomainPerElementSize(environment, outputDirectory);
+			scalabilityAnalysis.RunParametricConstNumSubdomains(environment, laProviderForSolver, outputDirectory);
+			//scalabilityAnalysis.RunParametricConstNumElements(environment, laProviderForSolver, outputDirectory);
+			//scalabilityAnalysis.RunParametricConstSubdomainPerElementSize(environment, laProviderForSolver, outputDirectory);
 		}
 
 		//[Theory]
-		//[InlineData(EnvironmentChoice.SequentialSharedEnvironment)]
-		//[InlineData(EnvironmentChoice.TplSharedEnvironment)]
-		public static void RunFullScalabilityAnalysisCantilever3D(EnvironmentChoice environmentChoice)
-			=> RunFullScalabilityAnalysisCantilever3DInternal(environmentChoice.CreateEnvironment());
+		//[MemberData(nameof(TestData))]
+		public static void RunFullScalabilityAnalysisCantilever3D(
+			IEnvironmentChoice environment, IImplementationProviderChoice provider)
+		{
+			RunFullScalabilityAnalysisCantilever3DInternal(environment.Activate(), provider.Activate());
+		}
 
-		internal static void RunFullScalabilityAnalysisCantilever3DInternal(IComputeEnvironment environment)
+		internal static void RunFullScalabilityAnalysisCantilever3DInternal(
+			IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
 		{
 			string outputDirectory = workingDirectory + @"\cantilever3D\";
 			var scalabilityAnalysis = new ScalabilityAnalysisPFetiDP();
@@ -54,18 +76,21 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 			scalabilityAnalysis.EnableNativeDlls = true;
 			scalabilityAnalysis.IterativeResidualTolerance = 1E-6;
 
-			scalabilityAnalysis.RunParametricConstNumSubdomains(environment, outputDirectory);
-			//scalabilityAnalysis.RunParametricConstNumElements(environment, outputDirectory);
-			//scalabilityAnalysis.RunParametricConstSubdomainPerElementSize(environment, outputDirectory);
+			scalabilityAnalysis.RunParametricConstNumSubdomains(environment, laProviderForSolver, outputDirectory);
+			//scalabilityAnalysis.RunParametricConstNumElements(environment, laProviderForSolver, outputDirectory);
+			//scalabilityAnalysis.RunParametricConstSubdomainPerElementSize(environment, laProviderForSolver, outputDirectory);
 		}
 
 		//[Theory]
-		//[InlineData(EnvironmentChoice.SequentialSharedEnvironment)]
-		//[InlineData(EnvironmentChoice.TplSharedEnvironment)]
-		public static void RunFullScalabilityAnalysisRve2D(EnvironmentChoice environmentChoice)
-			=> RunFullScalabilityAnalysisRve2DInternal(environmentChoice.CreateEnvironment());
+		//[MemberData(nameof(TestData))]
+		public static void RunFullScalabilityAnalysisRve2D(
+			IEnvironmentChoice environment, IImplementationProviderChoice provider)
+		{
+			RunFullScalabilityAnalysisRve2DInternal(environment.Activate(), provider.Activate());
+		}
 
-		internal static void RunFullScalabilityAnalysisRve2DInternal(IComputeEnvironment environment)
+		internal static void RunFullScalabilityAnalysisRve2DInternal(
+			IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
 		{
 			string outputDirectory = workingDirectory + @"\rve2D\";
 			var scalabilityAnalysis = new ScalabilityAnalysisPFetiDP();
@@ -73,18 +98,21 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 			scalabilityAnalysis.EnableNativeDlls = true;
 			scalabilityAnalysis.IterativeResidualTolerance = 1E-6;
 
-			scalabilityAnalysis.RunParametricConstNumSubdomains(environment, outputDirectory);
-			//scalabilityAnalysis.RunParametricConstNumElements(environment, outputDirectory);
-			//scalabilityAnalysis.RunParametricConstSubdomainPerElementSize(environment, outputDirectory);
+			scalabilityAnalysis.RunParametricConstNumSubdomains(environment, laProviderForSolver, outputDirectory);
+			//scalabilityAnalysis.RunParametricConstNumElements(environment, laProviderForSolver, outputDirectory);
+			//scalabilityAnalysis.RunParametricConstSubdomainPerElementSize(environment, laProviderForSolver, outputDirectory);
 		}
 
 		//[Theory]
-		//[InlineData(EnvironmentChoice.SequentialSharedEnvironment)]
-		//[InlineData(EnvironmentChoice.TplSharedEnvironment)]
-		public static void RunFullScalabilityAnalysisRve3D(EnvironmentChoice environmentChoice)
-			=> RunFullScalabilityAnalysisRve3DInternal(environmentChoice.CreateEnvironment());
+		//[MemberData(nameof(TestData))]
+		public static void RunFullScalabilityAnalysisRve3D(
+			IEnvironmentChoice environment, IImplementationProviderChoice provider)
+		{
+			RunFullScalabilityAnalysisRve3DInternal(environment.Activate(),provider.Activate());
+		}
 
-		internal static void RunFullScalabilityAnalysisRve3DInternal(IComputeEnvironment environment)
+		internal static void RunFullScalabilityAnalysisRve3DInternal(
+			IComputeEnvironment environment, IImplementationProvider laProviderForSolver)
 		{
 			string outputDirectory = workingDirectory + @"\rve3D\";
 			var scalabilityAnalysis = new ScalabilityAnalysisPFetiDP();
@@ -92,38 +120,24 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 			scalabilityAnalysis.EnableNativeDlls = true;
 			scalabilityAnalysis.IterativeResidualTolerance = 1E-6;
 
-			scalabilityAnalysis.RunParametricConstNumSubdomains(environment, outputDirectory);
-			//scalabilityAnalysis.RunParametricConstNumElements(environment, outputDirectory);
-			//scalabilityAnalysis.RunParametricConstSubdomainPerElementSize(environment, outputDirectory);
+			scalabilityAnalysis.RunParametricConstNumSubdomains(environment, laProviderForSolver, outputDirectory);
+			//scalabilityAnalysis.RunParametricConstNumElements(environment, laProviderForSolver, outputDirectory);
+			//scalabilityAnalysis.RunParametricConstSubdomainPerElementSize(environment, laProviderForSolver, outputDirectory);
 		}
 
-		public override (ISolver solver, IAlgebraicModel algebraicModel) CreateSolver(
-			IComputeEnvironment environment, IModel model, ComputeNodeTopology nodeTopology)
+		public override (ISolver solver, IAlgebraicModel algebraicModel) CreateSolver(IComputeEnvironment environment,
+			IImplementationProvider laProviderForSolver, IModel model, ComputeNodeTopology nodeTopology)
 		{
 			ICornerDofSelection cornerDofs = ModelBuilder.GetCornerDofs(model);
 			environment.Initialize(nodeTopology);
 
 			// Specify the format of matrices
-			IPsmSubdomainMatrixManagerFactory<SymmetricCscMatrix> psmMatricesFactory;
-			IFetiDPSubdomainMatrixManagerFactory<SymmetricCscMatrix> fetiDPMatricesFactory;
-			IFetiDPCoarseProblemFactory fetiDPCoarseProblemFactory;
-			if (EnableNativeDlls)
-			{
-				psmMatricesFactory = new PsmSubdomainMatrixManagerSymmetricSuiteSparse.Factory();
-				fetiDPMatricesFactory = new FetiDPSubdomainMatrixManagerSymmetricSuiteSparse.Factory(true);
-				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricSuiteSparse();
-				fetiDPCoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
-			}
-			else
-			{
-				psmMatricesFactory = new PsmSubdomainMatrixManagerSymmetricCSparse.Factory();
-				fetiDPMatricesFactory = new FetiDPSubdomainMatrixManagerSymmetricCSparse.Factory(true); 
-				var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCSparse();
-				fetiDPCoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
-			}
+			var psmMatricesFactory = new PsmSubdomainMatrixManagerSymmetricCsc.Factory();
+			var fetiDPMatricesFactory = new FetiDPSubdomainMatrixManagerSymmetricCsc.Factory(true);
+			var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCsc(laProviderForSolver);
 
 			var solverFactory = new PFetiDPSolver<SymmetricCscMatrix>.Factory(
-				environment, psmMatricesFactory, cornerDofs, fetiDPMatricesFactory);
+				environment, laProviderForSolver, psmMatricesFactory, cornerDofs, fetiDPMatricesFactory);
 
 			solverFactory.InterfaceProblemSolverFactory = new PsmInterfaceProblemSolverFactoryPcg()
 			{
@@ -140,9 +154,12 @@ namespace MGroup.Solvers.DDM.Tests.ScalabilityAnalysis
 				coarseProblemPcgBuilder.ResidualTolerance = 1E-12;
 				var coarseProblemFactory = new FetiDPCoarseProblemDistributed.Factory();
 				coarseProblemFactory.CoarseProblemSolver = coarseProblemPcgBuilder.Build();
-				fetiDPCoarseProblemFactory = coarseProblemFactory;
+				solverFactory.CoarseProblemFactory = coarseProblemFactory;
 			}
-			solverFactory.CoarseProblemFactory = fetiDPCoarseProblemFactory;
+			else
+			{
+				solverFactory.CoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
+			}
 
 			solverFactory.IsHomogeneousProblem = true;
 			DistributedAlgebraicModel<SymmetricCscMatrix> algebraicModel = solverFactory.BuildAlgebraicModel(model);

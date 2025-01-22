@@ -1,5 +1,6 @@
 namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 {
+	using MGroup.LinearAlgebra.Implementations;
 	using MGroup.LinearAlgebra.Matrices;
 	using MGroup.LinearAlgebra.SchurComplements;
 	using MGroup.LinearAlgebra.SchurComplements.SubmatrixExtractors;
@@ -10,9 +11,10 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 	using MGroup.Solvers.DDM.LinearSystem;
 	using MGroup.Solvers.DDM.PSM.Dofs;
 
-	public class PsmSubdomainMatrixManagerCSparse : IPsmSubdomainMatrixManager
+	public class PsmSubdomainMatrixManagerCsc : IPsmSubdomainMatrixManager
 	{
 		private readonly SubdomainLinearSystem<CsrMatrix> linearSystem;
+		private readonly IImplementationProvider provider;
 		private readonly PsmSubdomainDofs subdomainDofs;
 		private readonly SubmatrixExtractorCsrCsc submatrixExtractor = new SubmatrixExtractorCsrCsc();
 
@@ -20,10 +22,12 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 		private CsrMatrix Kbi;
 		private CsrMatrix Kib;
 		private CscMatrix Kii;
-		private LUCSparseNet inverseKii;
+		private ILUCscFactorization inverseKii;
 
-		public PsmSubdomainMatrixManagerCSparse(SubdomainLinearSystem<CsrMatrix> linearSystem, PsmSubdomainDofs subdomainDofs)
+		public PsmSubdomainMatrixManagerCsc(
+			IImplementationProvider provider, SubdomainLinearSystem<CsrMatrix> linearSystem, PsmSubdomainDofs subdomainDofs)
 		{
+			this.provider = provider;
 			this.linearSystem = linearSystem;
 			this.subdomainDofs = subdomainDofs;
 		}
@@ -39,11 +43,16 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 
 		public void ClearSubMatrices()
 		{
+			if (inverseKii != null)
+			{
+				inverseKii.Dispose();
+			}
+
+			inverseKii = null;
+			Kii = null;
 			Kbb = null;
 			Kbi = null;
 			Kib = null;
-			Kii = null;
-			inverseKii = null;
 		}
 
 		//TODO: Optimize this method. It is too slow.
@@ -68,7 +77,13 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 
 		public void InvertKii()
 		{
-			inverseKii = LUCSparseNet.Factorize(Kii);
+			if (inverseKii != null)
+			{
+				inverseKii.Dispose();
+			}
+
+			inverseKii = provider.CreateLUTriangulation();
+			inverseKii.Factorize(Kii);
 			Kii = null; // This memory is not overwritten, but it is not needed anymore either.
 		}
 
@@ -84,11 +99,15 @@ namespace MGroup.Solvers.DDM.PSM.StiffnessMatrices
 
 		public class Factory : IPsmSubdomainMatrixManagerFactory<CsrMatrix>
 		{
+			public Factory(double luPivotTolerance)
+			{
+			}
+
 			public ISubdomainMatrixAssembler<CsrMatrix> CreateAssembler() => new CsrMatrixAssembler(false);
 
-			public IPsmSubdomainMatrixManager CreateMatrixManager(
+			public IPsmSubdomainMatrixManager CreateMatrixManager(IImplementationProvider provider,
 				SubdomainLinearSystem<CsrMatrix> linearSystem, PsmSubdomainDofs subdomainDofs)
-				=> new PsmSubdomainMatrixManagerCSparse(linearSystem, subdomainDofs);
+				=> new PsmSubdomainMatrixManagerCsc(provider, linearSystem, subdomainDofs);
 		}
 	}
 }

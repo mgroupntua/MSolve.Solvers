@@ -3,7 +3,12 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 	using MGroup.Constitutive.Structural;
 	using MGroup.Constitutive.Structural.Continuum;
 	using MGroup.Environments;
+	using MGroup.LinearAlgebra.Implementations;
+	using MGroup.LinearAlgebra.Implementations.Managed;
+	using MGroup.LinearAlgebra.Implementations.NativeWin64;
+	using MGroup.LinearAlgebra.Implementations.NativeWin64.SuiteSparse;
 	using MGroup.LinearAlgebra.Matrices;
+	using MGroup.LinearAlgebra.Triangulation;
 	using MGroup.MSolve.Discretization.Entities;
 	using MGroup.MSolve.Solution;
 	using MGroup.MSolve.Solution.AlgebraicModel;
@@ -18,10 +23,15 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 
 	public class UniformExample
 	{
+		/// <summary>
+		/// Requires Win64, Intel MKl and SuiteSparse.
+		/// </summary>
 		public static void Run()
 		{
+			var laProviderForSolver = new NativeWin64ImplementationProvider();
+
 			(Model model, ComputeNodeTopology nodeTopology) = DescribeModel().BuildMultiSubdomainModel();
-			(ISolver solver, IAlgebraicModel algebraicModel) = SetupSolver(model, nodeTopology);
+			(ISolver solver, IAlgebraicModel algebraicModel) = SetupSolver(laProviderForSolver, model, nodeTopology);
 
 			// Linear static analysis
 			var problem = new ProblemStructural(model, algebraicModel);
@@ -50,7 +60,8 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 			return builder;
 		}
 
-		private static (ISolver solver, IAlgebraicModel algebraicModel) SetupSolver(Model model, ComputeNodeTopology nodeTopology)
+		private static (ISolver solver, IAlgebraicModel algebraicModel) SetupSolver(IImplementationProvider provider, 
+			Model model, ComputeNodeTopology nodeTopology)
 		{
 			// Environment
 			IComputeEnvironment environment = new TplSharedEnvironment(false);
@@ -61,12 +72,12 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 			ICornerDofSelection cornerDofs = UniformDdmModelBuilder3D.FindCornerDofs(model);
 
 			// Solver settings
-			var psmMatrices = new PsmSubdomainMatrixManagerSymmetricSuiteSparse.Factory();
-			var fetiDPMatrices = new FetiDPSubdomainMatrixManagerSymmetricSuiteSparse.Factory(true);
-			var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricSuiteSparse();
+			var psmMatrices = new PsmSubdomainMatrixManagerSymmetricCsc.Factory();
+			var fetiDPMatrices = new FetiDPSubdomainMatrixManagerSymmetricCsc.Factory(true);
+			var coarseProblemMatrix = new FetiDPCoarseProblemMatrixSymmetricCsc(provider);
 
 			var solverFactory = new PFetiDPSolver<SymmetricCscMatrix>.Factory(
-				environment, psmMatrices, cornerDofs, fetiDPMatrices);
+				environment, provider, psmMatrices, cornerDofs, fetiDPMatrices);
 			solverFactory.CoarseProblemFactory = new FetiDPCoarseProblemGlobal.Factory(coarseProblemMatrix);
 			solverFactory.EnableLogging = true;
 			solverFactory.ExplicitSubdomainMatrices = false;
@@ -74,7 +85,7 @@ namespace MGroup.Solvers.DDM.Tests.PFetiDP
 			{
 				MaxIterations = 100,
 				ResidualTolerance = 1E-7,
-				UseObjectiveConvergenceCriterion = false
+				UseObjectiveConvergenceCriterion = false,
 			};
 
 			// Create solver
